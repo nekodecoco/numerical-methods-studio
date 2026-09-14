@@ -31,6 +31,8 @@ interface ControlPanelProps {
   setXMinInput: (val: number) => void;
   xMaxInput: number;
   setXMaxInput: (val: number) => void;
+  maxOrderInput: number;
+  setMaxOrderInput: (val: number) => void;
   onApply: () => void;
   errorMessage?: string;
 }
@@ -44,6 +46,8 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({
   setXMinInput,
   xMaxInput,
   setXMaxInput,
+  maxOrderInput,
+  setMaxOrderInput,
   onApply,
   errorMessage,
 }) => {
@@ -134,7 +138,7 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({
         </div>
 
         {/* Parameters Grid */}
-        <div className="grid grid-cols-3 gap-2.5">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
           <div>
             <label className="block text-[11px] font-semibold uppercase tracking-wider text-stone-500 mb-1">
               Center <MathView math="a" />
@@ -173,6 +177,26 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({
               value={xMaxInput}
               onChange={(e) => setXMaxInput(parseFloat(e.target.value) || 0)}
               className="w-full px-2.5 py-1.5 text-sm font-mono bg-stone-50 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#800020]/30 focus:border-[#800020] text-stone-900"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-[11px] font-semibold uppercase tracking-wider text-stone-500 mb-1">
+              Max Order <MathView math="N" />
+            </label>
+            <input
+              type="number"
+              min="1"
+              max="25"
+              step="1"
+              value={maxOrderInput}
+              onChange={(e) => {
+                const val = parseInt(e.target.value) || 1;
+                setMaxOrderInput(Math.min(25, Math.max(1, val)));
+              }}
+              title="Maximum Taylor approximation order (up to 25)"
+              className="w-full px-2.5 py-1.5 text-sm font-mono bg-stone-50 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#800020]/30 focus:border-[#800020] text-stone-900 font-bold text-[#800020]"
               required
             />
           </div>

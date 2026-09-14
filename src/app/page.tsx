@@ -9,20 +9,20 @@ import { DerivativesLog } from '@/components/DerivativesLog';
 import { MathView } from '@/components/MathView';
 import { BookOpen, GraduationCap, Info, Lightbulb, Sparkles } from 'lucide-react';
 
-const CAP_ORDER = 10;
-
 export default function Home() {
   // Input form state
   const [exprInput, setExprInput] = useState<string>('sin(x)');
   const [aInput, setAInput] = useState<number>(0);
   const [xMinInput, setXMinInput] = useState<number>(-6);
   const [xMaxInput, setXMaxInput] = useState<number>(6);
+  const [maxOrderInput, setMaxOrderInput] = useState<number>(20);
 
   // Active plotted state
   const [activeExpr, setActiveExpr] = useState<string>('sin(x)');
   const [activeA, setActiveA] = useState<number>(0);
   const [activeXMin, setActiveXMin] = useState<number>(-6);
   const [activeXMax, setActiveXMax] = useState<number>(6);
+  const [activeCapOrder, setActiveCapOrder] = useState<number>(20);
 
   // Model & computation state
   const [steps, setSteps] = useState<TaylorStep[]>([]);
@@ -39,7 +39,8 @@ export default function Home() {
       return;
     }
 
-    const res = buildTaylorSeries(exprInput, aInput, CAP_ORDER);
+    const cap = Math.min(25, Math.max(1, maxOrderInput));
+    const res = buildTaylorSeries(exprInput, aInput, cap);
 
     if (res.error || res.steps.length === 0) {
       setErrorMessage(res.error || 'Failed to parse or differentiate expression');
@@ -51,12 +52,13 @@ export default function Home() {
     setActiveA(aInput);
     setActiveXMin(xMinInput);
     setActiveXMax(xMaxInput);
+    setActiveCapOrder(cap);
     setSteps(res.steps);
     setEvalOriginal(() => res.originalEval);
     setOriginalLatex(res.originalLatex);
     // As required: reset to order 0 initially!
     setCurrentOrder(0);
-  }, [exprInput, aInput, xMinInput, xMaxInput]);
+  }, [exprInput, aInput, xMinInput, xMaxInput, maxOrderInput]);
 
   // Initial load
   useEffect(() => {
@@ -64,7 +66,7 @@ export default function Home() {
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleRevealNext = () => {
-    if (currentOrder < CAP_ORDER && currentOrder < steps.length - 1) {
+    if (currentOrder < activeCapOrder && currentOrder < steps.length - 1) {
       setCurrentOrder((prev) => prev + 1);
     }
   };
@@ -72,6 +74,12 @@ export default function Home() {
   const handleStepBack = () => {
     if (currentOrder > 0) {
       setCurrentOrder((prev) => prev - 1);
+    }
+  };
+
+  const handleSetOrder = (ord: number) => {
+    if (ord >= 0 && ord <= activeCapOrder && ord < steps.length) {
+      setCurrentOrder(ord);
     }
   };
 
@@ -125,6 +133,8 @@ export default function Home() {
               setXMinInput={setXMinInput}
               xMaxInput={xMaxInput}
               setXMaxInput={setXMaxInput}
+              maxOrderInput={maxOrderInput}
+              setMaxOrderInput={setMaxOrderInput}
               onApply={handleApply}
               errorMessage={errorMessage}
             />
@@ -162,9 +172,10 @@ export default function Home() {
             <ActionBar
               currentOrder={currentOrder}
               maxAvailableOrder={steps.length > 0 ? steps.length - 1 : 0}
-              capOrder={CAP_ORDER}
+              capOrder={activeCapOrder}
               onRevealNext={handleRevealNext}
               onStepBack={handleStepBack}
+              onSetOrder={handleSetOrder}
               onReset={handleReset}
             />
 
@@ -183,7 +194,7 @@ export default function Home() {
             <DerivativesLog
               steps={steps}
               currentOrder={currentOrder}
-              capOrder={CAP_ORDER}
+              capOrder={activeCapOrder}
               a={activeA}
               originalLatex={originalLatex}
             />

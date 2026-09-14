@@ -10,6 +10,7 @@ interface ActionBarProps {
   capOrder: number;
   onRevealNext: () => void;
   onStepBack: () => void;
+  onSetOrder: (ord: number) => void;
   onReset: () => void;
 }
 
@@ -19,6 +20,7 @@ export const ActionBar: React.FC<ActionBarProps> = ({
   capOrder,
   onRevealNext,
   onStepBack,
+  onSetOrder,
   onReset,
 }) => {
   const [burstActive, setBurstActive] = useState(false);
@@ -33,8 +35,9 @@ export const ActionBar: React.FC<ActionBarProps> = ({
     setBurstActive(true);
     setTimeout(() => setBurstActive(false), 450);
 
-    // If reaching milestone order 5 or capOrder, celebrate with classroom confetti!
-    if (currentOrder + 1 === 5 || currentOrder + 1 === capOrder) {
+    // Celebrate key milestones (every 5 orders or cap)
+    const nextOrd = currentOrder + 1;
+    if (nextOrd % 5 === 0 || nextOrd === capOrder) {
       try {
         confetti({
           particleCount: 40,
@@ -52,8 +55,8 @@ export const ActionBar: React.FC<ActionBarProps> = ({
 
   return (
     <div className="bg-white rounded-2xl border border-stone-200/90 shadow-lg shadow-stone-200/40 p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
-      {/* Current Order Status */}
-      <div className="flex items-center gap-3">
+      {/* Current Order Status & Scrubber */}
+      <div className="flex items-center gap-4 w-full sm:w-auto">
         <div className="flex flex-col">
           <span className="text-[11px] uppercase tracking-wider font-semibold text-stone-500">
             Current Taylor Degree
@@ -74,22 +77,42 @@ export const ActionBar: React.FC<ActionBarProps> = ({
           </div>
         </div>
 
-        {/* Progress Dots */}
-        <div className="hidden md:flex items-center gap-1 ml-3">
-          {Array.from({ length: capOrder + 1 }).map((_, idx) => (
-            <div
-              key={idx}
-              className={`h-2 rounded-full transition-all duration-300 ${
-                idx === currentOrder
-                  ? 'w-5 bg-[#800020]'
-                  : idx < currentOrder
-                  ? 'w-2 bg-amber-400'
-                  : 'w-2 bg-stone-200'
-              }`}
-              title={`Order ${idx}`}
+        {/* Adaptive Progress Indicator: Dots if <= 12, Scrubber Slider if > 12 */}
+        {capOrder <= 12 ? (
+          <div className="hidden md:flex items-center gap-1 ml-2">
+            {Array.from({ length: capOrder + 1 }).map((_, idx) => (
+              <button
+                key={idx}
+                type="button"
+                onClick={() => onSetOrder(idx)}
+                title={`Jump to Order ${idx}`}
+                className={`h-2.5 rounded-full transition-all duration-300 cursor-pointer ${
+                  idx === currentOrder
+                    ? 'w-5 bg-[#800020]'
+                    : idx < currentOrder
+                    ? 'w-2.5 bg-amber-400 hover:bg-amber-500'
+                    : 'w-2 bg-stone-200 hover:bg-stone-300'
+                }`}
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="hidden lg:flex flex-col gap-1 ml-2">
+            <div className="flex justify-between text-[10px] text-stone-400 font-mono">
+              <span>0</span>
+              <span>Scrub Order ({currentOrder}/{capOrder})</span>
+              <span>{capOrder}</span>
+            </div>
+            <input
+              type="range"
+              min="0"
+              max={capOrder}
+              value={currentOrder}
+              onChange={(e) => onSetOrder(parseInt(e.target.value) || 0)}
+              className="w-36 h-1.5 bg-stone-200 rounded-lg appearance-none cursor-pointer accent-[#800020]"
             />
-          ))}
-        </div>
+          </div>
+        )}
       </div>
 
       {/* Main Action Buttons */}
