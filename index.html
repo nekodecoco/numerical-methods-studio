@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Taylor Series Visualizer | Numerical Methods</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Plotly.js -->
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+  
+  <!-- Math.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/14.0.1/math.min.js"></script>
+  
+  <!-- KaTeX -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.21/dist/katex.min.css" />
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.21/dist/katex.min.js"></script>
+  
+  <!-- Canvas Confetti -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.4/dist/confetti.browser.min.js"></script>
+
+  <style>
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fadeIn {
+      animation: fadeIn 350ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+  </style>
+</head>
+<body class="bg-[#FAF9F6] text-stone-900 min-h-screen antialiased selection:bg-[#800020] selection:text-white font-sans flex flex-col">
+
+  <!-- Header -->
+  <header class="border-b border-stone-200 bg-white/95 backdrop-blur sticky top-0 z-30 shadow-xs">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-[#800020] text-white flex items-center justify-center shadow-md shadow-[#800020]/20 font-bold text-lg">
+          🎓
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="text-base sm:text-lg font-bold tracking-tight text-stone-950 font-serif">
+              Taylor Series Visualizer
+            </h1>
+            <span class="text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#800020]/10 text-[#800020] border border-[#800020]/20 hidden sm:inline-block">
+              Numerical Methods
+            </span>
+          </div>
+          <p class="text-xs text-stone-500 hidden sm:block">
+            Interactive polynomial approximation &amp; progressive derivative discovery
+          </p>
+        </div>
+      </div>
+
+      <div class="hidden md:flex items-center gap-2 text-xs text-stone-600 bg-stone-50 px-3 py-1.5 rounded-xl border border-stone-200" id="headerFormula">
+        <!-- KaTeX injected formula -->
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      
+      <!-- Left Column: Controls & Guidelines -->
+      <div class="lg:col-span-4 space-y-6">
+        
+        <!-- Controls Card -->
+        <div class="bg-white rounded-2xl border border-stone-200/90 shadow-lg shadow-stone-200/30 p-5 space-y-4">
+          <div class="flex items-center justify-between">
+            <h2 class="text-base font-semibold text-stone-900 flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-[#800020]"></span>
+              Function &amp; Expansion Setup
+            </h2>
+          </div>
+
+          <!-- Classroom Presets -->
+          <div>
+            <label class="block text-xs font-semibold uppercase tracking-wider text-stone-500 mb-1.5">
+              Classroom Presets
+            </label>
+            <div class="grid grid-cols-3 gap-1.5" id="presetContainer">
+              <!-- Preset buttons rendered via JS -->
+            </div>
+          </div>
+
+          <!-- Form -->
+          <form id="plotForm" class="space-y-3">
+            <div>
+              <label class="block text-xs font-semibold uppercase tracking-wider text-stone-500 mb-1">
+                Function <span id="fXLabel">f(x)</span>
+              </label>
+              <input
+                type="text"
+                id="exprInput"
+                value="sin(x)"
+                placeholder="e.g. sin(x), exp(x), 1/(1+x^2)"
+                class="w-full px-3.5 py-2 text-sm font-mono bg-stone-50 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#800020]/30 focus:border-[#800020] text-stone-900"
+                required
+              />
+            </div>
+
+            <!-- Parameters Grid -->
+            <div class="grid grid-cols-3 gap-2.5">
+              <div>
+                <label class="block text-[11px] font-semibold uppercase tracking-wider text-stone-500 mb-1">
+                  Center <span class="font-serif">a</span>
+                </label>
+                <input
+                  type="number"
+                  step="any"
+                  id="aInput"
+                  value="0"
+                  class="w-full px-2.5 py-1.5 text-sm font-mono bg-stone-50 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#800020]/30 focus:border-[#800020] text-stone-900"
+                  required
+                />
+              </div>
+
+              <div>
+                <label class="block text-[11px] font-semibold uppercase tracking-wider text-stone-500 mb-1">
+                  Range <span class="font-serif">x_min</span>
+                </label>
+                <input
+                  type="number"
+                  step="any"
+                  id="xMinInput"
+                  value="-6"
+                  class="w-full px-2.5 py-1.5 text-sm font-mono bg-stone-50 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#800020]/30 focus:border-[#800020] text-stone-900"
+                  required
+                />
+              </div>
+
+              <div>
+                <label class="block text-[11px] font-semibold uppercase tracking-wider text-stone-500 mb-1">
+                  Range <span class="font-serif">x_max</span>
+                </label>
+                <input
+                  type="number"
+                  step="any"
+                  id="xMaxInput"
+                  value="6"
+                  class="w-full px-2.5 py-1.5 text-sm font-mono bg-stone-50 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#800020]/30 focus:border-[#800020] text-stone-900"
+                  required
+                />
+              </div>
+            </div>
+
+            <!-- Inline Error -->
+            <div id="errorAlert" class="hidden p-3 bg-red-50 border border-red-200 text-red-700 rounded-xl text-xs font-medium"></div>
+
+            <button
+              type="submit"
+              id="applyBtn"
+              class="w-full py-2.5 px-4 rounded-xl font-medium text-sm text-white bg-[#800020] hover:bg-[#6b001b] active:scale-[0.98] transition-all duration-150 flex items-center justify-center gap-2 shadow-md shadow-[#800020]/20 cursor-pointer"
+            >
+              <span>▶ Plot &amp; Initialize (Order 0)</span>
+            </button>
+          </form>
+        </div>
+
+        <!-- Pedagogical Guidelines -->
+        <div class="bg-white rounded-2xl border border-stone-200/90 shadow-sm p-5 space-y-3">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-stone-500 flex items-center gap-1.5">
+            💡 Teaching Takeaways
+          </h3>
+          <ul class="text-xs text-stone-600 space-y-2 leading-relaxed">
+            <li class="flex items-start gap-2">
+              <span class="font-bold text-[#800020]">0th Order:</span>
+              <span>Horizontal line matching only function value at <span class="font-serif italic">a</span>.</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="font-bold text-[#800020]">1st Order:</span>
+              <span>Tangent line matching slope <span class="font-serif italic">f'(a)</span>.</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="font-bold text-[#800020]">2nd Order:</span>
+              <span>Osculating parabola matching concavity <span class="font-serif italic">f''(a)</span>.</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="font-bold text-[#800020]">Higher Orders:</span>
+              <span>Progressively widens the interval of tight convergence around <span class="font-serif italic">a</span>.</span>
+            </li>
+          </ul>
+        </div>
+
+      </div>
+
+      <!-- Right Column: Action Bar, Modern Graph & Derivatives Log -->
+      <div class="lg:col-span-8 space-y-6">
+        
+        <!-- Action Bar -->
+        <div class="bg-white rounded-2xl border border-stone-200/90 shadow-lg shadow-stone-200/40 p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div class="flex items-center gap-3">
+            <div class="flex flex-col">
+              <span class="text-[11px] uppercase tracking-wider font-semibold text-stone-500">
+                Current Taylor Degree
+              </span>
+              <div class="flex items-center gap-2 mt-0.5">
+                <span class="text-2xl font-bold font-mono text-[#800020]" id="orderDisplay">
+                  n = 0
+                </span>
+                <span class="text-xs px-2 py-0.5 rounded-full font-medium bg-stone-100 text-stone-600 border border-stone-200" id="orderBadge">
+                  Constant f(a)
+                </span>
+              </div>
+            </div>
+
+            <!-- Dots Indicator -->
+            <div class="hidden md:flex items-center gap-1 ml-3" id="dotsContainer"></div>
+          </div>
+
+          <!-- Buttons -->
+          <div class="flex items-center gap-2.5 w-full sm:w-auto justify-end">
+            <button
+              type="button"
+              id="stepBackBtn"
+              title="Step back one order"
+              class="p-2.5 rounded-xl border border-stone-200 text-stone-600 hover:bg-stone-50 disabled:opacity-35 disabled:cursor-not-allowed transition-all cursor-pointer"
+            >
+              ◀
+            </button>
+
+            <button
+              type="button"
+              id="resetBtn"
+              title="Reset to 0th order"
+              class="px-3.5 py-2.5 rounded-xl border border-stone-200 text-xs font-semibold text-stone-600 hover:bg-stone-50 disabled:opacity-35 disabled:cursor-not-allowed transition-all cursor-pointer"
+            >
+              ↺ Reset
+            </button>
+
+            <button
+              type="button"
+              id="revealBtn"
+              class="relative px-5 py-2.5 rounded-xl font-semibold text-sm shadow-md transition-all duration-200 flex items-center justify-center gap-2 select-none overflow-hidden bg-[#800020] text-white hover:bg-[#6b001b] active:scale-95 cursor-pointer"
+            >
+              <span id="revealBtnText">✨ Reveal Next Derivative (n = 1) →</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Modern Graph Container -->
+        <div class="relative w-full rounded-2xl bg-white border border-stone-200/90 shadow-xl shadow-stone-200/40 overflow-hidden">
+          <!-- Graph HUD -->
+          <div class="px-5 py-3.5 border-b border-stone-100 flex flex-wrap items-center justify-between gap-3 bg-gradient-to-r from-stone-50/80 via-white to-stone-50/80">
+            <div class="flex items-center gap-3">
+              <span class="inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#800020]/10 text-[#800020] border border-[#800020]/20">
+                f(x) Royal Maroon
+              </span>
+              <span class="inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-300/60" id="hudPolyLabel">
+                P0(x) Luminous Gold
+              </span>
+              <span class="hidden sm:inline-flex text-xs text-stone-500 font-mono bg-stone-100 px-2 py-0.5 rounded" id="hudErrorStat">
+                Peak Gap: 0.0000
+              </span>
+            </div>
+
+            <div class="flex items-center gap-2">
+              <button
+                type="button"
+                id="toggleGhostBtn"
+                class="px-2.5 py-1 text-xs font-medium rounded-lg bg-stone-200 text-stone-800 transition-all cursor-pointer"
+              >
+                👁 Ghost Curve
+              </button>
+              <button
+                type="button"
+                id="toggleErrorAreaBtn"
+                class="px-2.5 py-1 text-xs font-medium rounded-lg bg-stone-100 text-stone-500 hover:bg-stone-200 transition-all cursor-pointer"
+              >
+                📐 Error Area
+              </button>
+            </div>
+          </div>
+
+          <!-- Plotly Div -->
+          <div id="plotDiv" class="w-full min-h-[520px]"></div>
+
+          <!-- Corner Order Badge -->
+          <div class="absolute bottom-4 right-4 pointer-events-none select-none">
+            <div class="bg-white/85 backdrop-blur-md px-3 py-1.5 rounded-xl border border-stone-200/80 shadow-sm text-right">
+              <div class="text-[10px] uppercase tracking-wider font-semibold text-stone-400">Polynomial Order</div>
+              <div class="text-lg font-bold text-[#800020] font-mono leading-none" id="cornerOrderBadge">n = 0</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Derivatives Log Panel -->
+        <div class="bg-white rounded-2xl border border-stone-200/90 shadow-lg shadow-stone-200/30 p-5 space-y-4">
+          <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 pb-3 border-b border-stone-100">
+            <div>
+              <h3 class="text-base font-semibold text-stone-900 flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
+                Symbolic Derivatives &amp; Running Polynomial
+              </h3>
+              <p class="text-xs text-stone-500 mt-0.5">
+                Step-by-step Taylor expansion evaluated at center <span id="centerDisplay" class="font-serif">a = 0</span>
+              </p>
+            </div>
+
+            <div class="bg-amber-50/80 border border-amber-200/80 rounded-xl px-4 py-2 text-stone-900 flex flex-col items-start lg:items-end">
+              <span class="text-[10px] uppercase font-bold tracking-wider text-amber-800">
+                Running Polynomial P_n(x)
+              </span>
+              <div class="text-sm font-serif overflow-x-auto max-w-full text-stone-900 pt-0.5" id="runningPolyLatex"></div>
+            </div>
+          </div>
+
+          <div class="space-y-3 max-h-[480px] overflow-y-auto pr-1" id="cardsContainer"></div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <footer class="border-t border-stone-200 bg-white py-6 text-center text-xs text-stone-500">
+    <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+      <p>Designed for Numerical Methods &amp; Mathematical Analysis courses. Built with math.js &amp; Plotly.</p>
+      <div class="flex items-center gap-4 text-stone-400">
+        <span>Zero Setup Needed</span> • <span>Classroom Projector Ready</span>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const CAP_ORDER = 10;
+    const presets = [
+      { label: 'sin(x)', expr: 'sin(x)', a: 0, xMin: -6, xMax: 6 },
+      { label: 'cos(x)', expr: 'cos(x)', a: 0, xMin: -6, xMax: 6 },
+      { label: 'e^x', expr: 'exp(x)', a: 0, xMin: -4, xMax: 4 },
+      { label: '1/(1+x²)', expr: '1/(1 + x^2)', a: 0, xMin: -3, xMax: 3 },
+      { label: 'ln(1+x)', expr: 'log(1 + x)', a: 0, xMin: -0.9, xMax: 3 },
+      { label: 'sinh(x)', expr: 'sinh(x)', a: 0, xMin: -4, xMax: 4 }
+    ];
+
+    let currentOrder = 0;
+    let computedSteps = [];
+    let originalEval = (x) => Math.sin(x);
+    let originalExpr = 'sin(x)';
+    let activeA = 0;
+    let activeXMin = -6;
+    let activeXMax = 6;
+    let showGhost = true;
+    let showErrorArea = false;
+    let animationFrameId = null;
+
+    // Render static KaTeX in header
+    window.addEventListener('DOMContentLoaded', () => {
+      if (window.katex) {
+        katex.render("f(x) \\approx \\sum_{k=0}^n \\frac{f^{(k)}(a)}{k!} (x-a)^k", document.getElementById('headerFormula'), { throwOnError: false });
+        katex.render("f(x)", document.getElementById('fXLabel'), { throwOnError: false });
+      }
+      renderPresets();
+      renderDots();
+      handleApply();
+    });
+
+    function renderPresets() {
+      const c = document.getElementById('presetContainer');
+      c.innerHTML = '';
+      presets.forEach(p => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'px-2 py-1 text-xs rounded-lg font-medium border border-stone-200 bg-stone-50 hover:bg-stone-100 text-stone-700 transition cursor-pointer';
+        btn.textContent = p.label;
+        btn.onclick = () => {
+          document.getElementById('exprInput').value = p.expr;
+          document.getElementById('aInput').value = p.a;
+          document.getElementById('xMinInput').value = p.xMin;
+          document.getElementById('xMaxInput').value = p.xMax;
+          handleApply();
+        };
+        c.appendChild(btn);
+      });
+    }
+
+    function renderDots() {
+      const c = document.getElementById('dotsContainer');
+      c.innerHTML = '';
+      for (let i = 0; i <= CAP_ORDER; i++) {
+        const dot = document.createElement('div');
+        dot.id = `dot-${i}`;
+        dot.className = `h-2 rounded-full transition-all duration-300 ${i === currentOrder ? 'w-5 bg-[#800020]' : i < currentOrder ? 'w-2 bg-amber-400' : 'w-2 bg-stone-200'}`;
+        c.appendChild(dot);
+      }
+    }
+
+    function formatNum(val, precision = 4) {
+      if (isNaN(val)) return 'NaN';
+      if (!isFinite(val)) return val > 0 ? '\\infty' : '-\\infty';
+      if (Math.abs(val) < 1e-12) return '0';
+      const rounded = Math.round(val);
+      if (Math.abs(val - rounded) < 1e-9) return rounded.toString();
+      return Number(val.toFixed(precision)).toString();
+    }
+
+    function normalizeExpr(str) {
+      return str.trim().replace(/\bln\b/g, 'log');
+    }
+
+    function buildTaylor(exprStr, a, maxOrder) {
+      const clean = normalizeExpr(exprStr);
+      let baseNode;
+      try {
+        baseNode = math.parse(clean);
+      } catch (e) {
+        return { error: 'Parse error: ' + e.message };
+      }
+
+      let originalLatex = '';
+      try {
+        originalLatex = baseNode.toTex({ parenthesis: 'auto' });
+      } catch {
+        originalLatex = exprStr;
+      }
+
+      const compiledBase = baseNode.compile();
+      const origEval = (x) => {
+        try {
+          const res = compiledBase.evaluate({ x, e: Math.E, pi: Math.PI });
+          const num = typeof res === 'number' ? res : Number(res);
+          return isFinite(num) ? num : NaN;
+        } catch {
+          return NaN;
+        }
+      };
+
+      const steps = [];
+      let currentDeriv = baseNode;
+
+      for (let ord = 0; ord <= maxOrder; ord++) {
+        try {
+          if (ord > 0) {
+            currentDeriv = math.derivative(currentDeriv, 'x');
+          }
+          let simplified = currentDeriv;
+          try {
+            simplified = math.simplify(currentDeriv);
+          } catch {}
+
+          const derivExpr = simplified.toString();
+          let derivLatex = '';
+          try {
+            derivLatex = simplified.toTex({ parenthesis: 'auto' });
+          } catch {
+            derivLatex = derivExpr;
+          }
+
+          let derivAtA = 0;
+          try {
+            const comp = simplified.compile();
+            const val = comp.evaluate({ x: a, e: Math.E, pi: Math.PI });
+            derivAtA = typeof val === 'number' ? val : Number(val);
+            if (isNaN(derivAtA) || !isFinite(derivAtA)) derivAtA = 0;
+          } catch {
+            derivAtA = 0;
+          }
+
+          const fact = math.factorial(ord);
+          const coeff = derivAtA / fact;
+
+          const xShift = a === 0 ? 'x' : a > 0 ? `(x - ${formatNum(a)})` : `(x + ${formatNum(Math.abs(a))})`;
+          let termLatex = '';
+          if (Math.abs(coeff) < 1e-12) {
+            termLatex = '0';
+          } else if (ord === 0) {
+            termLatex = formatNum(derivAtA);
+          } else if (ord === 1) {
+            const sign = derivAtA < 0 ? '- ' : '+ ';
+            const absD = formatNum(Math.abs(derivAtA));
+            termLatex = `${sign}${absD === '1' ? '' : absD}${xShift}`;
+          } else {
+            const sign = derivAtA < 0 ? '- ' : '+ ';
+            const absD = formatNum(Math.abs(derivAtA));
+            const frac = absD === '1' ? `\\frac{1}{${ord}!}` : `\\frac{${absD}}{${ord}!}`;
+            termLatex = `${sign}${frac} ${xShift}^{${ord}}`;
+          }
+
+          steps.push({
+            order: ord,
+            derivativeExpr: derivExpr,
+            derivativeLatex: derivLatex,
+            derivativeAtA: derivAtA,
+            derivativeAtAFormatted: formatNum(derivAtA),
+            factorialVal: fact,
+            coefficient: coeff,
+            termLatex: termLatex
+          });
+        } catch (e) {
+          if (steps.length > 0) break;
+          return { error: 'Differentiation error: ' + e.message };
+        }
+      }
+
+      // Build cumulative polynomials
+      for (let i = 0; i < steps.length; i++) {
+        const active = steps.slice(0, i + 1);
+        const nonZero = active.filter(s => Math.abs(s.coefficient) > 1e-12);
+        let polyLatex = '0';
+        if (nonZero.length > 0) {
+          polyLatex = nonZero.map((s, idx) => {
+            let t = s.termLatex.trim();
+            if (idx === 0 && t.startsWith('+ ')) t = t.substring(2);
+            return t;
+          }).join(' ');
+        }
+        steps[i].polynomialLatex = polyLatex;
+
+        const coeffs = active.map(s => ({ order: s.order, c: s.coefficient }));
+        steps[i].evalPolynomial = (x) => {
+          let sum = 0;
+          const dx = x - a;
+          for (let k = 0; k < coeffs.length; k++) {
+            if (coeffs[k].c !== 0) sum += coeffs[k].c * Math.pow(dx, coeffs[k].order);
+          }
+          return isFinite(sum) ? sum : NaN;
+        };
+      }
+
+      return { origEval, originalLatex, steps };
+    }
+
+    function handleApply() {
+      const expr = document.getElementById('exprInput').value;
+      const a = parseFloat(document.getElementById('aInput').value) || 0;
+      const xMin = parseFloat(document.getElementById('xMinInput').value) || -6;
+      const xMax = parseFloat(document.getElementById('xMaxInput').value) || 6;
+
+      const errorAlert = document.getElementById('errorAlert');
+      if (xMin >= xMax) {
+        errorAlert.textContent = 'x_min must be strictly less than x_max';
+        errorAlert.classList.remove('hidden');
+        return;
+      }
+
+      const res = buildTaylor(expr, a, CAP_ORDER);
+      if (res.error || !res.steps || res.steps.length === 0) {
+        errorAlert.textContent = res.error || 'Failed to compute derivatives';
+        errorAlert.classList.remove('hidden');
+        return;
+      }
+
+      errorAlert.classList.add('hidden');
+      originalExpr = expr;
+      activeA = a;
+      activeXMin = xMin;
+      activeXMax = xMax;
+      computedSteps = res.steps;
+      originalEval = res.origEval;
+      currentOrder = 0;
+
+      updateUI();
+      drawPlot(true);
+    }
+
+    document.getElementById('plotForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      handleApply();
+    });
+
+    document.getElementById('revealBtn').addEventListener('click', () => {
+      if (currentOrder < CAP_ORDER && currentOrder < computedSteps.length - 1) {
+        currentOrder++;
+        
+        // Micro-burst animation on button
+        const btn = document.getElementById('revealBtn');
+        btn.classList.add('ring-4', 'ring-[#800020]/30', 'scale-95');
+        setTimeout(() => btn.classList.remove('ring-4', 'ring-[#800020]/30', 'scale-95'), 300);
+
+        if (currentOrder === 5 || currentOrder === CAP_ORDER) {
+          if (window.confetti) {
+            confetti({
+              particleCount: 40,
+              spread: 60,
+              origin: { y: 0.8 },
+              colors: ['#800020', '#F59E0B', '#10B981', '#6366F1']
+            });
+          }
+        }
+
+        updateUI();
+        animateTraceDraw();
+      }
+    });
+
+    document.getElementById('stepBackBtn').addEventListener('click', () => {
+      if (currentOrder > 0) {
+        currentOrder--;
+        updateUI();
+        drawPlot(false);
+      }
+    });
+
+    document.getElementById('resetBtn').addEventListener('click', () => {
+      currentOrder = 0;
+      updateUI();
+      drawPlot(false);
+    });
+
+    document.getElementById('toggleGhostBtn').addEventListener('click', () => {
+      showGhost = !showGhost;
+      const b = document.getElementById('toggleGhostBtn');
+      if (showGhost) {
+        b.className = 'px-2.5 py-1 text-xs font-medium rounded-lg bg-stone-200 text-stone-800 transition-all cursor-pointer';
+      } else {
+        b.className = 'px-2.5 py-1 text-xs font-medium rounded-lg bg-stone-100 text-stone-500 hover:bg-stone-200 transition-all cursor-pointer';
+      }
+      drawPlot(false);
+    });
+
+    document.getElementById('toggleErrorAreaBtn').addEventListener('click', () => {
+      showErrorArea = !showErrorArea;
+      const b = document.getElementById('toggleErrorAreaBtn');
+      if (showErrorArea) {
+        b.className = 'px-2.5 py-1 text-xs font-medium rounded-lg bg-amber-100 text-amber-800 border border-amber-300 transition-all cursor-pointer';
+      } else {
+        b.className = 'px-2.5 py-1 text-xs font-medium rounded-lg bg-stone-100 text-stone-500 hover:bg-stone-200 transition-all cursor-pointer';
+      }
+      drawPlot(false);
+    });
+
+    function updateUI() {
+      // Order display
+      document.getElementById('orderDisplay').textContent = `n = ${currentOrder}`;
+      document.getElementById('cornerOrderBadge').textContent = `n = ${currentOrder}`;
+      document.getElementById('hudPolyLabel').textContent = `P${currentOrder}(x) Luminous Gold`;
+
+      const badge = document.getElementById('orderBadge');
+      if (currentOrder === 0) badge.textContent = 'Constant f(a)';
+      else if (currentOrder === 1) badge.textContent = 'Tangent Line';
+      else if (currentOrder === 2) badge.textContent = 'Osculating Parabola';
+      else badge.textContent = `Order ${currentOrder} Fit`;
+
+      // Dots
+      for (let i = 0; i <= CAP_ORDER; i++) {
+        const dot = document.getElementById(`dot-${i}`);
+        if (dot) {
+          dot.className = `h-2 rounded-full transition-all duration-300 ${i === currentOrder ? 'w-5 bg-[#800020]' : i < currentOrder ? 'w-2 bg-amber-400' : 'w-2 bg-stone-200'}`;
+        }
+      }
+
+      // Buttons
+      document.getElementById('stepBackBtn').disabled = currentOrder === 0;
+      document.getElementById('resetBtn').disabled = currentOrder === 0;
+
+      const revealBtn = document.getElementById('revealBtn');
+      const isCapped = currentOrder >= CAP_ORDER || currentOrder >= computedSteps.length - 1;
+      revealBtn.disabled = isCapped;
+      if (isCapped) {
+        revealBtn.className = 'relative px-5 py-2.5 rounded-xl font-semibold text-sm shadow-md transition-all duration-200 flex items-center justify-center gap-2 select-none overflow-hidden bg-stone-200 text-stone-400 cursor-not-allowed border border-stone-300';
+        document.getElementById('revealBtnText').textContent = '✓ Maximum Order Reached';
+      } else {
+        revealBtn.className = 'relative px-5 py-2.5 rounded-xl font-semibold text-sm shadow-md transition-all duration-200 flex items-center justify-center gap-2 select-none overflow-hidden bg-[#800020] text-white hover:bg-[#6b001b] active:scale-95 cursor-pointer';
+        document.getElementById('revealBtnText').textContent = `✨ Reveal Next Derivative (n = ${currentOrder + 1}) →`;
+      }
+
+      // KaTeX running polynomial
+      const step = computedSteps[currentOrder];
+      if (step && window.katex) {
+        katex.render(`P_{${currentOrder}}(x) = ${step.polynomialLatex || '0'}`, document.getElementById('runningPolyLatex'), { throwOnError: false });
+      }
+
+      // Center display
+      document.getElementById('centerDisplay').textContent = `a = ${activeA}`;
+
+      // Render cards
+      renderCards();
+    }
+
+    function renderCards() {
+      const container = document.getElementById('cardsContainer');
+      container.innerHTML = '';
+
+      const visible = computedSteps.slice(0, currentOrder + 1);
+      visible.forEach((s, idx) => {
+        const isLatest = idx === currentOrder;
+        const card = document.createElement('div');
+        card.className = `p-4 rounded-xl border transition-all duration-300 ${isLatest ? 'bg-amber-50/30 border-amber-300/80 shadow-sm animate-fadeIn' : 'bg-stone-50/60 border-stone-200'}`;
+
+        const headerDiv = document.createElement('div');
+        headerDiv.className = 'flex flex-wrap items-center justify-between gap-2 mb-2';
+        headerDiv.innerHTML = `
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-bold px-2 py-0.5 rounded-md ${isLatest ? 'bg-[#800020] text-white' : 'bg-stone-200 text-stone-700'}">Order ${s.order}</span>
+            <span class="text-xs font-medium text-stone-600">${s.order === 0 ? 'Base Value f(a)' : s.order === 1 ? 'First Derivative (Slope)' : s.order === 2 ? 'Second Derivative (Curvature)' : 'Derivative ' + s.order}</span>
+          </div>
+          ${isLatest ? '<span class="text-[11px] font-semibold text-amber-700 bg-amber-100/70 px-2 py-0.5 rounded-full">✨ Latest Revealed Term</span>' : ''}
+        `;
+        card.appendChild(headerDiv);
+
+        const grid = document.createElement('div');
+        grid.className = 'grid grid-cols-1 md:grid-cols-3 gap-3 pt-1 text-xs';
+
+        // 1. Symbolic
+        const c1 = document.createElement('div');
+        c1.className = 'bg-white p-2.5 rounded-lg border border-stone-200/80';
+        c1.innerHTML = '<span class="block text-[10px] uppercase font-bold text-stone-400 mb-1">Symbolic Derivative</span><div class="text-sm font-serif text-stone-900 overflow-x-auto deriv-target"></div>';
+        grid.appendChild(c1);
+
+        // 2. Evaluated at a
+        const c2 = document.createElement('div');
+        c2.className = 'bg-white p-2.5 rounded-lg border border-stone-200/80';
+        c2.innerHTML = `<span class="block text-[10px] uppercase font-bold text-stone-400 mb-1">Evaluated at a = ${activeA}</span><div class="text-sm font-serif text-stone-900 overflow-x-auto eval-target"></div>`;
+        grid.appendChild(c2);
+
+        // 3. Added Term
+        const c3 = document.createElement('div');
+        c3.className = 'bg-white p-2.5 rounded-lg border border-stone-200/80';
+        c3.innerHTML = '<span class="block text-[10px] uppercase font-bold text-stone-400 mb-1">Added Taylor Term</span><div class="text-sm font-serif text-[#800020] font-semibold overflow-x-auto term-target"></div>';
+        grid.appendChild(c3);
+
+        card.appendChild(grid);
+        container.appendChild(card);
+
+        if (window.katex) {
+          const dLabel = s.order === 0 ? 'f(x)' : s.order === 1 ? "f'(x)" : s.order === 2 ? "f''(x)" : s.order === 3 ? "f'''(x)" : `f^{(${s.order})}(x)`;
+          const aLabel = s.order === 0 ? 'f(a)' : s.order === 1 ? "f'(a)" : s.order === 2 ? "f''(a)" : s.order === 3 ? "f'''(a)" : `f^{(${s.order})}(a)`;
+          katex.render(`${dLabel} = ${s.derivativeLatex || s.derivativeExpr}`, c1.querySelector('.deriv-target'), { throwOnError: false });
+          katex.render(`${aLabel} = ${s.derivativeAtAFormatted}`, c2.querySelector('.eval-target'), { throwOnError: false });
+          katex.render(s.termLatex || '0', c3.querySelector('.term-target'), { throwOnError: false });
+        }
+      });
+    }
+
+    function calculateCurves(progress = 1) {
+      const N = 400;
+      const stepX = (activeXMax - activeXMin) / (N - 1);
+      const xs = [];
+      const yOrig = [];
+      const validYs = [];
+
+      for (let i = 0; i < N; i++) {
+        const x = activeXMin + i * stepX;
+        xs.push(x);
+        const yo = originalEval(x);
+        if (isFinite(yo) && !isNaN(yo)) {
+          yOrig.push(yo);
+          if (Math.abs(yo) < 1000) validYs.push(yo);
+        } else {
+          yOrig.push(null);
+        }
+      }
+
+      let minY = -5, maxY = 5;
+      if (validYs.length > 0) {
+        minY = Math.min(...validYs);
+        maxY = Math.max(...validYs);
+        const span = maxY - minY;
+        const pad = span > 0.001 ? span * 0.25 : 2;
+        minY -= pad;
+        maxY += pad;
+      }
+      if (maxY - minY < 1) { minY -= 1; maxY += 1; }
+      const safeMinY = Math.max(-100, minY);
+      const safeMaxY = Math.min(100, maxY);
+
+      const currStep = computedSteps[currentOrder];
+      const prevStep = currentOrder > 0 ? computedSteps[currentOrder - 1] : null;
+
+      const yCurr = [];
+      const yPrev = [];
+      let peakErr = 0;
+
+      for (let i = 0; i < N; i++) {
+        const x = xs[i];
+        if (currStep) {
+          const yc = currStep.evalPolynomial(x);
+          yCurr.push(isFinite(yc) && !isNaN(yc) ? yc : null);
+          const yo = yOrig[i];
+          if (yo !== null && isFinite(yc) && !isNaN(yc)) {
+            const err = Math.abs(yo - yc);
+            if (err > peakErr && isFinite(err)) peakErr = err;
+          }
+        } else {
+          yCurr.push(null);
+        }
+
+        if (prevStep) {
+          const yp = prevStep.evalPolynomial(x);
+          yPrev.push(isFinite(yp) && !isNaN(yp) ? yp : null);
+        } else {
+          yPrev.push(null);
+        }
+      }
+
+      // Handle progressive slice
+      let animX = xs;
+      let animYCurr = yCurr;
+      if (progress < 1) {
+        const count = Math.max(2, Math.floor(xs.length * progress));
+        animX = xs.slice(0, count);
+        animYCurr = yCurr.slice(0, count);
+      }
+
+      return {
+        xs, yOrig, yCurr: animYCurr, animX, yPrev, safeMinY, safeMaxY, peakErr,
+        fa: isFinite(originalEval(activeA)) ? originalEval(activeA) : 0
+      };
+    }
+
+    function drawPlot(initial = false, progress = 1) {
+      const { xs, yOrig, yCurr, animX, yPrev, safeMinY, safeMaxY, peakErr, fa } = calculateCurves(progress);
+
+      document.getElementById('hudErrorStat').textContent = `Peak Gap: ${peakErr > 1000 ? '>1000' : peakErr.toFixed(4)}`;
+
+      const traces = [];
+
+      // 1. Error area
+      if (showErrorArea && computedSteps[currentOrder]) {
+        traces.push({
+          x: xs, y: yOrig, type: 'scatter', mode: 'lines',
+          line: { color: 'transparent' }, showlegend: false, hoverinfo: 'skip'
+        });
+        traces.push({
+          x: xs, y: yCurr, type: 'scatter', mode: 'lines',
+          fill: 'tonexty', fillcolor: 'rgba(217, 119, 6, 0.14)', line: { color: 'transparent' },
+          name: 'Approximation Error Area', hoverinfo: 'skip'
+        });
+      }
+
+      // 2. Ghost
+      if (showGhost && currentOrder > 0 && computedSteps[currentOrder - 1]) {
+        traces.push({
+          x: xs, y: yPrev, type: 'scatter', mode: 'lines',
+          name: `P${currentOrder - 1}(x) (Ghost)`,
+          line: { color: 'rgba(148, 163, 184, 0.75)', width: 2, dash: 'dash' },
+          hovertemplate: `<b>Previous P${currentOrder - 1}(x)</b>: %{y:.4f}<extra></extra>`
+        });
+      }
+
+      // 3. True function
+      traces.push({
+        x: xs, y: yOrig, type: 'scatter', mode: 'lines',
+        name: `f(x) = ${originalExpr}`,
+        line: { color: '#800020', width: 3.5 },
+        hovertemplate: `<b>f(x)</b>: %{y:.4f}<extra></extra>`
+      });
+
+      // 4. Current Taylor Polynomial
+      if (computedSteps[currentOrder]) {
+        traces.push({
+          x: animX, y: yCurr, type: 'scatter', mode: 'lines',
+          name: `P${currentOrder}(x) (Order ${currentOrder})`,
+          line: { color: '#D97706', width: 3.5 },
+          hovertemplate: `<b>P${currentOrder}(x)</b>: %{y:.4f}<extra></extra>`
+        });
+      }
+
+      // 5. Expansion Point Marker
+      traces.push({
+        x: [activeA], y: [fa], type: 'scatter', mode: 'markers+text',
+        name: `Center a = ${activeA}`,
+        marker: { size: 14, color: '#800020', symbol: 'circle', line: { color: '#F59E0B', width: 3.5 } },
+        text: [`a = ${activeA}`], textposition: 'top center',
+        textfont: { family: 'sans-serif', size: 12, color: '#800020' },
+        hovertemplate: `<b>Expansion Center</b><br>a: %{x}<br>f(a): %{y:.4f}<extra></extra>`
+      });
+
+      const layout = {
+        autosize: true,
+        height: 520,
+        margin: { l: 55, r: 25, t: 45, b: 50 },
+        paper_bgcolor: 'rgba(255, 255, 255, 0)',
+        plot_bgcolor: '#FAFBFC',
+        font: { family: 'Inter, system-ui, sans-serif', color: '#475569' },
+        xaxis: {
+          title: { text: 'x', font: { size: 13, color: '#475569' } },
+          range: [activeXMin, activeXMax],
+          showgrid: true, gridcolor: '#EDF2F7', gridwidth: 1.2,
+          zeroline: true, zerolinecolor: '#CBD5E1', zerolinewidth: 1.5,
+          tickfont: { size: 11, color: '#64748B' }
+        },
+        yaxis: {
+          title: { text: 'y', font: { size: 13, color: '#475569' } },
+          range: [safeMinY, safeMaxY],
+          showgrid: true, gridcolor: '#EDF2F7', gridwidth: 1.2,
+          zeroline: true, zerolinecolor: '#CBD5E1', zerolinewidth: 1.5,
+          tickfont: { size: 11, color: '#64748B' }
+        },
+        legend: {
+          orientation: 'h', x: 0, y: 1.12,
+          bgcolor: 'rgba(255, 255, 255, 0.85)', bordercolor: '#E2E8F0', borderwidth: 1,
+          font: { size: 11.5, color: '#334155' }
+        },
+        hovermode: 'closest',
+        hoverlabel: { bgcolor: '#0F172A', font: { color: '#FFFFFF', size: 12 }, bordercolor: 'transparent' }
+      };
+
+      const config = {
+        responsive: true,
+        displayModeBar: true,
+        displaylogo: false,
+        modeBarButtonsToRemove: ['lasso2d', 'select2d']
+      };
+
+      if (initial) {
+        Plotly.newPlot('plotDiv', traces, layout, config);
+      } else {
+        Plotly.react('plotDiv', traces, layout, config);
+      }
+    }
+
+    function animateTraceDraw() {
+      const prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (prefersReduced) {
+        drawPlot(false, 1);
+        return;
+      }
+
+      if (animationFrameId) cancelAnimationFrame(animationFrameId);
+
+      const duration = 340;
+      const start = performance.now();
+
+      function step(now) {
+        const elapsed = now - start;
+        const progress = Math.min(1, elapsed / duration);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        drawPlot(false, eased);
+
+        if (progress < 1) {
+          animationFrameId = requestAnimationFrame(step);
+        } else {
+          animationFrameId = null;
+          drawPlot(false, 1);
+        }
+      }
+
+      animationFrameId = requestAnimationFrame(step);
+    }
+  </script>
+</body>
+</html>
