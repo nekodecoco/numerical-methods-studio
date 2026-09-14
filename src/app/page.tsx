@@ -197,6 +197,8 @@ export default function Home() {
               capOrder={activeCapOrder}
               a={activeA}
               originalLatex={originalLatex}
+              evalOriginal={evalOriginal}
+              originalExpr={activeExpr}
             />
           </div>
         </div>

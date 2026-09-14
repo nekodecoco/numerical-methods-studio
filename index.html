@@ -313,28 +313,122 @@
           </div>
         </div>
 
-        <!-- Derivatives Log Panel -->
-        <div class="bg-white rounded-2xl border border-stone-200/90 shadow-lg shadow-stone-200/30 p-5 space-y-4">
-          <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 pb-3 border-b border-stone-100">
-            <div>
-              <h3 class="text-base font-semibold text-stone-900 flex items-center gap-2">
-                <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
-                Symbolic Derivatives &amp; Running Polynomial
-              </h3>
-              <p class="text-xs text-stone-500 mt-0.5">
-                Step-by-step Taylor expansion evaluated at center <span id="centerDisplay" class="font-serif">a = 0</span>
-              </p>
+        <!-- Derivatives Log & Values Tracker Panel -->
+        <div class="bg-white rounded-2xl border border-stone-200/90 shadow-lg shadow-stone-200/30 p-5 space-y-5">
+          <!-- 1. Full Formula Display Banner -->
+          <div class="rounded-xl border border-amber-200/90 bg-gradient-to-br from-amber-50/70 via-white to-amber-50/40 p-4 space-y-2 shadow-xs">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <div class="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-amber-900">
+                <span class="text-[#800020] font-bold text-sm">∑</span>
+                <span>Full Taylor Polynomial Formula (Degree <span id="formulaDegree">n = 0</span>)</span>
+              </div>
+
+              <button
+                type="button"
+                id="copyFormulaBtn"
+                class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded-lg bg-white border border-stone-200 text-stone-700 hover:bg-stone-50 transition cursor-pointer"
+                title="Copy LaTeX formula to clipboard"
+              >
+                <span id="copyFormulaText">📋 Copy LaTeX</span>
+              </button>
             </div>
 
-            <div class="bg-amber-50/80 border border-amber-200/80 rounded-xl px-4 py-2 text-stone-900 flex flex-col items-start lg:items-end">
-              <span class="text-[10px] uppercase font-bold tracking-wider text-amber-800">
-                Running Polynomial P_n(x)
-              </span>
-              <div class="text-sm font-serif overflow-x-auto max-w-full text-stone-900 pt-0.5" id="runningPolyLatex"></div>
+            <!-- Large KaTeX Render of Full Polynomial -->
+            <div class="p-3 bg-white/90 rounded-lg border border-amber-200/60 overflow-x-auto text-stone-900">
+              <div class="text-base sm:text-lg font-serif text-[#800020] min-w-max" id="fullFormulaDisplay"></div>
+            </div>
+
+            <!-- Definition Reference -->
+            <div class="text-[11px] text-stone-500 font-serif flex flex-wrap items-center gap-2 pt-0.5">
+              <span class="font-sans font-semibold uppercase text-[10px] text-stone-400">Definition:</span>
+              <span id="generalFormulaDef"></span>
             </div>
           </div>
 
-          <div class="space-y-3 max-h-[480px] overflow-y-auto pr-1" id="cardsContainer"></div>
+          <!-- 2. Header & View Toggle -->
+          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-3 border-b border-stone-100">
+            <div>
+              <h3 class="text-base font-semibold text-stone-900 flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-[#800020]"></span>
+                Derivatives &amp; Numerical Values Tracker
+              </h3>
+              <p class="text-xs text-stone-500 mt-0.5">
+                Expansion center <span id="centerDisplay" class="font-serif">a = 0</span>
+              </p>
+            </div>
+
+            <!-- Tab Switcher Pills -->
+            <div class="inline-flex items-center p-1 bg-stone-100 rounded-xl border border-stone-200">
+              <button
+                type="button"
+                id="tabTableBtn"
+                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-white text-[#800020] shadow-xs cursor-pointer transition"
+              >
+                <span>📋 Values Table</span>
+              </button>
+              <button
+                type="button"
+                id="tabCardsBtn"
+                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-stone-600 hover:text-stone-900 cursor-pointer transition"
+              >
+                <span>🃏 Step Cards</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- 3. Table View Container -->
+          <div id="tableViewWrapper" class="space-y-4">
+            <!-- Table Evaluation Probe Bar -->
+            <div class="flex flex-wrap items-center justify-between gap-3 p-3 bg-stone-50 rounded-xl border border-stone-200/80 text-xs">
+              <div class="flex items-center gap-2">
+                <span class="font-semibold text-stone-700">Point Evaluation Probe:</span>
+                <div class="flex items-center gap-1.5 bg-white px-2 py-1 rounded-lg border border-stone-300">
+                  <span class="font-serif italic text-stone-500">x =</span>
+                  <input
+                    type="number"
+                    step="any"
+                    id="tableEvalX"
+                    value="1"
+                    class="w-20 font-mono text-stone-900 bg-transparent focus:outline-none"
+                  />
+                </div>
+                <span class="text-stone-500 font-mono hidden sm:inline" id="tableTrueValDisplay"></span>
+              </div>
+
+              <button
+                type="button"
+                id="copyTableBtn"
+                class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-stone-200 hover:bg-stone-100 rounded-lg text-stone-700 font-medium transition cursor-pointer"
+                title="Copy table data as TSV (pasteable into Excel / Sheets)"
+              >
+                <span id="copyTableText">📋 Copy Table TSV</span>
+              </button>
+            </div>
+
+            <!-- Table -->
+            <div class="overflow-x-auto rounded-xl border border-stone-200 shadow-xs bg-white">
+              <table class="w-full text-left text-xs text-stone-700 border-collapse">
+                <thead>
+                  <tr class="bg-stone-100/80 border-b border-stone-200 text-[11px] uppercase tracking-wider text-stone-600 font-semibold">
+                    <th class="py-2.5 px-3">Order <span class="font-serif">k</span></th>
+                    <th class="py-2.5 px-3">Derivative <span class="font-serif">f^(k)(x)</span></th>
+                    <th class="py-2.5 px-3">At Center <span class="font-serif">f^(k)(a)</span></th>
+                    <th class="py-2.5 px-3">Factorial <span class="font-serif">k!</span></th>
+                    <th class="py-2.5 px-3">Coefficient <span class="font-serif">c_k</span></th>
+                    <th class="py-2.5 px-3">Added Term</th>
+                    <th class="py-2.5 px-3 bg-amber-50/60 text-amber-950" id="thEvalP">P_k(1)</th>
+                    <th class="py-2.5 px-3 bg-red-50/40 text-stone-900">Absolute Error |f - P_k|</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-stone-100 font-mono" id="tableBody"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- 4. Cards View Container -->
+          <div id="cardsViewWrapper" class="hidden space-y-3 max-h-[480px] overflow-y-auto pr-1">
+            <div class="space-y-3" id="cardsContainer"></div>
+          </div>
         </div>
 
       </div>
@@ -720,17 +814,75 @@
         document.getElementById('revealBtnText').textContent = `✨ Reveal Next Derivative (n = ${currentOrder + 1}) →`;
       }
 
-      // KaTeX running polynomial
+      // Render Full Formula in KaTeX
       const step = computedSteps[currentOrder];
-      if (step && window.katex) {
-        katex.render(`P_{${currentOrder}}(x) = ${step.polynomialLatex || '0'}`, document.getElementById('runningPolyLatex'), { throwOnError: false });
+      const polyLatex = step ? (step.polynomialLatex || '0') : '0';
+      const fullFormulaStr = `P_{${currentOrder}}(x) = ${polyLatex}`;
+
+      document.getElementById('formulaDegree').textContent = `n = ${currentOrder}`;
+      if (window.katex) {
+        katex.render(fullFormulaStr, document.getElementById('fullFormulaDisplay'), { displayMode: true, throwOnError: false });
+        katex.render("f(x) = \\sum_{k=0}^n \\frac{f^{(k)}(a)}{k!} (x-a)^k + R_n(x)", document.getElementById('generalFormulaDef'), { throwOnError: false });
       }
 
       // Center display
       document.getElementById('centerDisplay').textContent = `a = ${activeA}`;
 
-      // Render cards
+      // Render Table and Cards
+      renderTable();
       renderCards();
+    }
+
+    function renderTable() {
+      const tableBody = document.getElementById('tableBody');
+      if (!tableBody) return;
+      tableBody.innerHTML = '';
+
+      const evalX = parseFloat(document.getElementById('tableEvalX')?.value) || 1;
+      document.getElementById('thEvalP').textContent = `P_k(${evalX})`;
+
+      const trueVal = originalEval(evalX);
+      const isTrueValid = isFinite(trueVal) && !isNaN(trueVal);
+      const trueDisplay = document.getElementById('tableTrueValDisplay');
+      if (trueDisplay) {
+        trueDisplay.textContent = isTrueValid ? `True f(${evalX}) ≈ ${trueVal.toFixed(6)}` : '';
+      }
+
+      const visible = computedSteps.slice(0, currentOrder + 1);
+      visible.forEach((s, idx) => {
+        const isLatest = idx === currentOrder;
+        const pVal = s.evalPolynomial(evalX);
+        const absErr = isTrueValid && isFinite(pVal) ? Math.abs(trueVal - pVal) : null;
+
+        const row = document.createElement('tr');
+        row.className = `transition-colors ${isLatest ? 'bg-amber-50/50 font-medium' : idx % 2 === 0 ? 'bg-white' : 'bg-stone-50/40'} hover:bg-stone-100/60`;
+
+        const errHtml = absErr !== null
+          ? `<span class="inline-block px-1.5 py-0.5 rounded text-[11px] ${absErr < 1e-5 ? 'bg-emerald-100 text-emerald-800 font-bold' : absErr < 0.01 ? 'bg-blue-100 text-blue-800 font-medium' : 'text-stone-700'}">${absErr < 1e-4 ? absErr.toExponential(4) : absErr.toFixed(6)}</span>`
+          : 'N/A';
+
+        const coeffStr = Math.abs(s.coefficient) < 1e-12 ? '0' : Math.abs(s.coefficient) < 0.0001 ? s.coefficient.toExponential(3) : s.coefficient.toFixed(5);
+
+        row.innerHTML = `
+          <td class="py-2.5 px-3">
+            <span class="inline-flex items-center justify-center w-6 h-6 rounded-md text-xs font-bold ${isLatest ? 'bg-[#800020] text-white' : 'bg-stone-200 text-stone-700'}">${s.order}</span>
+          </td>
+          <td class="py-2.5 px-3 max-w-[160px] truncate font-serif text-sm deriv-cell"></td>
+          <td class="py-2.5 px-3 font-semibold text-stone-900">${s.derivativeAtAFormatted}</td>
+          <td class="py-2.5 px-3 text-stone-500">${s.factorialVal}</td>
+          <td class="py-2.5 px-3 text-stone-900 font-medium">${coeffStr}</td>
+          <td class="py-2.5 px-3 text-[#800020] font-serif text-xs max-w-[150px] truncate term-cell"></td>
+          <td class="py-2.5 px-3 bg-amber-50/40 font-semibold text-amber-900">${isFinite(pVal) ? pVal.toFixed(6) : 'Undefined'}</td>
+          <td class="py-2.5 px-3 bg-red-50/30">${errHtml}</td>
+        `;
+
+        tableBody.appendChild(row);
+
+        if (window.katex) {
+          katex.render(s.derivativeLatex || s.derivativeExpr, row.querySelector('.deriv-cell'), { throwOnError: false });
+          katex.render(s.termLatex || '0', row.querySelector('.term-cell'), { throwOnError: false });
+        }
+      });
     }
 
     function renderCards() {
@@ -994,6 +1146,65 @@
 
       animationFrameId = requestAnimationFrame(step);
     }
+
+    // Tab switcher events
+    document.getElementById('tabTableBtn').addEventListener('click', () => {
+      document.getElementById('tableViewWrapper').classList.remove('hidden');
+      document.getElementById('cardsViewWrapper').classList.add('hidden');
+      document.getElementById('tabTableBtn').className = 'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-white text-[#800020] shadow-xs cursor-pointer transition';
+      document.getElementById('tabCardsBtn').className = 'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-stone-600 hover:text-stone-900 cursor-pointer transition';
+    });
+
+    document.getElementById('tabCardsBtn').addEventListener('click', () => {
+      document.getElementById('tableViewWrapper').classList.add('hidden');
+      document.getElementById('cardsViewWrapper').classList.remove('hidden');
+      document.getElementById('tabCardsBtn').className = 'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-white text-[#800020] shadow-xs cursor-pointer transition';
+      document.getElementById('tabTableBtn').className = 'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-stone-600 hover:text-stone-900 cursor-pointer transition';
+    });
+
+    // Probe point input live update
+    document.getElementById('tableEvalX').addEventListener('input', () => {
+      renderTable();
+    });
+
+    // Copy Formula Button
+    document.getElementById('copyFormulaBtn').addEventListener('click', () => {
+      const step = computedSteps[currentOrder];
+      const polyLatex = step ? (step.polynomialLatex || '0') : '0';
+      const text = `P_{${currentOrder}}(x) = ${polyLatex}`;
+      navigator.clipboard.writeText(text);
+      const span = document.getElementById('copyFormulaText');
+      span.textContent = '✓ Copied LaTeX!';
+      setTimeout(() => span.textContent = '📋 Copy LaTeX', 2000);
+    });
+
+    // Copy Table TSV Button
+    document.getElementById('copyTableBtn').addEventListener('click', () => {
+      const evalX = parseFloat(document.getElementById('tableEvalX')?.value) || 1;
+      const trueVal = originalEval(evalX);
+      const isTrueValid = isFinite(trueVal) && !isNaN(trueVal);
+      const visible = computedSteps.slice(0, currentOrder + 1);
+
+      const header = ['Order (k)', "f^(k)(x)", "f^(k)(a)", "k!", "c_k", `P_k(${evalX})`, `Error |f - P_k|`].join('\t');
+      const rows = visible.map(s => {
+        const pVal = s.evalPolynomial(evalX);
+        const err = isTrueValid && isFinite(pVal) ? Math.abs(trueVal - pVal) : 'N/A';
+        return [
+          s.order,
+          s.derivativeExpr,
+          s.derivativeAtAFormatted,
+          s.factorialVal,
+          s.coefficient.toFixed(6),
+          isFinite(pVal) ? pVal.toFixed(6) : 'N/A',
+          typeof err === 'number' ? err.toExponential(4) : err
+        ].join('\t');
+      });
+
+      navigator.clipboard.writeText([header, ...rows].join('\n'));
+      const span = document.getElementById('copyTableText');
+      span.textContent = '✓ Copied TSV!';
+      setTimeout(() => span.textContent = '📋 Copy Table TSV', 2000);
+    });
   </script>
 </body>
 </html>
