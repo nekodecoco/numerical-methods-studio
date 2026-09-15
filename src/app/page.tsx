@@ -8,6 +8,7 @@ import { ActionBar } from '@/components/ActionBar';
 import { DerivativesLog } from '@/components/DerivativesLog';
 import { MathView } from '@/components/MathView';
 import { BookOpen, GraduationCap, Info, Lightbulb, Sparkles } from 'lucide-react';
+import Link from 'next/link';
 
 export default function Home() {
   // Input form state
@@ -111,10 +112,20 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Quick Theory Pill */}
-          <div className="hidden md:flex items-center gap-2 text-xs text-stone-600 bg-stone-50 px-3 py-1.5 rounded-xl border border-stone-200">
-            <BookOpen className="w-3.5 h-3.5 text-[#800020]" />
-            <MathView math="f(x) \approx \sum_{k=0}^n \frac{f^{(k)}(a)}{k!} (x-a)^k" />
+          {/* Quick Theory Pill & Tutorial Link */}
+          <div className="flex items-center gap-3">
+            <div className="hidden md:flex items-center gap-2 text-xs text-stone-600 bg-stone-50 px-3 py-1.5 rounded-xl border border-stone-200">
+              <BookOpen className="w-3.5 h-3.5 text-[#800020]" />
+              <MathView math="f(x) \approx \sum_{k=0}^n \frac{f^{(k)}(a)}{k!} (x-a)^k" />
+            </div>
+
+            <Link
+              href="/tutorial"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-[#800020] text-white hover:bg-[#6b001b] transition shadow-sm shadow-[#800020]/20 cursor-pointer"
+            >
+              <BookOpen className="w-3.5 h-3.5" />
+              <span>Tutorial &amp; Guide</span>
+            </Link>
           </div>
         </div>
       </header>
