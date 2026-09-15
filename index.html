@@ -554,7 +554,12 @@
     }
 
     function normalizeExpr(str) {
-      return str.trim().replace(/\bln\b/g, 'log');
+      return str
+        .trim()
+        .replace(/[\u2010-\u2015\u2212\uFE58\uFE63\uFF0D]/g, '-')
+        .replace(/[\u00D7\u22C5\u00B7]/g, '*')
+        .replace(/[\u00F7]/g, '/')
+        .replace(/\bln\b/g, 'log');
     }
 
     function buildTaylor(exprStr, a, maxOrder) {

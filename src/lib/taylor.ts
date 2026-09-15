@@ -37,6 +37,12 @@ export interface TaylorModel {
  */
 export function normalizeExpression(expr: string): string {
   let clean = expr.trim();
+  // Replace all Unicode dash/minus variants (en-dash, em-dash, math minus, etc.) with standard ASCII '-'
+  clean = clean.replace(/[\u2010-\u2015\u2212\uFE58\uFE63\uFF0D]/g, '-');
+  // Replace Unicode multiplication symbols (×, ⋅, ·) with '*'
+  clean = clean.replace(/[\u00D7\u22C5\u00B7]/g, '*');
+  // Replace Unicode division symbols (÷) with '/'
+  clean = clean.replace(/[\u00F7]/g, '/');
   // Replace ln(...) with log(...)
   clean = clean.replace(/\bln\b/g, 'log');
   return clean;
