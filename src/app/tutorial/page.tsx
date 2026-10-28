@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { MathView } from '@/components/MathView';
+import { NavBar } from '@/components/NavBar';
 import {
   ArrowLeft,
   BookOpen,
@@ -16,6 +17,8 @@ import {
   RotateCcw,
   Sparkles,
   Zap,
+  Scissors,
+  Split,
 } from 'lucide-react';
 
 interface QuizQuestion {
@@ -106,37 +109,7 @@ export default function TutorialPage() {
 
   return (
     <div className="min-h-screen bg-[#FAF9F6] text-stone-900 flex flex-col">
-      {/* Navigation Header */}
-      <header className="border-b border-stone-200 bg-white/95 backdrop-blur sticky top-0 z-30 shadow-xs">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-[#800020] text-white flex items-center justify-center shadow-md shadow-[#800020]/20">
-              <GraduationCap className="w-5 h-5" />
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h1 className="text-base sm:text-lg font-bold tracking-tight text-stone-950 font-serif">
-                  Taylor Series Tutorial
-                </h1>
-                <span className="text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 border border-amber-300 hidden sm:inline-block">
-                  Student Study Guide
-                </span>
-              </div>
-              <p className="text-xs text-stone-500 hidden sm:block">
-                Numerical Methods &amp; Calculus Concept Breakdown
-              </p>
-            </div>
-          </div>
-
-          <Link
-            href="/"
-            className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold bg-[#800020] text-white hover:bg-[#6b001b] transition shadow-md shadow-[#800020]/20"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            <span>Interactive Visualizer</span>
-          </Link>
-        </div>
-      </header>
+      <NavBar />
 
       {/* Main Container */}
       <main className="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-10">
@@ -523,11 +496,94 @@ export default function TutorialPage() {
           </div>
         </section>
 
-        {/* 5. Interactive Practice Quiz */}
+        {/* 5. Root-Finding Algorithms: Bisection vs False Position */}
+        <section className="bg-white rounded-2xl border border-stone-200 p-6 sm:p-8 space-y-6 shadow-sm">
+          <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#800020]">
+            <Scissors className="w-4 h-4 text-amber-500" />
+            <span>5. Bracketing Root-Finding: Bisection vs. False Position</span>
+          </div>
+
+          <div>
+            <h3 className="text-xl font-bold text-stone-900 font-serif">
+              Locating Roots by Squeezing Intervals
+            </h3>
+            <p className="text-sm text-stone-600 mt-1 leading-relaxed">
+              When analytical roots are impossible, bracketing methods start with two points <MathView math="x_l" /> and <MathView math="x_u" /> where <MathView math="f(x_l) \cdot f(x_u) \le 0" />. By the <strong>Intermediate Value Theorem</strong>, at least one real root must lie inside!
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+            {/* Bisection Card */}
+            <div className="p-5 rounded-2xl bg-stone-50 border border-stone-200 space-y-3 flex flex-col justify-between">
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold px-2.5 py-1 rounded-md bg-[#800020] text-white">
+                    Bisection Method
+                  </span>
+                  <span className="text-xs font-mono text-stone-500">Linear (Rate = 1/2)</span>
+                </div>
+                <h4 className="text-sm font-bold text-stone-900">Divide &amp; Conquer (Interval Halving)</h4>
+                <p className="text-xs text-stone-600 leading-relaxed">
+                  Always evaluates the exact geometric midpoint:
+                </p>
+                <div className="bg-white p-2 rounded-lg border border-stone-200 text-xs font-serif text-[#800020] font-bold">
+                  <MathView math="x_r = \frac{x_l + x_u}{2}" />
+                </div>
+                <ul className="text-xs text-stone-600 space-y-1 list-disc pl-4">
+                  <li>Guaranteed convergence on any continuous bracket.</li>
+                  <li>Interval shrinks by 50% every iteration (<MathView math="\Delta x_{new} = \Delta x / 2" />).</li>
+                  <li>Cannot be tricked by curve shape or asymptotic steepness.</li>
+                </ul>
+              </div>
+
+              <Link
+                href="/bisection"
+                className="inline-flex items-center justify-center gap-1.5 w-full py-2 bg-[#800020] text-white rounded-xl text-xs font-bold hover:bg-[#6b001b] transition shadow-xs cursor-pointer"
+              >
+                <Play className="w-3.5 h-3.5 fill-white" />
+                <span>Open Bisection Visualizer</span>
+              </Link>
+            </div>
+
+            {/* False Position Card */}
+            <div className="p-5 rounded-2xl bg-amber-50/50 border border-amber-200 space-y-3 flex flex-col justify-between">
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold px-2.5 py-1 rounded-md bg-amber-600 text-white">
+                    False Position (Regula Falsi)
+                  </span>
+                  <span className="text-xs font-mono text-stone-500">Secant Weighted</span>
+                </div>
+                <h4 className="text-sm font-bold text-amber-950">Linear Interpolation via Secant Chord</h4>
+                <p className="text-xs text-stone-700 leading-relaxed">
+                  Replaces the curve with a straight line between endpoints and finds the x-intercept:
+                </p>
+                <div className="bg-white p-2 rounded-lg border border-amber-200 text-xs font-serif text-amber-900 font-bold">
+                  <MathView math="x_r = \frac{x_l f(x_u) - x_u f(x_l)}{f(x_u) - f(x_l)}" />
+                </div>
+                <ul className="text-xs text-stone-700 space-y-1 list-disc pl-4">
+                  <li>Takes into account the magnitude of <MathView math="f(x_l)" /> and <MathView math="f(x_u)" />.</li>
+                  <li>Much faster than Bisection when functions are relatively flat.</li>
+                  <li><strong>Pitfall:</strong> High curvature causes one-sided stagnation!</li>
+                </ul>
+              </div>
+
+              <Link
+                href="/false-position"
+                className="inline-flex items-center justify-center gap-1.5 w-full py-2 bg-amber-700 text-white rounded-xl text-xs font-bold hover:bg-amber-800 transition shadow-xs cursor-pointer"
+              >
+                <Play className="w-3.5 h-3.5 fill-white" />
+                <span>Open False Position Visualizer</span>
+              </Link>
+            </div>
+          </div>
+        </section>
+
+        {/* 6. Interactive Practice Quiz */}
         <section className="bg-white rounded-2xl border border-stone-200 p-6 sm:p-8 space-y-6 shadow-sm">
           <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#800020]">
             <HelpCircle className="w-4 h-4 text-amber-500" />
-            <span>5. Quick Concept Check</span>
+            <span>6. Quick Concept Check</span>
           </div>
           <div>
             <h3 className="text-xl font-bold text-stone-900 font-serif">

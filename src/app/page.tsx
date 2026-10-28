@@ -9,6 +9,7 @@ import { DerivativesLog } from '@/components/DerivativesLog';
 import { MathView } from '@/components/MathView';
 import { BookOpen, GraduationCap, Info, Lightbulb, Sparkles } from 'lucide-react';
 import Link from 'next/link';
+import { NavBar } from '@/components/NavBar';
 
 export default function Home() {
   // Input form state
@@ -90,48 +91,31 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-[#FAF9F6] text-stone-900 flex flex-col">
-      {/* Top Academic Navigation Bar */}
-      <header className="border-b border-stone-200 bg-white/95 backdrop-blur sticky top-0 z-30 shadow-xs">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-[#800020] text-white flex items-center justify-center shadow-md shadow-[#800020]/20">
-              <GraduationCap className="w-5 h-5" />
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h1 className="text-base sm:text-lg font-bold tracking-tight text-stone-950 font-serif">
-                  Taylor Series Visualizer
-                </h1>
-                <span className="text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#800020]/10 text-[#800020] border border-[#800020]/20 hidden sm:inline-block">
-                  Numerical Methods
-                </span>
-              </div>
-              <p className="text-xs text-stone-500 hidden sm:block">
-                Interactive polynomial approximation &amp; progressive derivative discovery
-              </p>
-            </div>
-          </div>
-
-          {/* Quick Theory Pill & Tutorial Link */}
-          <div className="flex items-center gap-3">
-            <div className="hidden md:flex items-center gap-2 text-xs text-stone-600 bg-stone-50 px-3 py-1.5 rounded-xl border border-stone-200">
-              <BookOpen className="w-3.5 h-3.5 text-[#800020]" />
-              <MathView math="f(x) \approx \sum_{k=0}^n \frac{f^{(k)}(a)}{k!} (x-a)^k" />
-            </div>
-
-            <Link
-              href="/tutorial"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-[#800020] text-white hover:bg-[#6b001b] transition shadow-sm shadow-[#800020]/20 cursor-pointer"
-            >
-              <BookOpen className="w-3.5 h-3.5" />
-              <span>Tutorial &amp; Guide</span>
-            </Link>
-          </div>
-        </div>
-      </header>
+      <NavBar />
 
       {/* Main Educational Workspace */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+        {/* Topic Banner */}
+        <div className="bg-gradient-to-r from-[#800020] to-[#590016] text-white rounded-2xl p-6 shadow-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="space-y-1">
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-white/15 text-amber-200">
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>Polynomial Series Approximation</span>
+            </div>
+            <h1 className="text-2xl font-bold font-serif">Taylor Series Visualizer</h1>
+            <p className="text-xs sm:text-sm text-stone-200">
+              Interactive polynomial approximation &amp; progressive derivative discovery
+            </p>
+          </div>
+
+          <div className="bg-white/10 border border-white/20 rounded-xl px-4 py-2.5 text-xs font-serif min-w-max hidden md:block">
+            <div className="text-[10px] uppercase tracking-wider text-amber-200 font-sans font-bold">
+              General Taylor Definition
+            </div>
+            <MathView math="f(x) \approx \sum_{k=0}^n \frac{f^{(k)}(a)}{k!} (x-a)^k" block={false} className="text-white text-sm" />
+          </div>
+        </div>
+
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           {/* Left Column: Control Panel & Concept Card */}
           <div className="lg:col-span-4 space-y-6">

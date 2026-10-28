@@ -46,12 +46,32 @@
         </div>
       </div>
 
-      <a
-        href="index.html"
-        class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold bg-[#800020] text-white hover:bg-[#6b001b] transition shadow-md shadow-[#800020]/20 cursor-pointer"
-      >
-        <span>◀ Interactive Visualizer</span>
-      </a>
+      <nav class="flex items-center gap-1.5 sm:gap-2">
+        <a
+          href="index.html"
+          class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-stone-600 hover:text-stone-900 hover:bg-stone-100 transition cursor-pointer"
+        >
+          <span>📈 Taylor Series</span>
+        </a>
+        <a
+          href="bisection.html"
+          class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-stone-600 hover:text-stone-900 hover:bg-stone-100 transition cursor-pointer"
+        >
+          <span>✂️ Bisection</span>
+        </a>
+        <a
+          href="false-position.html"
+          class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-stone-600 hover:text-stone-900 hover:bg-stone-100 transition cursor-pointer"
+        >
+          <span>📐 False Position</span>
+        </a>
+        <a
+          href="tutorial.html"
+          class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-[#800020] text-white shadow-sm shadow-[#800020]/25 cursor-pointer"
+        >
+          <span>📖 Study Guide</span>
+        </a>
+      </nav>
     </div>
   </header>
 
@@ -233,21 +253,122 @@
       </p>
     </section>
 
+    <!-- 5. Bracketing Root-Finding: Bisection vs. False Position -->
+    <section class="bg-white rounded-2xl border border-stone-200 p-6 sm:p-8 space-y-6 shadow-sm">
+      <div class="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#800020]">
+        <span>✂️ 5. Bracketing Root-Finding: Bisection vs. False Position</span>
+      </div>
+
+      <div>
+        <h3 class="text-xl font-bold text-stone-900 font-serif">
+          Locating Roots by Squeezing Intervals
+        </h3>
+        <p class="text-sm text-stone-600 mt-1 leading-relaxed">
+          When analytical roots are impossible, bracketing methods start with two points <span class="katex-math" data-math="x_l"></span> and <span class="katex-math" data-math="x_u"></span> where <span class="katex-math" data-math="f(x_l) \cdot f(x_u) \le 0"></span>. By the <strong>Intermediate Value Theorem</strong>, at least one real root must lie inside!
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+        <!-- Bisection Card -->
+        <div class="p-5 rounded-2xl bg-stone-50 border border-stone-200 space-y-3 flex flex-col justify-between">
+          <div class="space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold px-2.5 py-1 rounded-md bg-[#800020] text-white">
+                Bisection Method
+              </span>
+              <span class="text-xs font-mono text-stone-500">Linear (Rate = 1/2)</span>
+            </div>
+            <h4 class="text-sm font-bold text-stone-900">Divide &amp; Conquer (Interval Halving)</h4>
+            <p class="text-xs text-stone-600 leading-relaxed">
+              Always evaluates the exact geometric midpoint:
+            </p>
+            <div class="bg-white p-2 rounded-lg border border-stone-200 text-xs font-serif text-[#800020] font-bold katex-math" data-math="x_r = \frac{x_l + x_u}{2}"></div>
+            <ul class="text-xs text-stone-600 space-y-1 list-disc pl-4">
+              <li>Guaranteed convergence on any continuous bracket.</li>
+              <li>Interval shrinks by exactly 50% every iteration (<span class="katex-math" data-math="\Delta x_{new} = \Delta x / 2"></span>).</li>
+              <li>Cannot be tricked by curve shape or asymptotic steepness.</li>
+            </ul>
+          </div>
+
+          <a
+            href="bisection.html"
+            class="inline-flex items-center justify-center gap-1.5 w-full py-2 bg-[#800020] text-white rounded-xl text-xs font-bold hover:bg-[#6b001b] transition shadow-xs cursor-pointer"
+          >
+            <span>▶ Open Bisection Visualizer</span>
+          </a>
+        </div>
+
+        <!-- False Position Card -->
+        <div class="p-5 rounded-2xl bg-amber-50/50 border border-amber-200 space-y-3 flex flex-col justify-between">
+          <div class="space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold px-2.5 py-1 rounded-md bg-amber-600 text-white">
+                False Position (Regula Falsi)
+              </span>
+              <span class="text-xs font-mono text-stone-500">Secant Weighted</span>
+            </div>
+            <h4 class="text-sm font-bold text-amber-950">Linear Interpolation via Secant Chord</h4>
+            <p class="text-xs text-stone-700 leading-relaxed">
+              Replaces the curve with a straight line between endpoints and finds the x-intercept:
+            </p>
+            <div class="bg-white p-2 rounded-lg border border-amber-200 text-xs font-serif text-amber-900 font-bold katex-math" data-math="x_r = \frac{x_l f(x_u) - x_u f(x_l)}{f(x_u) - f(x_l)}"></div>
+            <ul class="text-xs text-stone-700 space-y-1 list-disc pl-4">
+              <li>Takes into account the magnitude of <span class="katex-math" data-math="f(x_l)"></span> and <span class="katex-math" data-math="f(x_u)"></span>.</li>
+              <li>Much faster than Bisection when functions are relatively flat.</li>
+              <li><strong>Pitfall:</strong> High curvature causes one-sided stagnation!</li>
+            </ul>
+          </div>
+
+          <a
+            href="false-position.html"
+            class="inline-flex items-center justify-center gap-1.5 w-full py-2 bg-amber-700 text-white rounded-xl text-xs font-bold hover:bg-amber-800 transition shadow-xs cursor-pointer"
+          >
+            <span>▶ Open False Position Visualizer</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
     <!-- Footer Call to Action -->
     <div class="text-center py-6 space-y-3">
       <h3 class="text-lg font-bold font-serif text-stone-900">Ready to Experiment?</h3>
-      <a
-        href="index.html"
-        class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[#800020] hover:bg-[#6b001b] text-white font-bold text-sm transition shadow-lg shadow-[#800020]/25"
-      >
-        <span>▶ Open Interactive Visualizer</span>
-      </a>
+      <div class="flex items-center justify-center gap-3">
+        <a
+          href="index.html"
+          class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#800020] hover:bg-[#6b001b] text-white font-bold text-xs transition shadow-lg shadow-[#800020]/25"
+        >
+          <span>📈 Taylor Series</span>
+        </a>
+        <a
+          href="bisection.html"
+          class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-stone-800 hover:bg-stone-900 text-white font-bold text-xs transition shadow-md"
+        >
+          <span>✂️ Bisection</span>
+        </a>
+        <a
+          href="false-position.html"
+          class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs transition shadow-md"
+        >
+          <span>📐 False Position</span>
+        </a>
+      </div>
     </div>
 
   </main>
 
   <footer class="border-t border-stone-200 bg-white py-6 text-center text-xs text-stone-500">
-    <p>Taylor Series Tutorial for Numerical Methods courses. <a href="index.html" class="underline hover:text-stone-800">Back to Visualizer</a></p>
+    <div class="max-w-5xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+      <p>Numerical Methods Studio classroom suite for engineering and mathematics.</p>
+      <div class="flex items-center gap-3 text-stone-400">
+        <a href="index.html" class="hover:text-stone-700 underline">Taylor Series</a>
+        <span>•</span>
+        <a href="bisection.html" class="hover:text-stone-700 underline">Bisection</a>
+        <span>•</span>
+        <a href="false-position.html" class="hover:text-stone-700 underline">False Position</a>
+        <span>•</span>
+        <a href="tutorial.html" class="hover:text-stone-700 underline">Study Guide</a>
+      </div>
+    </div>
   </footer>
 
   <script>
