@@ -41,52 +41,122 @@
 </head>
 <body class="bg-[#FAF9F6] text-stone-900 min-h-screen antialiased selection:bg-[#800020] selection:text-white font-sans flex flex-col">
 
-  <!-- Header -->
-  <header class="border-b border-stone-200 bg-white/95 backdrop-blur sticky top-0 z-30 shadow-xs">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-      <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-xl bg-[#800020] text-white flex items-center justify-center shadow-md shadow-[#800020]/20 font-bold text-lg">
-          🎓
+  <!-- Categorized Modern Header -->
+  <header class="border-b border-stone-200/80 bg-white/95 backdrop-blur-md sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+      <!-- Brand -->
+      <a href="index.html" class="flex items-center gap-3 group select-none flex-shrink-0">
+        <div class="w-9 h-9 rounded-lg bg-[#800020] text-white flex items-center justify-center font-mono font-bold text-sm shadow-sm group-hover:bg-[#6b001b] transition-colors">
+          <span class="tracking-tight text-amber-200 font-serif italic text-base">f</span>
+          <span class="text-[10px] text-white/90 -ml-0.5">(x)</span>
         </div>
-        <div>
+        <div class="flex flex-col">
           <div class="flex items-center gap-2">
-            <h1 class="text-base sm:text-lg font-bold tracking-tight text-stone-950 font-serif">
-              Taylor Series Visualizer
-            </h1>
-            <span class="text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#800020]/10 text-[#800020] border border-[#800020]/20 hidden sm:inline-block">
-              Numerical Methods
+            <span class="text-sm sm:text-base font-semibold tracking-tight text-stone-900 font-sans">
+              Numerical Methods Studio
+            </span>
+            <span class="text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-stone-100 text-stone-600 border border-stone-200 hidden sm:inline-block">
+              v2.0
             </span>
           </div>
-          <p class="text-xs text-stone-500 hidden sm:block">
-            Interactive polynomial approximation &amp; progressive derivative discovery
-          </p>
+          <span class="text-[11px] text-stone-400 font-mono hidden md:block">
+            Root-finding &amp; Taylor Series Workspace
+          </span>
         </div>
-      </div>
+      </a>
 
-      <nav class="flex items-center gap-1.5 sm:gap-2">
+      <!-- Categorized Navigation -->
+      <nav class="flex items-center gap-1.5 text-xs font-medium">
+        <!-- Taylor Series (Active) -->
         <a
           href="index.html"
-          class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-[#800020] text-white shadow-sm shadow-[#800020]/25 cursor-pointer"
+          class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#800020] text-white font-semibold shadow-xs transition-colors"
         >
-          <span>📈 Taylor Series</span>
+          <span>Taylor Series</span>
         </a>
-        <a
-          href="bisection.html"
-          class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-stone-600 hover:text-stone-900 hover:bg-stone-100 transition cursor-pointer"
-        >
-          <span>✂️ Bisection</span>
-        </a>
-        <a
-          href="false-position.html"
-          class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-stone-600 hover:text-stone-900 hover:bg-stone-100 transition cursor-pointer"
-        >
-          <span>📐 False Position</span>
-        </a>
+
+        <!-- Bracketing Methods Dropdown -->
+        <div class="relative group">
+          <button
+            type="button"
+            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-stone-600 hover:text-stone-950 hover:bg-stone-100 transition-colors cursor-pointer"
+          >
+            <span>Bracketing Methods</span>
+            <svg class="w-3.5 h-3.5 transition-transform group-hover:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+          <div class="absolute left-0 mt-1 w-64 rounded-xl bg-white border border-stone-200/90 shadow-xl shadow-stone-900/10 p-1.5 hidden group-hover:block z-50">
+            <div class="px-2.5 py-1.5 border-b border-stone-100 mb-1">
+              <span class="text-[10px] font-mono uppercase tracking-wider text-stone-400 font-semibold">
+                Enclosed Search Intervals
+              </span>
+            </div>
+            <a href="bisection.html" class="flex items-start gap-2.5 p-2 rounded-lg text-xs hover:bg-stone-50 text-stone-700 transition-colors">
+              <div>
+                <div class="font-semibold text-stone-900">Bisection Method</div>
+                <div class="text-[11px] text-stone-500">Interval halving · Guaranteed convergence</div>
+              </div>
+            </a>
+            <a href="false-position.html" class="flex items-start gap-2.5 p-2 rounded-lg text-xs hover:bg-stone-50 text-stone-700 transition-colors">
+              <div>
+                <div class="font-semibold text-stone-900">False Position</div>
+                <div class="text-[11px] text-stone-500">Regula Falsi · Linear interpolation</div>
+              </div>
+            </a>
+          </div>
+        </div>
+
+        <!-- Open Methods Dropdown -->
+        <div class="relative group">
+          <button
+            type="button"
+            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-stone-600 hover:text-stone-950 hover:bg-stone-100 transition-colors cursor-pointer"
+          >
+            <span>Open Methods</span>
+            <svg class="w-3.5 h-3.5 transition-transform group-hover:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+          <div class="absolute right-0 sm:left-0 mt-1 w-72 rounded-xl bg-white border border-stone-200/90 shadow-xl shadow-stone-900/10 p-1.5 hidden group-hover:block z-50">
+            <div class="px-2.5 py-1.5 border-b border-stone-100 mb-1">
+              <span class="text-[10px] font-mono uppercase tracking-wider text-stone-400 font-semibold">
+                Single / Multi-Point Iteration
+              </span>
+            </div>
+            <a href="fixed-point.html" class="flex items-start gap-2.5 p-2 rounded-lg text-xs hover:bg-stone-50 text-stone-700 transition-colors">
+              <div>
+                <div class="font-semibold text-stone-900">Fixed-Point Iteration</div>
+                <div class="text-[11px] text-stone-500">x = g(x) · Cobweb analysis</div>
+              </div>
+            </a>
+            <a href="newton-raphson.html" class="flex items-start gap-2.5 p-2 rounded-lg text-xs hover:bg-stone-50 text-stone-700 transition-colors">
+              <div>
+                <div class="font-semibold text-stone-900">Newton-Raphson</div>
+                <div class="text-[11px] text-stone-500">Tangent projection · Quadratic convergence</div>
+              </div>
+            </a>
+            <a href="secant.html" class="flex items-start gap-2.5 p-2 rounded-lg text-xs hover:bg-stone-50 text-stone-700 transition-colors">
+              <div>
+                <div class="font-semibold text-stone-900">Secant Method</div>
+                <div class="text-[11px] text-stone-500">Finite difference · No derivative required</div>
+              </div>
+            </a>
+            <a href="mullers.html" class="flex items-start gap-2.5 p-2 rounded-lg text-xs hover:bg-stone-50 text-stone-700 transition-colors">
+              <div>
+                <div class="font-semibold text-stone-900">Muller's Method</div>
+                <div class="text-[11px] text-stone-500">Parabolic fit · Handles complex roots</div>
+              </div>
+            </a>
+          </div>
+        </div>
+
+        <!-- Study Guide -->
         <a
           href="tutorial.html"
-          class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-stone-600 hover:text-stone-900 hover:bg-stone-100 transition cursor-pointer"
+          class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-stone-600 hover:text-stone-950 hover:bg-stone-100 transition-colors"
         >
-          <span>📖 Study Guide</span>
+          <span>Study Guide</span>
         </a>
       </nav>
     </div>
@@ -743,22 +813,6 @@
       if (currentOrder < activeCapOrder && currentOrder < computedSteps.length - 1) {
         currentOrder++;
         
-        // Micro-burst animation on button
-        const btn = document.getElementById('revealBtn');
-        btn.classList.add('ring-4', 'ring-[#800020]/30', 'scale-95');
-        setTimeout(() => btn.classList.remove('ring-4', 'ring-[#800020]/30', 'scale-95'), 300);
-
-        if (currentOrder % 5 === 0 || currentOrder === activeCapOrder) {
-          if (window.confetti) {
-            confetti({
-              particleCount: 40,
-              spread: 60,
-              origin: { y: 0.8 },
-              colors: ['#800020', '#F59E0B', '#10B981', '#6366F1']
-            });
-          }
-        }
-
         updateUI();
         animateTraceDraw();
       }

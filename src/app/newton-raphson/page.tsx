@@ -1,0 +1,234 @@
+'use client';
+
+import React, { useState, useEffect, useCallback } from 'react';
+import { NavBar } from '@/components/NavBar';
+import { NewtonRaphsonControl } from '@/components/NewtonRaphsonControl';
+import { NewtonRaphsonPlot } from '@/components/NewtonRaphsonPlot';
+import { NewtonRaphsonTable } from '@/components/NewtonRaphsonTable';
+import { RootFindingActionBar } from '@/components/RootFindingActionBar';
+import { MathView } from '@/components/MathView';
+import {
+  solveNewtonRaphson,
+  NewtonRaphsonStep,
+  NEWTON_RAPHSON_PRESETS,
+} from '@/lib/openMethods';
+import { Zap, Lightbulb, CheckCircle2, Sparkles, AlertTriangle } from 'lucide-react';
+
+export default function NewtonRaphsonPage() {
+  // Input form state
+  const [exprFInput, setExprFInput] = useState<string>('x^3 - x - 2');
+  const [x0Input, setX0Input] = useState<number>(1);
+  const [tolInput, setTolInput] = useState<number>(0.0001); // 0.0001%
+  const [maxIterInput, setMaxIterInput] = useState<number>(20);
+
+  // Active plotted state
+  const [activeExprF, setActiveExprF] = useState<string>('x^3 - x - 2');
+  const [activeX0, setActiveX0] = useState<number>(1);
+  const [evalF, setEvalF] = useState<(x: number) => number>(() => (x: number) => x * x * x - x - 2);
+  const [latexDerivative, setLatexDerivative] = useState<string>('3x^2 - 1');
+
+  // Model & computation state
+  const [steps, setSteps] = useState<NewtonRaphsonStep[]>([]);
+  const [currentIter, setCurrentIter] = useState<number>(1);
+  const [errorMessage, setErrorMessage] = useState<string | undefined>(undefined);
+  const [warningMessage, setWarningMessage] = useState<string | undefined>(undefined);
+  const [converged, setConverged] = useState<boolean>(false);
+  const [diverged, setDiverged] = useState<boolean>(false);
+
+  const handleApply = useCallback(() => {
+    const res = solveNewtonRaphson(
+      exprFInput,
+      x0Input,
+      maxIterInput,
+      tolInput
+    );
+
+    if (res.error) {
+      setErrorMessage(res.error);
+      return;
+    }
+
+    setErrorMessage(undefined);
+    setWarningMessage(res.warning);
+
+    if (res.steps.length > 0) {
+      setActiveExprF(exprFInput);
+      setActiveX0(x0Input);
+      setEvalF(() => res.evalF);
+      setLatexDerivative(res.derivativeLatex);
+      setSteps(res.steps);
+      setCurrentIter(1);
+      setConverged(res.converged);
+      setDiverged(res.diverged);
+    }
+  }, [exprFInput, x0Input, tolInput, maxIterInput]);
+
+  useEffect(() => {
+    handleApply();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const currentStep = steps[currentIter - 1] || null;
+
+  return (
+    <div className="min-h-screen bg-[#FAF9F6] text-stone-900 flex flex-col">
+      <NavBar />
+
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+        {/* Method Banner */}
+        <div className="bg-white border border-stone-200/90 rounded-xl p-5 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded bg-[#800020]/10 text-[#800020] font-semibold border border-[#800020]/15">
+                Open Method
+              </span>
+              <span className="text-xs text-stone-400 font-mono">Tangent Projection</span>
+            </div>
+            <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-stone-900 font-sans">
+              Newton-Raphson Method Visualizer
+            </h1>
+            <p className="text-xs text-stone-600 max-w-2xl">
+              Extrapolate tangent lines from function coordinates to the x-axis with quadratic convergence speed (<span className="font-mono text-stone-800">p = 2</span>).
+            </p>
+          </div>
+
+          <div className="bg-stone-50 border border-stone-200 rounded-lg px-3.5 py-2 text-xs hidden md:block">
+            <div className="text-[9px] uppercase tracking-wider font-mono text-stone-500 font-semibold mb-0.5">
+              Newton-Raphson Formula · Quadratic
+            </div>
+            <div className="text-stone-900 text-sm font-bold flex items-center gap-2">
+              <MathView math="x_{i+1} = x_i - \frac{f(x_i)}{f'(x_i)}" block={false} />
+            </div>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          {/* Left Column: Controls & Guidelines */}
+          <div className="lg:col-span-4 space-y-6">
+            <NewtonRaphsonControl
+              presets={NEWTON_RAPHSON_PRESETS}
+              exprFInput={exprFInput}
+              setExprFInput={setExprFInput}
+              derivativeLatex={latexDerivative}
+              x0Input={x0Input}
+              setX0Input={setX0Input}
+              tolInput={tolInput}
+              setTolInput={setTolInput}
+              maxIterInput={maxIterInput}
+              setMaxIterInput={setMaxIterInput}
+              onApply={handleApply}
+              errorMessage={errorMessage}
+              warningMessage={warningMessage}
+            />
+
+            {/* Teaching Takeaways Card */}
+            <div className="bg-white rounded-2xl border border-stone-200/90 shadow-sm p-5 space-y-3">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-stone-500 flex items-center gap-1.5">
+                <Lightbulb className="w-4 h-4 text-amber-500" />
+                <span>Teaching Takeaways</span>
+              </h3>
+              <ul className="text-xs text-stone-600 space-y-2.5 leading-relaxed">
+                <li className="flex items-start gap-2">
+                  <span className="font-bold text-[#800020]">1. Taylor Series Link:</span>
+                  <span>Newton-Raphson is directly derived from a 1st-order Taylor polynomial: <MathView math="f(x_i + \Delta x) \approx f(x_i) + f'(x_i)\Delta x = 0" /> yielding <MathView math="\Delta x = -f(x_i)/f'(x_i)" />.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="font-bold text-[#800020]">2. Quadratic Convergence:</span>
+                  <span>Once close to a simple root, the error is proportional to the square of the previous error: <MathView math="E_{t, i+1} \approx C \cdot E_{t, i}^2" />. Decimal accuracy roughly doubles every step!</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="font-bold text-[#800020]">3. Zero Slope Pitfall:</span>
+                  <span>If <MathView math="f'(x_i) = 0" />, the tangent line is horizontal and never reaches the x-axis, causing division by zero!</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="font-bold text-[#800020]">4. Cycling &amp; Inflection Points:</span>
+                  <span>Near inflection points or symmetric shapes (like <MathView math="x^3 - 5x" /> with <MathView math="x_0=1" />), iterations can bounce indefinitely between fixed points in a cycle!</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          {/* Right Column: Action Bar, HUD, Plot & Table */}
+          <div className="lg:col-span-8 space-y-6">
+            {/* Action Bar */}
+            <RootFindingActionBar
+              method="newton-raphson"
+              currentIter={currentIter}
+              totalSteps={steps.length}
+              converged={converged}
+              onNext={() => setCurrentIter((prev) => Math.min(steps.length, prev + 1))}
+              onPrev={() => setCurrentIter((prev) => Math.max(1, prev - 1))}
+              onReset={() => setCurrentIter(1)}
+              onSetIter={(val) => setCurrentIter(val)}
+              xr={currentStep ? currentStep.xNext : activeX0}
+              ea={currentStep ? currentStep.ea : null}
+            />
+
+            {/* Live Step HUD */}
+            {currentStep && (
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
+                <div className="bg-white p-3 rounded-xl border border-stone-200 shadow-xs">
+                  <span className="text-[10px] uppercase font-bold text-stone-500 block">Current x_i</span>
+                  <span className="text-sm font-mono font-bold text-stone-900">{currentStep.xi.toFixed(5)}</span>
+                  <span className="text-[10px] text-stone-400 block">f(xi) = {currentStep.fxi.toFixed(4)}</span>
+                </div>
+
+                <div className="bg-white p-3 rounded-xl border border-stone-200 shadow-xs">
+                  <span className="text-[10px] uppercase font-bold text-blue-700 block">Slope f&apos;(x_i)</span>
+                  <span className="text-sm font-mono font-bold text-blue-900">{currentStep.dfxi.toFixed(4)}</span>
+                  <span className="text-[10px] text-stone-400 block">Tangent Slope</span>
+                </div>
+
+                <div className="bg-white p-3 rounded-xl border border-amber-300 bg-amber-50/40 shadow-xs">
+                  <span className="text-[10px] uppercase font-bold text-amber-800 block">Next Root x_{'{i+1}'}</span>
+                  <span className="text-sm font-mono font-bold text-[#800020]">{currentStep.xNext.toFixed(6)}</span>
+                  <span className="text-[10px] text-stone-500 block">Tangent Intercept</span>
+                </div>
+
+                <div className="bg-white p-3 rounded-xl border border-stone-200 shadow-xs">
+                  <span className="text-[10px] uppercase font-bold text-stone-500 block">Rel Error ε_a</span>
+                  <span className="text-sm font-mono font-bold text-emerald-700">
+                    {currentStep.ea !== null ? `${currentStep.ea.toFixed(4)}%` : 'Initial Step'}
+                  </span>
+                  <span className="text-[10px] text-stone-400 block">
+                    {converged && currentIter === steps.length ? '🎯 Converged' : 'In Progress'}
+                  </span>
+                </div>
+              </div>
+            )}
+
+            {/* Dynamic Tangent Plot */}
+            <NewtonRaphsonPlot
+              exprFStr={activeExprF}
+              evalF={evalF}
+              steps={steps}
+              currentIter={currentIter}
+              initialX0={activeX0}
+            />
+
+            {/* Full Iteration Table */}
+            <NewtonRaphsonTable
+              steps={steps}
+              currentIter={currentIter}
+              onSelectIter={(i) => setCurrentIter(i)}
+              exprF={activeExprF}
+            />
+          </div>
+        </div>
+      </main>
+
+      {/* Footer */}
+      <footer className="border-t border-stone-200 bg-white py-6 text-center text-xs text-stone-500 mt-12">
+        <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <p>Numerical Methods Studio classroom suite for engineering and mathematics.</p>
+          <div className="flex items-center gap-3 text-stone-400">
+            <span>Newton-Raphson Method</span>
+            <span>•</span>
+            <span>Quadratic Convergence</span>
+            <span>•</span>
+            <span>Vercel Deploy Ready</span>
+          </div>
+        </div>
+      </footer>
+    </div>
+  );
+}

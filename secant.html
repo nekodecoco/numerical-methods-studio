@@ -1,0 +1,1100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Secant Method Visualizer | Numerical Methods Studio</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Plotly.js -->
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+  
+  <!-- Math.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/14.0.1/math.min.js"></script>
+  
+  <!-- KaTeX -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.21/dist/katex.min.css" />
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.21/dist/katex.min.js"></script>
+  
+  <!-- Canvas Confetti -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.4/dist/confetti.browser.min.js"></script>
+
+  <style>
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fadeIn {
+      animation: fadeIn 300ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+  </style>
+</head>
+<body class="bg-[#FAF9F6] text-stone-900 min-h-screen antialiased selection:bg-[#800020] selection:text-white font-sans flex flex-col">
+
+  <!-- Categorized Modern Header -->
+  <header class="border-b border-stone-200/80 bg-white/95 backdrop-blur-md sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+      <!-- Brand -->
+      <a href="index.html" class="flex items-center gap-3 group select-none flex-shrink-0">
+        <div class="w-9 h-9 rounded-lg bg-[#800020] text-white flex items-center justify-center font-mono font-bold text-sm shadow-sm group-hover:bg-[#6b001b] transition-colors">
+          <span class="tracking-tight text-amber-200 font-serif italic text-base">f</span>
+          <span class="text-[10px] text-white/90 -ml-0.5">(x)</span>
+        </div>
+        <div class="flex flex-col">
+          <div class="flex items-center gap-2">
+            <span class="text-sm sm:text-base font-semibold tracking-tight text-stone-900 font-sans">
+              Numerical Methods Studio
+            </span>
+            <span class="text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-stone-100 text-stone-600 border border-stone-200 hidden sm:inline-block">
+              v2.0
+            </span>
+          </div>
+          <span class="text-[11px] text-stone-400 font-mono hidden md:block">
+            Root-finding &amp; Taylor Series Workspace
+          </span>
+        </div>
+      </a>
+
+      <!-- Categorized Navigation -->
+      <nav class="flex items-center gap-1.5 text-xs font-medium">
+        <!-- Taylor Series -->
+        <a
+          href="index.html"
+          class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-stone-600 hover:text-stone-950 hover:bg-stone-100 transition-colors"
+        >
+          <span>Taylor Series</span>
+        </a>
+
+        <!-- Bracketing Methods Dropdown -->
+        <div class="relative group">
+          <button
+            type="button"
+            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-stone-600 hover:text-stone-950 hover:bg-stone-100 transition-colors cursor-pointer"
+          >
+            <span>Bracketing Methods</span>
+            <svg class="w-3.5 h-3.5 transition-transform group-hover:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+          <div class="absolute left-0 mt-1 w-64 rounded-xl bg-white border border-stone-200/90 shadow-xl shadow-stone-900/10 p-1.5 hidden group-hover:block z-50">
+            <div class="px-2.5 py-1.5 border-b border-stone-100 mb-1">
+              <span class="text-[10px] font-mono uppercase tracking-wider text-stone-400 font-semibold">
+                Enclosed Search Intervals
+              </span>
+            </div>
+            <a href="bisection.html" class="flex items-start gap-2.5 p-2 rounded-lg text-xs hover:bg-stone-50 text-stone-700 transition-colors">
+              <div>
+                <div class="font-semibold text-stone-900">Bisection Method</div>
+                <div class="text-[11px] text-stone-500">Interval halving · Guaranteed convergence</div>
+              </div>
+            </a>
+            <a href="false-position.html" class="flex items-start gap-2.5 p-2 rounded-lg text-xs hover:bg-stone-50 text-stone-700 transition-colors">
+              <div>
+                <div class="font-semibold text-stone-900">False Position</div>
+                <div class="text-[11px] text-stone-500">Regula Falsi · Linear interpolation</div>
+              </div>
+            </a>
+          </div>
+        </div>
+
+        <!-- Open Methods Dropdown (Active) -->
+        <div class="relative group">
+          <button
+            type="button"
+            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[#800020] bg-[#800020]/10 font-semibold border border-[#800020]/20 transition-colors cursor-pointer"
+          >
+            <span>Open Methods</span>
+            <svg class="w-3.5 h-3.5 transition-transform group-hover:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+          <div class="absolute right-0 sm:left-0 mt-1 w-72 rounded-xl bg-white border border-stone-200/90 shadow-xl shadow-stone-900/10 p-1.5 hidden group-hover:block z-50">
+            <div class="px-2.5 py-1.5 border-b border-stone-100 mb-1">
+              <span class="text-[10px] font-mono uppercase tracking-wider text-stone-400 font-semibold">
+                Single / Multi-Point Iteration
+              </span>
+            </div>
+            <a href="fixed-point.html" class="flex items-start gap-2.5 p-2 rounded-lg text-xs hover:bg-stone-50 text-stone-700 transition-colors">
+              <div>
+                <div class="font-semibold text-stone-900">Fixed-Point Iteration</div>
+                <div class="text-[11px] text-stone-500">x = g(x) · Cobweb analysis</div>
+              </div>
+            </a>
+            <a href="newton-raphson.html" class="flex items-start gap-2.5 p-2 rounded-lg text-xs hover:bg-stone-50 text-stone-700 transition-colors">
+              <div>
+                <div class="font-semibold text-stone-900">Newton-Raphson</div>
+                <div class="text-[11px] text-stone-500">Tangent projection · Quadratic convergence</div>
+              </div>
+            </a>
+            <a href="secant.html" class="flex items-start gap-2.5 p-2 rounded-lg text-xs bg-[#800020]/8 text-[#800020] font-semibold transition-colors">
+              <div>
+                <div class="font-semibold text-stone-900">Secant Method</div>
+                <div class="text-[11px] text-stone-500 font-normal">Finite difference · No derivative required</div>
+              </div>
+            </a>
+            <a href="mullers.html" class="flex items-start gap-2.5 p-2 rounded-lg text-xs hover:bg-stone-50 text-stone-700 transition-colors">
+              <div>
+                <div class="font-semibold text-stone-900">Muller's Method</div>
+                <div class="text-[11px] text-stone-500">Parabolic fit · Handles complex roots</div>
+              </div>
+            </a>
+          </div>
+        </div>
+
+        <!-- Study Guide -->
+        <a
+          href="tutorial.html"
+          class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-stone-600 hover:text-stone-950 hover:bg-stone-100 transition-colors"
+        >
+          <span>Study Guide</span>
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+
+    <!-- Top Concept Banner -->
+    <section class="bg-gradient-to-r from-[#800020] via-[#6d001b] to-[#450011] text-white rounded-2xl p-5 shadow-lg relative overflow-hidden">
+      <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div class="space-y-1">
+          <div class="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-white/15 text-amber-200 border border-white/20">
+            <span>Derivative-Free Open Method</span>
+          </div>
+          <h2 class="text-xl sm:text-2xl font-bold font-serif tracking-tight">
+            Secant Method Visualizer
+          </h2>
+          <p class="text-xs sm:text-sm text-stone-200 max-w-2xl leading-relaxed">
+            By drawing a secant line between points <span class="font-serif italic">(x_{i-1}, f(x_{i-1}))</span> and <span class="font-serif italic">(x_i, f(x_i))</span>, the next root estimate is its x-intercept: <span class="font-serif italic">x_{i+1} = x_i - f(x_i) \cdot \frac{x_i - x_{i-1}}{f(x_i) - f(x_{i-1})}</span>. 
+            No analytical derivatives required, converging with superlinear speed <span class="font-serif font-bold text-amber-200">&phi; &approx; 1.618</span>!
+          </p>
+        </div>
+        <div class="flex-shrink-0 bg-white/10 backdrop-blur border border-white/20 p-3.5 rounded-xl text-center">
+          <span class="text-[10px] uppercase tracking-wider text-amber-200 font-bold block">Superlinear Convergence</span>
+          <span class="text-base font-bold font-mono">x_{i+1} = x_i - f(x_i)\frac{x_i - x_{i-1}}{f(x_i) - f(x_{i-1})}</span>
+          <span class="text-[10px] text-stone-300 block mt-0.5">Golden Ratio Order: &phi; &approx; 1.618</span>
+        </div>
+      </div>
+    </section>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      
+      <!-- Left Column: Controls & Presets -->
+      <div class="lg:col-span-4 space-y-6">
+        
+        <!-- Controls Card -->
+        <div class="bg-white rounded-2xl border border-stone-200/90 shadow-lg shadow-stone-200/30 p-5 space-y-4">
+          <div class="flex items-center justify-between">
+            <h2 class="text-base font-semibold text-stone-900 flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-[#800020]"></span>
+              Secant Setup
+            </h2>
+            <span class="text-[11px] font-mono text-stone-500">f(x) = 0</span>
+          </div>
+
+          <!-- Presets Dropdown -->
+          <div class="space-y-1.5">
+            <label class="block text-[11px] font-semibold uppercase tracking-wider text-stone-500">
+              Textbook Presets
+            </label>
+            <select
+              id="presetSelect"
+              class="w-full px-3 py-2 text-xs font-medium bg-stone-50 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#800020]/20 focus:border-[#800020] text-stone-800 cursor-pointer"
+            >
+              <option value="0">Cubic Polynomial: x³ - x - 2</option>
+              <option value="1">Square Root of 5: x² - 5</option>
+              <option value="2">Transcendental: e⁻ˣ - x</option>
+              <option value="3">Trigonometric: cos(x) - x</option>
+              <option value="4">Polynomial: x³ - 2x - 5</option>
+              <option value="5">Equal Values Trap: x² - 4 (Cautionary)</option>
+            </select>
+            <p id="presetDescription" class="text-[11px] text-stone-500 italic">
+              Textbook cubic solved without computing derivatives! Secant lines converge rapidly to root x ≈ 1.52095.
+            </p>
+          </div>
+
+          <!-- Form Inputs -->
+          <form id="solverForm" class="space-y-3.5 pt-1">
+            <div>
+              <label class="block text-[11px] font-semibold uppercase tracking-wider text-stone-500 mb-1">
+                Function Expression <span class="font-serif">f(x)</span>
+              </label>
+              <input
+                type="text"
+                id="exprFInput"
+                value="x^3 - x - 2"
+                placeholder="e.g. x^3 - x - 2"
+                class="w-full px-3 py-2 text-sm font-mono bg-stone-50 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#800020]/20 focus:border-[#800020] text-stone-900"
+              />
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block text-[11px] font-semibold uppercase tracking-wider text-stone-500 mb-1">
+                  Guess x₀ (x<sub>i-1</sub>)
+                </label>
+                <input
+                  type="number"
+                  step="any"
+                  id="x0Input"
+                  value="1"
+                  class="w-full px-3 py-2 text-sm font-mono bg-stone-50 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#800020]/20 focus:border-[#800020] text-stone-900"
+                />
+              </div>
+              <div>
+                <label class="block text-[11px] font-semibold uppercase tracking-wider text-stone-500 mb-1">
+                  Guess x₁ (x<sub>i</sub>)
+                </label>
+                <input
+                  type="number"
+                  step="any"
+                  id="x1Input"
+                  value="2"
+                  class="w-full px-3 py-2 text-sm font-mono bg-stone-50 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#800020]/20 focus:border-[#800020] text-stone-900"
+                />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block text-[11px] font-semibold uppercase tracking-wider text-stone-500 mb-1">
+                  Tolerance &epsilon;<sub>a</sub> (%)
+                </label>
+                <input
+                  type="number"
+                  step="0.00001"
+                  min="0.000001"
+                  max="10"
+                  id="tolInput"
+                  value="0.0001"
+                  class="w-full px-3 py-2 text-sm font-mono bg-stone-50 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#800020]/20 focus:border-[#800020] text-stone-900"
+                />
+              </div>
+              <div>
+                <label class="block text-[11px] font-semibold uppercase tracking-wider text-stone-500 mb-1">
+                  Max Iterations
+                </label>
+                <input
+                  type="number"
+                  min="1"
+                  max="100"
+                  id="maxIterInput"
+                  value="20"
+                  class="w-full px-3 py-2 text-sm font-mono bg-stone-50 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#800020]/20 focus:border-[#800020] text-stone-900"
+                />
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              class="w-full py-2.5 px-4 bg-[#800020] hover:bg-[#6b001b] text-white rounded-xl text-xs font-semibold shadow-md shadow-[#800020]/20 flex items-center justify-center gap-2 transition cursor-pointer"
+            >
+              <span>▶ Run Secant Method</span>
+            </button>
+          </form>
+
+          <!-- Error Alert Banner -->
+          <div id="errorAlert" class="hidden p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-800"></div>
+          <div id="warningAlert" class="hidden p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-800"></div>
+        </div>
+
+        <!-- Educational Comparison Card -->
+        <div class="bg-white rounded-2xl border border-stone-200/90 shadow-lg shadow-stone-200/30 p-5 space-y-3">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-stone-500 flex items-center gap-1.5">
+            <span>💡 Method Comparison</span>
+          </h3>
+          <div class="space-y-2 text-xs text-stone-600 leading-relaxed">
+            <p>
+              <strong>vs. False Position:</strong> False Position locks onto one side if curvature is one-sided, slowing to linear convergence. Secant always discards the older point, yielding superlinear convergence (<span class="font-serif italic">&phi; &approx; 1.618</span>).
+            </p>
+            <p>
+              <strong>vs. Newton-Raphson:</strong> Newton-Raphson requires evaluating both <span class="font-serif italic">f(x)</span> and <span class="font-serif italic">f'(x)</span> (2 evaluations/step). Secant requires only <em>one</em> new evaluation of <span class="font-serif italic">f(x)</span> per iteration, often winning in computational efficiency!
+            </p>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Right Column: Plot, Controls & Iteration Table -->
+      <div class="lg:col-span-8 space-y-6">
+        
+        <!-- Plot Card -->
+        <div class="bg-white rounded-2xl border border-stone-200/90 shadow-lg shadow-stone-200/30 p-4 space-y-3">
+          <div class="flex flex-wrap items-center justify-between gap-2 px-1">
+            <div class="flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-amber-600"></span>
+              <span class="text-xs font-semibold text-stone-800">
+                Secant Line Projection Diagram
+              </span>
+              <span id="stepCounterLabel" class="text-[11px] font-mono text-stone-400">
+                (Step 1 of 1)
+              </span>
+            </div>
+
+            <div class="flex items-center gap-2">
+              <button
+                type="button"
+                id="toggleGhostBtn"
+                class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium border border-amber-300 bg-amber-50 text-amber-900 transition cursor-pointer"
+              >
+                <span>Prior Secants: ON</span>
+              </button>
+
+              <button
+                type="button"
+                id="toggleZoomBtn"
+                class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium border border-stone-200 bg-stone-50 text-stone-600 hover:bg-stone-100 transition cursor-pointer"
+              >
+                <span>Zoom to Root</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Canvas -->
+          <div id="plotCanvas" class="w-full h-[520px] rounded-xl overflow-hidden border border-stone-200"></div>
+        </div>
+
+        <!-- Interactive Action Bar -->
+        <div class="bg-white rounded-2xl border border-stone-200/90 shadow-lg shadow-stone-200/40 p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div class="flex items-center gap-4 w-full sm:w-auto">
+            <div class="flex flex-col">
+              <span class="text-[11px] uppercase tracking-wider font-semibold text-stone-500">
+                Secant Iteration Step
+              </span>
+              <div class="flex items-center gap-2 mt-0.5">
+                <span id="activeIterBadge" class="text-2xl font-bold font-mono text-[#800020]">
+                  i = 1
+                </span>
+                <span id="activeRootBadge" class="text-xs px-2.5 py-0.5 rounded-full font-bold bg-amber-50 text-amber-800 border border-amber-300">
+                  x_{i+1} ≈ 1.52095
+                </span>
+                <span id="activeEaBadge" class="hidden sm:inline-block text-xs px-2 py-0.5 rounded-full font-medium bg-stone-100 text-stone-600 border border-stone-200">
+                  &epsilon;<sub>a</sub>: -
+                </span>
+              </div>
+            </div>
+
+            <!-- Scrubber -->
+            <div class="hidden lg:flex flex-col gap-1 ml-2">
+              <div class="flex justify-between text-[10px] text-stone-400 font-mono">
+                <span>1</span>
+                <span>Scrub Step</span>
+                <span id="scrubMaxLabel">1</span>
+              </div>
+              <input
+                type="range"
+                id="stepScrubber"
+                min="1"
+                max="1"
+                value="1"
+                class="w-32 h-1.5 bg-stone-200 rounded-lg appearance-none cursor-pointer accent-[#800020]"
+              />
+            </div>
+          </div>
+
+          <!-- Controls -->
+          <div class="flex items-center gap-2.5 w-full sm:w-auto justify-end">
+            <button
+              type="button"
+              id="prevBtn"
+              disabled
+              title="Previous step"
+              class="p-2.5 rounded-xl border border-stone-200 text-stone-600 hover:bg-stone-50 disabled:opacity-35 disabled:cursor-not-allowed transition cursor-pointer"
+            >
+              ◀
+            </button>
+
+            <button
+              type="button"
+              id="resetBtn"
+              disabled
+              title="Reset to iteration 1"
+              class="px-3.5 py-2.5 rounded-xl border border-stone-200 text-xs font-semibold text-stone-600 hover:bg-stone-50 disabled:opacity-35 disabled:cursor-not-allowed transition cursor-pointer"
+            >
+              Reset
+            </button>
+
+            <button
+              type="button"
+              id="playBtn"
+              class="px-3.5 py-2.5 rounded-xl border border-stone-200 text-xs font-semibold text-stone-600 hover:bg-stone-50 transition cursor-pointer"
+            >
+              ▶ Auto Play
+            </button>
+
+            <button
+              type="button"
+              id="nextBtn"
+              class="px-5 py-2.5 rounded-xl font-semibold text-sm shadow-md bg-[#800020] text-white hover:bg-[#6b001b] transition cursor-pointer flex items-center gap-2"
+            >
+              <span>Next Iteration</span>
+              <span>▶</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Summary Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div class="bg-white rounded-xl border border-stone-200/90 p-4 shadow-sm">
+            <span class="text-[10px] font-semibold uppercase tracking-wider text-stone-500 block">
+              Final Root Estimate
+            </span>
+            <span id="finalRootStat" class="text-lg font-bold font-mono text-[#800020] mt-0.5 block">
+              x* ≈ -
+            </span>
+            <span id="finalFxStat" class="text-[11px] text-stone-500">
+              f(x*) ≈ -
+            </span>
+          </div>
+
+          <div class="bg-white rounded-xl border border-stone-200/90 p-4 shadow-sm">
+            <span class="text-[10px] font-semibold uppercase tracking-wider text-stone-500 block">
+              Convergence Status
+            </span>
+            <div id="convergenceStat" class="text-sm font-bold text-emerald-800 mt-0.5">
+              -
+            </div>
+            <span id="totalStepsStat" class="text-[11px] text-stone-500">
+              Tolerance: ≤ 0.0001%
+            </span>
+          </div>
+
+          <div class="bg-white rounded-xl border border-stone-200/90 p-4 shadow-sm">
+            <span class="text-[10px] font-semibold uppercase tracking-wider text-stone-500 block">
+              Final Relative Error
+            </span>
+            <span id="finalEaStat" class="text-lg font-bold font-mono text-emerald-700 mt-0.5 block">
+              -
+            </span>
+            <span class="text-[11px] text-stone-500">
+              Order φ ≈ 1.618
+            </span>
+          </div>
+        </div>
+
+        <!-- Iteration Table -->
+        <div class="bg-white rounded-2xl border border-stone-200/90 shadow-lg shadow-stone-200/30 p-5 space-y-3">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="text-base">📋</span>
+              <h3 class="text-sm font-bold text-stone-900">
+                Secant Method Iteration Table
+              </h3>
+              <span id="tableCountBadge" class="text-xs text-stone-500 font-mono">
+                (0 steps)
+              </span>
+            </div>
+
+            <button
+              type="button"
+              id="copyTableBtn"
+              class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium border border-stone-200 bg-stone-50 hover:bg-stone-100 text-stone-700 transition cursor-pointer"
+            >
+              <span>Copy TSV Data</span>
+            </button>
+          </div>
+
+          <div class="overflow-x-auto rounded-xl border border-stone-200 max-h-96 overflow-y-auto">
+            <table class="w-full text-left border-collapse text-xs">
+              <thead class="bg-stone-50 text-stone-700 font-semibold sticky top-0 border-b border-stone-200 z-10">
+                <tr>
+                  <th class="py-2.5 px-3 text-center">i</th>
+                  <th class="py-2.5 px-3">x<sub>i-1</sub></th>
+                  <th class="py-2.5 px-3">f(x<sub>i-1</sub>)</th>
+                  <th class="py-2.5 px-3">x<sub>i</sub></th>
+                  <th class="py-2.5 px-3">f(x<sub>i</sub>)</th>
+                  <th class="py-2.5 px-3 bg-amber-50/70 text-amber-900 font-bold">x<sub>i+1</sub> (Root)</th>
+                  <th class="py-2.5 px-3">f(x<sub>i+1</sub>)</th>
+                  <th class="py-2.5 px-3">Slope m</th>
+                  <th class="py-2.5 px-3 text-right">&epsilon;<sub>a</sub> (%)</th>
+                </tr>
+              </thead>
+              <tbody id="tableBody" class="divide-y divide-stone-100 font-mono text-[11px]">
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <script>
+    const PRESETS = [
+      {
+        label: 'Cubic Polynomial: x³ - x - 2',
+        expr: 'x^3 - x - 2',
+        x0: 1,
+        x1: 2,
+        desc: 'Textbook cubic solved without computing derivatives! Secant lines converge rapidly to root x ≈ 1.52095.'
+      },
+      {
+        label: 'Square Root of 5: x² - 5',
+        expr: 'x^2 - 5',
+        x0: 2,
+        x1: 3,
+        desc: 'Calculates √5 ≈ 2.236068 from secants through points on the parabola.'
+      },
+      {
+        label: 'Transcendental: e⁻ˣ - x',
+        expr: 'exp(-x) - x',
+        x0: 0,
+        x1: 1,
+        desc: 'Locates root x ≈ 0.567143 with just one function evaluation per step after initial guesses.'
+      },
+      {
+        label: 'Trigonometric: cos(x) - x',
+        expr: 'cos(x) - x',
+        x0: 0.5,
+        x1: 1.0,
+        desc: 'Finds intersection cos(x) = x at x ≈ 0.739085 in 4-5 iterations.'
+      },
+      {
+        label: 'Polynomial: x³ - 2x - 5',
+        expr: 'x^3 - 2*x - 5',
+        x0: 2,
+        x1: 3,
+        desc: 'Classic equation used by Wallis. Rapidly converges to root x ≈ 2.09455.'
+      },
+      {
+        label: 'Equal Values Trap: x² - 4 (Cautionary)',
+        expr: 'x^2 - 4',
+        x0: -2,
+        x1: 2,
+        desc: 'Horizontal secant trap! Since f(-2) = f(2) = 0, the denominator vanishes, causing division by zero.'
+      }
+    ];
+
+    let solution = null;
+    let currentStepIdx = 0;
+    let isPlaying = false;
+    let playTimer = null;
+    let showGhostSecants = true;
+    let zoomToRoot = false;
+
+    function normalizeExpression(raw) {
+      if (!raw) return '';
+      let s = raw.trim();
+      s = s.replace(/[\u2010-\u2015\u2212\uFE58\uFE63\uFF0D]/g, '-');
+      s = s.replace(/[\u00D7\u22C5\u00B7]/g, '*');
+      s = s.replace(/[\u00F7]/g, '/');
+      s = s.replace(/\bln\b/g, 'log');
+      return s;
+    }
+
+    function formatNumber(val, decimals = 5) {
+      if (val === null || val === undefined || isNaN(val)) return '-';
+      if (Math.abs(val) < 1e-12) return '0.00000';
+      if (Math.abs(val) >= 1e4 || Math.abs(val) < 1e-4) {
+        return val.toExponential(4);
+      }
+      return val.toFixed(decimals);
+    }
+
+    function solveSecant(exprFStr, initialX0, initialX1, maxIter = 25, tol = 0.0001) {
+      const normalized = normalizeExpression(exprFStr);
+      let compiledF;
+      try {
+        const baseNode = math.parse(normalized);
+        compiledF = baseNode.compile();
+      } catch (e) {
+        return { error: 'Syntax error in f(x): ' + e.message };
+      }
+
+      function evaluateF(xVal) {
+        try {
+          const res = compiledF.evaluate({ x: xVal, e: Math.E, pi: Math.PI });
+          const num = typeof res === 'number' ? res : Number(res);
+          return isFinite(num) ? num : NaN;
+        } catch {
+          return NaN;
+        }
+      }
+
+      const f0 = evaluateF(initialX0);
+      const f1 = evaluateF(initialX1);
+      if (isNaN(f0)) return { error: `f(x) is undefined at initial guess x₀ = ${initialX0}.` };
+      if (isNaN(f1)) return { error: `f(x) is undefined at second guess x₁ = ${initialX1}.` };
+
+      let xPrev = initialX0;
+      let xi = initialX1;
+      const steps = [];
+      let converged = false;
+      let diverged = false;
+      let warning = null;
+
+      for (let i = 0; i < maxIter; i++) {
+        const fxPrev = evaluateF(xPrev);
+        const fxi = evaluateF(xi);
+
+        if (isNaN(fxPrev) || isNaN(fxi) || !isFinite(fxPrev) || !isFinite(fxi) || Math.abs(xi) > 1e12 || Math.abs(xPrev) > 1e12) {
+          diverged = true;
+          warning = `Secant iteration diverged: overflow at step ${i + 1}.`;
+          break;
+        }
+
+        const deltaF = fxi - fxPrev;
+        const deltaX = xi - xPrev;
+        let zeroSlope = false;
+        let xNext;
+
+        if (Math.abs(deltaF) < 1e-14) {
+          zeroSlope = true;
+          warning = `Horizontal secant: f(x_i) ≈ f(x_{i-1}). Denominator is zero!`;
+          xNext = xi + 0.001;
+        } else {
+          xNext = xi - (fxi * deltaX) / deltaF;
+        }
+
+        const fxNext = evaluateF(xNext);
+        let ea = null;
+        if (i > 0 && Math.abs(xNext) > 1e-14) {
+          ea = Math.abs((xNext - xi) / xNext) * 100;
+        }
+
+        const secantSlope = Math.abs(deltaX) > 1e-14 ? deltaF / deltaX : 0;
+        const secantIntercept = fxi - secantSlope * xi;
+
+        steps.push({
+          iteration: i + 1,
+          xPrev,
+          fxPrev,
+          xi,
+          fxi,
+          xNext,
+          fxNext,
+          secantSlope,
+          secantIntercept,
+          ea,
+          zeroSlope
+        });
+
+        if (ea !== null && ea < tol) {
+          converged = true;
+          break;
+        }
+
+        if (Math.abs(fxi) < 1e-14 || Math.abs(fxNext) < 1e-14) {
+          converged = true;
+          break;
+        }
+
+        xPrev = xi;
+        xi = xNext;
+      }
+
+      const finalRoot = steps.length > 0 ? steps[steps.length - 1].xNext : initialX1;
+
+      return {
+        exprFStr,
+        evaluateF,
+        steps,
+        converged,
+        diverged,
+        finalRoot,
+        warning
+      };
+    }
+
+    function renderPlot() {
+      if (!solution || solution.steps.length === 0) return;
+      const step = solution.steps[currentStepIdx];
+      const evaluateF = solution.evaluateF;
+
+      const allX = [parseFloat(document.getElementById('x0Input').value), parseFloat(document.getElementById('x1Input').value)];
+      solution.steps.slice(0, currentStepIdx + 1).forEach(s => {
+        allX.push(s.xPrev, s.xi, s.xNext);
+      });
+
+      let minX = Math.min(...allX);
+      let maxX = Math.max(...allX);
+
+      if (zoomToRoot && step) {
+        const center = step.xNext;
+        const span = Math.abs(step.xNext - step.xi) * 3 || 0.6;
+        minX = center - span;
+        maxX = center + span;
+      } else {
+        const span = maxX - minX || 2;
+        minX -= span * 0.35 || 1;
+        maxX += span * 0.35 || 1;
+      }
+
+      const N = 400;
+      const stepX = (maxX - minX) / (N - 1);
+      const xs = [];
+      const ys = [];
+      const validYs = [];
+
+      for (let i = 0; i < N; i++) {
+        const x = minX + i * stepX;
+        xs.push(x);
+        const y = evaluateF(x);
+        if (isFinite(y) && !isNaN(y) && Math.abs(y) < 1e5) {
+          ys.push(y);
+          validYs.push(y);
+        } else {
+          ys.push(null);
+        }
+      }
+
+      let minY = -5, maxY = 5;
+      if (validYs.length > 0) {
+        minY = Math.min(...validYs);
+        maxY = Math.max(...validYs);
+        const spanY = maxY - minY;
+        minY -= spanY * 0.25 || 1;
+        maxY += spanY * 0.25 || 1;
+      }
+
+      const traces = [];
+
+      // 1. Function Curve
+      traces.push({
+        x: xs,
+        y: ys,
+        type: 'scatter',
+        mode: 'lines',
+        name: 'f(x)',
+        line: { color: '#800020', width: 3 }
+      });
+
+      // 2. Ghost Secants
+      if (showGhostSecants && currentStepIdx > 0) {
+        for (let idx = 0; idx < currentStepIdx; idx++) {
+          const s = solution.steps[idx];
+          const xA = Math.min(s.xPrev, s.xi, s.xNext) - 0.5;
+          const xB = Math.max(s.xPrev, s.xi, s.xNext) + 0.5;
+          traces.push({
+            x: [xA, xB],
+            y: [s.secantSlope * xA + s.secantIntercept, s.secantSlope * xB + s.secantIntercept],
+            type: 'scatter',
+            mode: 'lines',
+            name: `Secant (i=${s.iteration})`,
+            line: { color: 'rgba(217, 119, 6, 0.25)', width: 1.5, dash: 'dot' },
+            showlegend: idx === 0,
+            hoverinfo: 'none'
+          });
+        }
+      }
+
+      // 3. Current Secant Line
+      if (step) {
+        const xA = Math.min(step.xPrev, step.xi, step.xNext) - 0.8;
+        const xB = Math.max(step.xPrev, step.xi, step.xNext) + 0.8;
+        traces.push({
+          x: [xA, xB],
+          y: [step.secantSlope * xA + step.secantIntercept, step.secantSlope * xB + step.secantIntercept],
+          type: 'scatter',
+          mode: 'lines',
+          name: 'Current Secant',
+          line: { color: '#D97706', width: 2.5 }
+        });
+
+        // Points
+        traces.push({
+          x: [step.xPrev],
+          y: [step.fxPrev],
+          type: 'scatter',
+          mode: 'markers+text',
+          name: 'Point x_{i-1}',
+          text: [`x_{i-1} (${formatNumber(step.xPrev, 3)})`],
+          textposition: 'top left',
+          marker: { size: 9, color: '#2563EB' }
+        });
+
+        traces.push({
+          x: [step.xi],
+          y: [step.fxi],
+          type: 'scatter',
+          mode: 'markers+text',
+          name: 'Point x_i',
+          text: [`x_i (${formatNumber(step.xi, 3)})`],
+          textposition: 'top right',
+          marker: { size: 9, color: '#D97706' }
+        });
+
+        // Vertical guide
+        traces.push({
+          x: [step.xNext, step.xNext],
+          y: [0, step.fxNext],
+          type: 'scatter',
+          mode: 'lines',
+          name: 'Projection',
+          line: { color: '#10B981', width: 1.5, dash: 'dash' },
+          hoverinfo: 'none'
+        });
+
+        // New root
+        traces.push({
+          x: [step.xNext],
+          y: [0],
+          type: 'scatter',
+          mode: 'markers+text',
+          name: `Root x_{i+1}`,
+          text: [`x_{i+1} = ${formatNumber(step.xNext, 5)}`],
+          textposition: 'bottom center',
+          marker: { size: 12, color: '#10B981', symbol: 'star' }
+        });
+      }
+
+      const layout = {
+        autosize: true,
+        margin: { l: 55, r: 25, t: 30, b: 50 },
+        plot_bgcolor: '#FAF9F6',
+        paper_bgcolor: '#FFFFFF',
+        font: { family: 'inherit', color: '#292524' },
+        xaxis: {
+          title: { text: 'x', font: { size: 12, color: '#78716C' } },
+          zeroline: true,
+          zerolinecolor: '#44403C',
+          zerolinewidth: 1.5,
+          gridcolor: '#E7E5E4',
+          range: [minX, maxX]
+        },
+        yaxis: {
+          title: { text: 'f(x)', font: { size: 12, color: '#78716C' } },
+          zeroline: true,
+          zerolinecolor: '#44403C',
+          zerolinewidth: 1.5,
+          gridcolor: '#E7E5E4',
+          range: [Math.max(minY, -100), Math.min(maxY, 100)]
+        },
+        legend: {
+          orientation: 'h',
+          yanchor: 'bottom',
+          y: 1.02,
+          xanchor: 'right',
+          x: 1,
+          font: { size: 11 }
+        }
+      };
+
+      Plotly.react('plotCanvas', traces, layout, { responsive: true, displaylogo: false });
+    }
+
+    function updateUI() {
+      if (!solution) return;
+      const totalSteps = solution.steps.length;
+      const step = solution.steps[currentStepIdx];
+
+      document.getElementById('stepCounterLabel').textContent = `(Step ${currentStepIdx + 1} of ${totalSteps})`;
+      document.getElementById('activeIterBadge').textContent = `i = ${step ? step.iteration : 1}`;
+      document.getElementById('activeRootBadge').textContent = `x_{i+1} ≈ ${step ? formatNumber(step.xNext, 5) : '-'}`;
+      document.getElementById('activeEaBadge').innerHTML = step && step.ea !== null ? `&epsilon;<sub>a</sub>: ${step.ea < 0.001 ? step.ea.toExponential(2) : step.ea.toFixed(4)}%` : `&epsilon;<sub>a</sub>: -`;
+
+      const scrubber = document.getElementById('stepScrubber');
+      scrubber.max = totalSteps;
+      scrubber.value = currentStepIdx + 1;
+      document.getElementById('scrubMaxLabel').textContent = totalSteps;
+
+      document.getElementById('prevBtn').disabled = currentStepIdx <= 0;
+      document.getElementById('resetBtn').disabled = currentStepIdx <= 0;
+      document.getElementById('nextBtn').disabled = currentStepIdx >= totalSteps - 1;
+
+      // Table highlight
+      const rows = document.querySelectorAll('#tableBody tr');
+      rows.forEach((r, idx) => {
+        if (idx === currentStepIdx) {
+          r.className = 'bg-[#800020]/10 font-bold text-stone-950 ring-1 ring-inset ring-[#800020]/30 cursor-pointer';
+        } else {
+          r.className = 'hover:bg-stone-50 text-stone-700 cursor-pointer';
+        }
+      });
+
+      renderPlot();
+    }
+
+    function populateTable() {
+      const tbody = document.getElementById('tableBody');
+      tbody.innerHTML = '';
+      if (!solution) return;
+
+      document.getElementById('tableCountBadge').textContent = `(${solution.steps.length} steps)`;
+
+      solution.steps.forEach((s, idx) => {
+        const tr = document.createElement('tr');
+        tr.onclick = () => {
+          currentStepIdx = idx;
+          updateUI();
+        };
+
+        const eaFormatted = s.ea === null ? '-' : s.ea < 0.0001 ? s.ea.toExponential(3) + '%' : s.ea.toFixed(5) + '%';
+        const eaClass = s.ea !== null && s.ea < 0.001 ? 'text-emerald-700 font-bold' : '';
+
+        tr.innerHTML = `
+          <td class="py-2 px-3 text-center text-stone-500 font-bold">${s.iteration}</td>
+          <td class="py-2 px-3">${formatNumber(s.xPrev)}</td>
+          <td class="py-2 px-3">${formatNumber(s.fxPrev)}</td>
+          <td class="py-2 px-3">${formatNumber(s.xi)}</td>
+          <td class="py-2 px-3">${formatNumber(s.fxi)}</td>
+          <td class="py-2 px-3 text-[#800020] font-bold bg-amber-50/40">${formatNumber(s.xNext)}</td>
+          <td class="py-2 px-3">${formatNumber(s.fxNext)}</td>
+          <td class="py-2 px-3">${formatNumber(s.secantSlope)}</td>
+          <td class="py-2 px-3 text-right ${eaClass}">${eaFormatted}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function runCalculation() {
+      const expr = document.getElementById('exprFInput').value;
+      const x0 = parseFloat(document.getElementById('x0Input').value);
+      const x1 = parseFloat(document.getElementById('x1Input').value);
+      const tol = parseFloat(document.getElementById('tolInput').value) || 0.0001;
+      const maxIter = parseInt(document.getElementById('maxIterInput').value) || 20;
+
+      const errorAlert = document.getElementById('errorAlert');
+      const warningAlert = document.getElementById('warningAlert');
+      errorAlert.classList.add('hidden');
+      warningAlert.classList.add('hidden');
+
+      solution = solveSecant(expr, x0, x1, maxIter, tol);
+
+      if (solution.error) {
+        errorAlert.textContent = solution.error;
+        errorAlert.classList.remove('hidden');
+        return;
+      }
+
+      if (solution.warning) {
+        warningAlert.textContent = solution.warning;
+        warningAlert.classList.remove('hidden');
+      }
+
+      currentStepIdx = 0;
+      populateTable();
+      updateUI();
+
+      // Stats
+      const lastStep = solution.steps[solution.steps.length - 1];
+      if (lastStep) {
+        document.getElementById('finalRootStat').textContent = `x* ≈ ${formatNumber(lastStep.xNext, 6)}`;
+        document.getElementById('finalFxStat').textContent = `f(x*) ≈ ${formatNumber(lastStep.fxNext, 6)}`;
+        document.getElementById('finalEaStat').textContent = lastStep.ea !== null ? (lastStep.ea < 0.0001 ? lastStep.ea.toExponential(3) + '%' : lastStep.ea.toFixed(5) + '%') : '0.00000%';
+        document.getElementById('convergenceStat').textContent = solution.converged ? `Converged in ${solution.steps.length} steps` : 'Max Steps Reached';
+        document.getElementById('totalStepsStat').textContent = `Tolerance: ≤ ${tol}%`;
+      }
+    }
+
+    // Event listeners
+    document.getElementById('solverForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      runCalculation();
+    });
+
+    document.getElementById('presetSelect').addEventListener('change', (e) => {
+      const p = PRESETS[parseInt(e.target.value)];
+      if (p) {
+        document.getElementById('exprFInput').value = p.expr;
+        document.getElementById('x0Input').value = p.x0;
+        document.getElementById('x1Input').value = p.x1;
+        document.getElementById('presetDescription').textContent = p.desc;
+        runCalculation();
+      }
+    });
+
+    document.getElementById('nextBtn').addEventListener('click', () => {
+      if (solution && currentStepIdx < solution.steps.length - 1) {
+        currentStepIdx++;
+        updateUI();
+      }
+    });
+
+    document.getElementById('prevBtn').addEventListener('click', () => {
+      if (solution && currentStepIdx > 0) {
+        currentStepIdx--;
+        updateUI();
+      }
+    });
+
+    document.getElementById('resetBtn').addEventListener('click', () => {
+      currentStepIdx = 0;
+      updateUI();
+    });
+
+    document.getElementById('stepScrubber').addEventListener('input', (e) => {
+      currentStepIdx = parseInt(e.target.value) - 1;
+      updateUI();
+    });
+
+    document.getElementById('toggleGhostBtn').addEventListener('click', function() {
+      showGhostSecants = !showGhostSecants;
+      this.textContent = `Prior Secants: ${showGhostSecants ? 'ON' : 'OFF'}`;
+      this.className = showGhostSecants
+        ? 'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium border border-amber-300 bg-amber-50 text-amber-900 transition cursor-pointer'
+        : 'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium border border-stone-200 bg-stone-50 text-stone-600 hover:bg-stone-100 transition cursor-pointer';
+      renderPlot();
+    });
+
+    document.getElementById('toggleZoomBtn').addEventListener('click', function() {
+      zoomToRoot = !zoomToRoot;
+      this.textContent = zoomToRoot ? 'Reset Zoom' : 'Zoom to Root';
+      this.className = zoomToRoot
+        ? 'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium border border-[#800020] bg-[#800020] text-white transition cursor-pointer'
+        : 'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium border border-stone-200 bg-stone-50 text-stone-600 hover:bg-stone-100 transition cursor-pointer';
+      renderPlot();
+    });
+
+    document.getElementById('playBtn').addEventListener('click', function() {
+      if (isPlaying) {
+        clearInterval(playTimer);
+        isPlaying = false;
+        this.textContent = '▶ Auto Play';
+      } else {
+        if (!solution) return;
+        isPlaying = true;
+        this.textContent = '⏸ Pause';
+        playTimer = setInterval(() => {
+          if (currentStepIdx < solution.steps.length - 1) {
+            currentStepIdx++;
+            updateUI();
+          } else {
+            clearInterval(playTimer);
+            isPlaying = false;
+            document.getElementById('playBtn').textContent = '▶ Auto Play';
+          }
+        }, 1200);
+      }
+    });
+
+    document.getElementById('copyTableBtn').addEventListener('click', function() {
+      if (!solution) return;
+      const headers = ['i', 'x_{i-1}', 'f(x_{i-1})', 'x_i', 'f(x_i)', 'x_{i+1}', 'f(x_{i+1})', 'Slope', 'ea(%)'];
+      const rows = solution.steps.map(s => [
+        s.iteration,
+        s.xPrev.toFixed(6),
+        s.fxPrev.toFixed(6),
+        s.xi.toFixed(6),
+        s.fxi.toFixed(6),
+        s.xNext.toFixed(6),
+        s.fxNext.toFixed(6),
+        s.secantSlope.toFixed(6),
+        s.ea !== null ? s.ea.toFixed(5) : '-'
+      ]);
+      const csv = [headers.join('\t'), ...rows.map(r => r.join('\t'))].join('\n');
+      navigator.clipboard.writeText(csv);
+      this.textContent = '✓ Copied TSV!';
+      setTimeout(() => { this.textContent = 'Copy TSV Data'; }, 2000);
+    });
+
+    // Initial calculation on page load
+    window.addEventListener('DOMContentLoaded', () => {
+      runCalculation();
+    });
+  </script>
+</body>
+</html>

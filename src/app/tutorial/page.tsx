@@ -19,6 +19,7 @@ import {
   Zap,
   Scissors,
   Split,
+  Target,
 } from 'lucide-react';
 
 interface QuizQuestion {
@@ -113,35 +114,42 @@ export default function TutorialPage() {
 
       {/* Main Container */}
       <main className="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-10">
-        {/* Hero Banner */}
-        <section className="bg-gradient-to-br from-[#800020] via-[#70001c] to-[#4d0013] text-white rounded-3xl p-6 sm:p-10 shadow-xl relative overflow-hidden">
-          <div className="relative z-10 max-w-2xl space-y-4">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-white/15 text-amber-200 border border-white/20">
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>Core Numerical Concept</span>
+        {/* Hero Header */}
+        <section className="bg-white border border-stone-200/90 rounded-2xl p-6 sm:p-8 shadow-xs relative">
+          <div className="max-w-3xl space-y-3">
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded bg-[#800020]/10 text-[#800020] font-semibold border border-[#800020]/15">
+                Theoretical Foundations
+              </span>
+              <span className="text-xs text-stone-400 font-mono">Reference &amp; Worked Examples</span>
             </div>
-            <h2 className="text-2xl sm:text-4xl font-extrabold tracking-tight font-serif text-white">
-              Demystifying the Taylor Series
-            </h2>
-            <p className="text-sm sm:text-base text-stone-200 leading-relaxed">
-              How does a computer calculate <code className="bg-black/30 px-1.5 py-0.5 rounded text-amber-300">sin(0.42)</code> or{' '}
-              <code className="bg-black/30 px-1.5 py-0.5 rounded text-amber-300">e^1.7</code>? Computers cannot directly calculate curves — they can only add and multiply.
-              Taylor polynomials are the bridge that transforms transcendent curves into simple addition and multiplication!
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-stone-900 font-sans">
+              Numerical Methods Study Guide
+            </h1>
+            <p className="text-sm text-stone-600 leading-relaxed">
+              Understand polynomial series approximations and root-finding algorithms from first principles: matching derivatives, contraction mappings, convergence orders, and interval containment.
             </p>
-            <div className="pt-2 flex flex-wrap gap-3">
+            <div className="pt-2 flex flex-wrap gap-2.5">
               <Link
                 href="/"
-                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-stone-950 font-bold text-xs transition shadow-md"
+                className="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg bg-[#800020] hover:bg-[#6b001b] text-white font-medium text-xs transition-colors shadow-xs"
               >
                 <Play className="w-3.5 h-3.5 fill-current" />
-                <span>Launch Interactive Visualizer</span>
+                <span>Launch Taylor Visualizer</span>
               </Link>
               <a
                 href="#recipe"
-                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/15 hover:bg-white/25 text-white font-semibold text-xs border border-white/20 transition"
+                className="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg bg-stone-100 hover:bg-stone-200/80 text-stone-800 font-medium text-xs border border-stone-200 transition-colors"
               >
-                <span>Jump to 5-Step Recipe</span>
-                <ChevronRight className="w-3.5 h-3.5" />
+                <span>5-Step Series Recipe</span>
+                <ChevronRight className="w-3.5 h-3.5 text-stone-400" />
+              </a>
+              <a
+                href="#root-finding-cheatsheet"
+                className="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg bg-stone-100 hover:bg-stone-200/80 text-stone-800 font-medium text-xs border border-stone-200 transition-colors"
+              >
+                <span>Root-Finding Reference</span>
+                <ChevronRight className="w-3.5 h-3.5 text-stone-400" />
               </a>
             </div>
           </div>
@@ -579,11 +587,158 @@ export default function TutorialPage() {
           </div>
         </section>
 
-        {/* 6. Interactive Practice Quiz */}
+        {/* 6. Open Root-Finding Methods: Fixed-Point vs. Newton-Raphson */}
+        <section className="bg-white rounded-2xl border border-stone-200 p-6 sm:p-8 space-y-6 shadow-sm">
+          <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#800020]">
+            <Zap className="w-4 h-4 text-amber-500" />
+            <span>6. Open Root-Finding: Fixed-Point &amp; Newton-Raphson</span>
+          </div>
+
+          <div>
+            <h3 className="text-xl font-bold text-stone-900 font-serif">
+              Rapid Single-Point Extrapolation Methods
+            </h3>
+            <p className="text-sm text-stone-600 mt-1 leading-relaxed">
+              Unlike bracketing methods that require two points trapping a sign change, <strong>open methods</strong> start from only a single initial guess <MathView math="x_0" />. While they are not guaranteed to converge for every starting point, they converge with blistering speed when contractive!
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+            {/* Fixed-Point Card */}
+            <div className="p-5 rounded-2xl bg-stone-50 border border-stone-200 space-y-3 flex flex-col justify-between">
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold px-2.5 py-1 rounded-md bg-[#800020] text-white">
+                    Fixed-Point Iteration
+                  </span>
+                  <span className="text-xs font-mono text-stone-500">Cobweb Staircase</span>
+                </div>
+                <h4 className="text-sm font-bold text-stone-900">Function Rearrangement x = g(x)</h4>
+                <p className="text-xs text-stone-600 leading-relaxed">
+                  Transforms <MathView math="f(x) = 0" /> into <MathView math="x = g(x)" /> and iterates:
+                </p>
+                <div className="bg-white p-2 rounded-lg border border-stone-200 text-xs font-serif text-[#800020] font-bold">
+                  <MathView math="x_{i+1} = g(x_i)" />
+                </div>
+                <ul className="text-xs text-stone-600 space-y-1 list-disc pl-4">
+                  <li><strong>Convergence Rule:</strong> Converges if <MathView math="|g'(x^*)| < 1" /> (contractive mapping).</li>
+                  <li><strong>Cobweb Geometry:</strong> Alternates between <MathView math="y = g(x)" /> and the diagonal line <MathView math="y = x" />.</li>
+                  <li><strong>Pitfall:</strong> If <MathView math="|g'(x)| > 1" />, the sequence diverges or oscillates to infinity!</li>
+                </ul>
+              </div>
+
+              <Link
+                href="/fixed-point"
+                className="inline-flex items-center justify-center gap-1.5 w-full py-2 bg-[#800020] text-white rounded-xl text-xs font-bold hover:bg-[#6b001b] transition shadow-xs cursor-pointer"
+              >
+                <Play className="w-3.5 h-3.5 fill-white" />
+                <span>Open Fixed-Point Visualizer</span>
+              </Link>
+            </div>
+
+            {/* Newton-Raphson Card */}
+            <div className="p-5 rounded-2xl bg-amber-50/50 border border-amber-200 space-y-3 flex flex-col justify-between">
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold px-2.5 py-1 rounded-md bg-amber-600 text-white">
+                    Newton-Raphson Method
+                  </span>
+                  <span className="text-xs font-mono text-stone-500">Quadratic Rate (Error²)</span>
+                </div>
+                <h4 className="text-sm font-bold text-amber-950">Tangent Line Extrapolation</h4>
+                <p className="text-xs text-stone-700 leading-relaxed">
+                  Extrapolates tangent from <MathView math="(x_i, f(x_i))" /> to find the x-intercept:
+                </p>
+                <div className="bg-white p-2 rounded-lg border border-amber-200 text-xs font-serif text-amber-900 font-bold">
+                  <MathView math="x_{i+1} = x_i - \frac{f(x_i)}{f'(x_i)}" />
+                </div>
+                <ul className="text-xs text-stone-700 space-y-1 list-disc pl-4">
+                  <li><strong>Quadratic Convergence:</strong> Number of accurate decimal digits roughly doubles every step!</li>
+                  <li>Derived directly from the 1st-order Taylor series truncation.</li>
+                  <li><strong>Pitfall:</strong> If <MathView math="f'(x_i) \approx 0" />, division by zero occurs; inflection points may cause cycling loops.</li>
+                </ul>
+              </div>
+
+              <Link
+                href="/newton-raphson"
+                className="inline-flex items-center justify-center gap-1.5 w-full py-2 bg-amber-700 text-white rounded-xl text-xs font-bold hover:bg-amber-800 transition shadow-xs cursor-pointer"
+              >
+                <Play className="w-3.5 h-3.5 fill-white" />
+                <span>Open Newton-Raphson Visualizer</span>
+              </Link>
+            </div>
+
+            {/* Secant Method Card */}
+            <div className="p-5 rounded-2xl bg-rose-50/50 border border-rose-200 space-y-3 flex flex-col justify-between">
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold px-2.5 py-1 rounded-md bg-[#800020] text-white">
+                    Secant Method
+                  </span>
+                  <span className="text-xs font-mono text-stone-500">Superlinear (φ ≈ 1.618)</span>
+                </div>
+                <h4 className="text-sm font-bold text-rose-950">Derivative-Free Secant Projection</h4>
+                <p className="text-xs text-stone-700 leading-relaxed">
+                  Replaces the analytical derivative <MathView math="f'(x)" /> with a finite-difference slope between two previous estimates:
+                </p>
+                <div className="bg-white p-2 rounded-lg border border-rose-200 text-xs font-serif text-[#800020] font-bold">
+                  <MathView math="x_{i+1} = x_i - f(x_i) \frac{x_i - x_{i-1}}{f(x_i) - f(x_{i-1})}" />
+                </div>
+                <ul className="text-xs text-stone-700 space-y-1 list-disc pl-4">
+                  <li><strong>Golden Ratio Rate:</strong> Faster than linear bisection, close to quadratic Newton-Raphson.</li>
+                  <li><strong>Efficiency:</strong> Requires only <em>one</em> new function evaluation per step after initial guesses!</li>
+                  <li>No bracketing requirement (unlike False Position), but can diverge if initial points are poorly chosen.</li>
+                </ul>
+              </div>
+
+              <Link
+                href="/secant"
+                className="inline-flex items-center justify-center gap-1.5 w-full py-2 bg-[#800020] text-white rounded-xl text-xs font-bold hover:bg-[#6b001b] transition shadow-xs cursor-pointer"
+              >
+                <Play className="w-3.5 h-3.5 fill-white" />
+                <span>Open Secant Visualizer</span>
+              </Link>
+            </div>
+
+            {/* Muller's Method Card */}
+            <div className="p-5 rounded-2xl bg-indigo-50/50 border border-indigo-200 space-y-3 flex flex-col justify-between">
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold px-2.5 py-1 rounded-md bg-indigo-600 text-white">
+                    Muller's Method
+                  </span>
+                  <span className="text-xs font-mono text-stone-500">Order p ≈ 1.84</span>
+                </div>
+                <h4 className="text-sm font-bold text-indigo-950">Three-Point Parabolic Fitting</h4>
+                <p className="text-xs text-stone-700 leading-relaxed">
+                  Fits a 2nd-degree parabola <MathView math="P(x) = a(x-x_2)^2 + b(x-x_2) + c" /> through three points:
+                </p>
+                <div className="bg-white p-2 rounded-lg border border-indigo-200 text-xs font-serif text-indigo-900 font-bold">
+                  <MathView math="x_3 = x_2 - \frac{2c}{b \pm \sqrt{b^2 - 4ac}}" />
+                </div>
+                <ul className="text-xs text-stone-700 space-y-1 list-disc pl-4">
+                  <li><strong>Parabolic Curvature:</strong> Bends to match nonlinear curves far better than straight secants.</li>
+                  <li><strong>Complex Roots:</strong> Handles negative discriminants seamlessly, locating complex conjugate roots!</li>
+                  <li>Near-quadratic convergence order (<MathView math="p \approx 1.84" />) without requiring derivative formulas.</li>
+                </ul>
+              </div>
+
+              <Link
+                href="/mullers"
+                className="inline-flex items-center justify-center gap-1.5 w-full py-2 bg-indigo-700 text-white rounded-xl text-xs font-bold hover:bg-indigo-800 transition shadow-xs cursor-pointer"
+              >
+                <Play className="w-3.5 h-3.5 fill-white" />
+                <span>Open Muller's Visualizer</span>
+              </Link>
+            </div>
+          </div>
+        </section>
+
+        {/* 7. Interactive Practice Quiz */}
         <section className="bg-white rounded-2xl border border-stone-200 p-6 sm:p-8 space-y-6 shadow-sm">
           <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#800020]">
             <HelpCircle className="w-4 h-4 text-amber-500" />
-            <span>6. Quick Concept Check</span>
+            <span>7. Quick Concept Check</span>
           </div>
           <div>
             <h3 className="text-xl font-bold text-stone-900 font-serif">

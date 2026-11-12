@@ -84,23 +84,27 @@ export default function BisectionPage() {
 
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
         {/* Method Banner */}
-        <div className="bg-gradient-to-r from-[#800020] to-[#590016] text-white rounded-2xl p-6 shadow-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="bg-white border border-stone-200/90 rounded-xl p-5 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="space-y-1">
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-white/15 text-amber-200">
-              <Scissors className="w-3.5 h-3.5" />
-              <span>Interval Halving Algorithm</span>
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded bg-[#800020]/10 text-[#800020] font-semibold border border-[#800020]/15">
+                Bracketing Method
+              </span>
+              <span className="text-xs text-stone-400 font-mono">Interval Halving</span>
             </div>
-            <h1 className="text-2xl font-bold font-serif">Bisection Method Visualizer</h1>
-            <p className="text-xs sm:text-sm text-stone-200">
-              Guaranteed root convergence by cutting the search interval in half every single step
+            <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-stone-900 font-sans">
+              Bisection Method Visualizer
+            </h1>
+            <p className="text-xs text-stone-600 max-w-2xl">
+              Guaranteed root convergence by iteratively cutting the search interval in half based on Bolzano&apos;s Intermediate Value Theorem.
             </p>
           </div>
 
-          <div className="bg-white/10 border border-white/20 rounded-xl px-4 py-2.5 text-xs font-serif min-w-max hidden md:block">
-            <div className="text-[10px] uppercase tracking-wider text-amber-200 font-sans font-bold">
+          <div className="bg-stone-50 border border-stone-200 rounded-lg px-3.5 py-2 text-xs hidden md:block">
+            <div className="text-[9px] uppercase tracking-wider font-mono text-stone-500 font-semibold mb-0.5">
               Midpoint Formula
             </div>
-            <MathView math="x_r = \frac{x_l + x_u}{2}" block={false} className="text-white text-sm" />
+            <MathView math="x_r = \frac{x_l + x_u}{2}" block={false} className="text-stone-900 font-medium" />
           </div>
         </div>
 

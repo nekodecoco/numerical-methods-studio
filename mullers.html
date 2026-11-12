@@ -1,0 +1,1193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Muller's Method Visualizer | Numerical Methods Studio</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Plotly.js -->
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+  
+  <!-- Math.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/14.0.1/math.min.js"></script>
+  
+  <!-- KaTeX -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.21/dist/katex.min.css" />
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.21/dist/katex.min.js"></script>
+  
+  <!-- Canvas Confetti -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.4/dist/confetti.browser.min.js"></script>
+
+  <style>
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fadeIn {
+      animation: fadeIn 300ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+  </style>
+</head>
+<body class="bg-[#FAF9F6] text-stone-900 min-h-screen antialiased selection:bg-[#800020] selection:text-white font-sans flex flex-col">
+
+  <!-- Categorized Modern Header -->
+  <header class="border-b border-stone-200/80 bg-white/95 backdrop-blur-md sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+      <!-- Brand -->
+      <a href="index.html" class="flex items-center gap-3 group select-none flex-shrink-0">
+        <div class="w-9 h-9 rounded-lg bg-[#800020] text-white flex items-center justify-center font-mono font-bold text-sm shadow-sm group-hover:bg-[#6b001b] transition-colors">
+          <span class="tracking-tight text-amber-200 font-serif italic text-base">f</span>
+          <span class="text-[10px] text-white/90 -ml-0.5">(x)</span>
+        </div>
+        <div class="flex flex-col">
+          <div class="flex items-center gap-2">
+            <span class="text-sm sm:text-base font-semibold tracking-tight text-stone-900 font-sans">
+              Numerical Methods Studio
+            </span>
+            <span class="text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-stone-100 text-stone-600 border border-stone-200 hidden sm:inline-block">
+              v2.0
+            </span>
+          </div>
+          <span class="text-[11px] text-stone-400 font-mono hidden md:block">
+            Root-finding &amp; Taylor Series Workspace
+          </span>
+        </div>
+      </a>
+
+      <!-- Categorized Navigation -->
+      <nav class="flex items-center gap-1.5 text-xs font-medium">
+        <!-- Taylor Series -->
+        <a
+          href="index.html"
+          class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-stone-600 hover:text-stone-950 hover:bg-stone-100 transition-colors"
+        >
+          <span>Taylor Series</span>
+        </a>
+
+        <!-- Bracketing Methods Dropdown -->
+        <div class="relative group">
+          <button
+            type="button"
+            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-stone-600 hover:text-stone-950 hover:bg-stone-100 transition-colors cursor-pointer"
+          >
+            <span>Bracketing Methods</span>
+            <svg class="w-3.5 h-3.5 transition-transform group-hover:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+          <div class="absolute left-0 mt-1 w-64 rounded-xl bg-white border border-stone-200/90 shadow-xl shadow-stone-900/10 p-1.5 hidden group-hover:block z-50">
+            <div class="px-2.5 py-1.5 border-b border-stone-100 mb-1">
+              <span class="text-[10px] font-mono uppercase tracking-wider text-stone-400 font-semibold">
+                Enclosed Search Intervals
+              </span>
+            </div>
+            <a href="bisection.html" class="flex items-start gap-2.5 p-2 rounded-lg text-xs hover:bg-stone-50 text-stone-700 transition-colors">
+              <div>
+                <div class="font-semibold text-stone-900">Bisection Method</div>
+                <div class="text-[11px] text-stone-500">Interval halving · Guaranteed convergence</div>
+              </div>
+            </a>
+            <a href="false-position.html" class="flex items-start gap-2.5 p-2 rounded-lg text-xs hover:bg-stone-50 text-stone-700 transition-colors">
+              <div>
+                <div class="font-semibold text-stone-900">False Position</div>
+                <div class="text-[11px] text-stone-500">Regula Falsi · Linear interpolation</div>
+              </div>
+            </a>
+          </div>
+        </div>
+
+        <!-- Open Methods Dropdown (Active) -->
+        <div class="relative group">
+          <button
+            type="button"
+            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[#800020] bg-[#800020]/10 font-semibold border border-[#800020]/20 transition-colors cursor-pointer"
+          >
+            <span>Open Methods</span>
+            <svg class="w-3.5 h-3.5 transition-transform group-hover:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+          <div class="absolute right-0 sm:left-0 mt-1 w-72 rounded-xl bg-white border border-stone-200/90 shadow-xl shadow-stone-900/10 p-1.5 hidden group-hover:block z-50">
+            <div class="px-2.5 py-1.5 border-b border-stone-100 mb-1">
+              <span class="text-[10px] font-mono uppercase tracking-wider text-stone-400 font-semibold">
+                Single / Multi-Point Iteration
+              </span>
+            </div>
+            <a href="fixed-point.html" class="flex items-start gap-2.5 p-2 rounded-lg text-xs hover:bg-stone-50 text-stone-700 transition-colors">
+              <div>
+                <div class="font-semibold text-stone-900">Fixed-Point Iteration</div>
+                <div class="text-[11px] text-stone-500">x = g(x) · Cobweb analysis</div>
+              </div>
+            </a>
+            <a href="newton-raphson.html" class="flex items-start gap-2.5 p-2 rounded-lg text-xs hover:bg-stone-50 text-stone-700 transition-colors">
+              <div>
+                <div class="font-semibold text-stone-900">Newton-Raphson</div>
+                <div class="text-[11px] text-stone-500">Tangent projection · Quadratic convergence</div>
+              </div>
+            </a>
+            <a href="secant.html" class="flex items-start gap-2.5 p-2 rounded-lg text-xs hover:bg-stone-50 text-stone-700 transition-colors">
+              <div>
+                <div class="font-semibold text-stone-900">Secant Method</div>
+                <div class="text-[11px] text-stone-500">Finite difference · No derivative required</div>
+              </div>
+            </a>
+            <a href="mullers.html" class="flex items-start gap-2.5 p-2 rounded-lg text-xs bg-[#800020]/8 text-[#800020] font-semibold transition-colors">
+              <div>
+                <div class="font-semibold text-stone-900">Muller's Method</div>
+                <div class="text-[11px] text-stone-500 font-normal">Parabolic fit · Handles complex roots</div>
+              </div>
+            </a>
+          </div>
+        </div>
+
+        <!-- Study Guide -->
+        <a
+          href="tutorial.html"
+          class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-stone-600 hover:text-stone-950 hover:bg-stone-100 transition-colors"
+        >
+          <span>Study Guide</span>
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+
+    <!-- Top Concept Banner -->
+    <section class="bg-gradient-to-r from-[#800020] via-[#6d001b] to-[#450011] text-white rounded-2xl p-5 shadow-lg relative overflow-hidden">
+      <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div class="space-y-1">
+          <div class="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-white/15 text-amber-200 border border-white/20">
+            <span>Quadratic Parabolic Open Method</span>
+          </div>
+          <h2 class="text-xl sm:text-2xl font-bold font-serif tracking-tight">
+            Muller's Method Visualizer
+          </h2>
+          <p class="text-xs sm:text-sm text-stone-200 max-w-2xl leading-relaxed">
+            By constructing a second-order parabola <span class="font-serif italic font-semibold">P(x) = a(x - x_2)^2 + b(x - x_2) + c</span> through three points, Muller's method solves for its roots via a modified quadratic formula: <span class="font-serif italic">x_3 = x_2 - 2c / (b &plusmn; &radic;(b^2 - 4ac))</span>. 
+            Remarkably, it converges with near-quadratic speed (<span class="font-serif font-bold text-amber-200">p &approx; 1.84</span>) and can locate <strong>complex conjugate roots</strong> even from real starting guesses!
+          </p>
+        </div>
+        <div class="flex-shrink-0 bg-white/10 backdrop-blur border border-white/20 p-3.5 rounded-xl text-center">
+          <span class="text-[10px] uppercase tracking-wider text-amber-200 font-bold block">Parabolic Curvature</span>
+          <span class="text-base font-bold font-mono">x_3 = x_2 - \frac{2c}{b \pm \sqrt{b^2 - 4ac}}</span>
+          <span class="text-[10px] text-stone-300 block mt-0.5">Convergence Order: p &approx; 1.84</span>
+        </div>
+      </div>
+    </section>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      
+      <!-- Left Column: Controls & Presets -->
+      <div class="lg:col-span-4 space-y-6">
+        
+        <!-- Controls Card -->
+        <div class="bg-white rounded-2xl border border-stone-200/90 shadow-lg shadow-stone-200/30 p-5 space-y-4">
+          <div class="flex items-center justify-between">
+            <h2 class="text-base font-semibold text-stone-900 flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-[#800020]"></span>
+              Parabola Setup
+            </h2>
+            <span class="text-[11px] font-mono text-stone-500">P(x) = 0</span>
+          </div>
+
+          <!-- Presets Dropdown -->
+          <div class="space-y-1.5">
+            <label class="block text-[11px] font-semibold uppercase tracking-wider text-stone-500">
+              Textbook Presets
+            </label>
+            <select
+              id="presetSelect"
+              class="w-full px-3 py-2 text-xs font-medium bg-stone-50 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#800020]/20 focus:border-[#800020] text-stone-800 cursor-pointer"
+            >
+              <option value="0">Cubic Polynomial: x³ - 13x - 12 (Chapra &amp; Canale)</option>
+              <option value="1">Plastic Ratio: x³ - x - 1</option>
+              <option value="2">Transcendental: e⁻ˣ - x</option>
+              <option value="3">Complex Conjugate Roots: x³ - 0.5x² + 4x - 2</option>
+              <option value="4">Quadratic Polynomial: x² - x - 2</option>
+            </select>
+            <p id="presetDescription" class="text-[11px] text-stone-500 italic">
+              Classic textbook example from Chapra &amp; Canale. Three-point parabolic fitting locates root x = 4 in 4 steps!
+            </p>
+          </div>
+
+          <!-- Form Inputs -->
+          <form id="solverForm" class="space-y-3.5 pt-1">
+            <div>
+              <label class="block text-[11px] font-semibold uppercase tracking-wider text-stone-500 mb-1">
+                Function Expression <span class="font-serif">f(x)</span>
+              </label>
+              <input
+                type="text"
+                id="exprFInput"
+                value="x^3 - 13*x - 12"
+                placeholder="e.g. x^3 - 13*x - 12"
+                class="w-full px-3 py-2 text-sm font-mono bg-stone-50 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#800020]/20 focus:border-[#800020] text-stone-900"
+              />
+            </div>
+
+            <!-- 3 Guesses: x0, x1, x2 -->
+            <div class="grid grid-cols-3 gap-2">
+              <div>
+                <label class="block text-[10px] font-semibold uppercase tracking-wider text-stone-500 mb-1">
+                  Guess x₀
+                </label>
+                <input
+                  type="number"
+                  step="any"
+                  id="x0Input"
+                  value="4.5"
+                  class="w-full px-2.5 py-2 text-xs font-mono bg-stone-50 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#800020]/20 focus:border-[#800020] text-stone-900"
+                />
+              </div>
+              <div>
+                <label class="block text-[10px] font-semibold uppercase tracking-wider text-stone-500 mb-1">
+                  Guess x₁
+                </label>
+                <input
+                  type="number"
+                  step="any"
+                  id="x1Input"
+                  value="5.5"
+                  class="w-full px-2.5 py-2 text-xs font-mono bg-stone-50 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#800020]/20 focus:border-[#800020] text-stone-900"
+                />
+              </div>
+              <div>
+                <label class="block text-[10px] font-semibold uppercase tracking-wider text-stone-500 mb-1">
+                  Guess x₂
+                </label>
+                <input
+                  type="number"
+                  step="any"
+                  id="x2Input"
+                  value="5.0"
+                  class="w-full px-2.5 py-2 text-xs font-mono bg-stone-50 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#800020]/20 focus:border-[#800020] text-stone-900"
+                />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block text-[11px] font-semibold uppercase tracking-wider text-stone-500 mb-1">
+                  Tolerance &epsilon;<sub>a</sub> (%)
+                </label>
+                <input
+                  type="number"
+                  step="0.00001"
+                  min="0.000001"
+                  max="10"
+                  id="tolInput"
+                  value="0.0001"
+                  class="w-full px-3 py-2 text-sm font-mono bg-stone-50 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#800020]/20 focus:border-[#800020] text-stone-900"
+                />
+              </div>
+              <div>
+                <label class="block text-[11px] font-semibold uppercase tracking-wider text-stone-500 mb-1">
+                  Max Iterations
+                </label>
+                <input
+                  type="number"
+                  min="1"
+                  max="100"
+                  id="maxIterInput"
+                  value="20"
+                  class="w-full px-3 py-2 text-sm font-mono bg-stone-50 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#800020]/20 focus:border-[#800020] text-stone-900"
+                />
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              class="w-full py-2.5 px-4 bg-[#800020] hover:bg-[#6b001b] text-white rounded-xl text-xs font-semibold shadow-md shadow-[#800020]/20 flex items-center justify-center gap-2 transition cursor-pointer"
+            >
+              <span>▶ Run Muller's Method</span>
+            </button>
+          </form>
+
+          <!-- Error Alert Banner -->
+          <div id="errorAlert" class="hidden p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-800"></div>
+          <div id="warningAlert" class="hidden p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-800"></div>
+        </div>
+
+        <!-- Educational Insight Card -->
+        <div class="bg-white rounded-2xl border border-stone-200/90 shadow-lg shadow-stone-200/30 p-5 space-y-3">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-stone-500 flex items-center gap-1.5">
+            <span>💡 Parabolic Interpolation &amp; Complex Roots</span>
+          </h3>
+          <div class="space-y-2 text-xs text-stone-600 leading-relaxed">
+            <p>
+              <strong>Parabolic vs. Linear:</strong> Straight lines cannot capture function curvature. By using three points to solve for coefficients <span class="font-serif italic font-semibold">a, b, c</span>, Muller's method bends along the function contour, accelerating convergence order to <span class="font-serif italic">p &approx; 1.84</span>.
+            </p>
+            <p>
+              <strong>Complex Roots:</strong> If <span class="font-serif italic">b² - 4ac &lt; 0</span>, the root has an imaginary part <span class="font-serif italic">i&radic;(4ac - b²)</span>. This allows Muller's method to find complex roots of polynomials that cannot be reached by Bisection or False Position!
+            </p>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Right Column: Plot, Controls & Iteration Table -->
+      <div class="lg:col-span-8 space-y-6">
+        
+        <!-- Plot Card -->
+        <div class="bg-white rounded-2xl border border-stone-200/90 shadow-lg shadow-stone-200/30 p-4 space-y-3">
+          <div class="flex flex-wrap items-center justify-between gap-2 px-1">
+            <div class="flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-amber-600"></span>
+              <span class="text-xs font-semibold text-stone-800">
+                Parabolic Fit Interpolation Diagram
+              </span>
+              <span id="stepCounterLabel" class="text-[11px] font-mono text-stone-400">
+                (Step 1 of 1)
+              </span>
+            </div>
+
+            <div class="flex items-center gap-2">
+              <button
+                type="button"
+                id="toggleGhostBtn"
+                class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium border border-amber-300 bg-amber-50 text-amber-900 transition cursor-pointer"
+              >
+                <span>Prior Parabolas: ON</span>
+              </button>
+
+              <button
+                type="button"
+                id="toggleZoomBtn"
+                class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium border border-stone-200 bg-stone-50 text-stone-600 hover:bg-stone-100 transition cursor-pointer"
+              >
+                <span>Zoom to Root</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Canvas -->
+          <div id="plotCanvas" class="w-full h-[520px] rounded-xl overflow-hidden border border-stone-200"></div>
+        </div>
+
+        <!-- Interactive Action Bar -->
+        <div class="bg-white rounded-2xl border border-stone-200/90 shadow-lg shadow-stone-200/40 p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div class="flex items-center gap-4 w-full sm:w-auto">
+            <div class="flex flex-col">
+              <span class="text-[11px] uppercase tracking-wider font-semibold text-stone-500">
+                Muller's Parabolic Step
+              </span>
+              <div class="flex items-center gap-2 mt-0.5">
+                <span id="activeIterBadge" class="text-2xl font-bold font-mono text-[#800020]">
+                  i = 1
+                </span>
+                <span id="activeRootBadge" class="text-xs px-2.5 py-0.5 rounded-full font-bold bg-amber-50 text-amber-800 border border-amber-300">
+                  x₃ ≈ 4.00000
+                </span>
+                <span id="activeEaBadge" class="hidden sm:inline-block text-xs px-2 py-0.5 rounded-full font-medium bg-stone-100 text-stone-600 border border-stone-200">
+                  &epsilon;<sub>a</sub>: -
+                </span>
+              </div>
+            </div>
+
+            <!-- Scrubber -->
+            <div class="hidden lg:flex flex-col gap-1 ml-2">
+              <div class="flex justify-between text-[10px] text-stone-400 font-mono">
+                <span>1</span>
+                <span>Scrub Step</span>
+                <span id="scrubMaxLabel">1</span>
+              </div>
+              <input
+                type="range"
+                id="stepScrubber"
+                min="1"
+                max="1"
+                value="1"
+                class="w-32 h-1.5 bg-stone-200 rounded-lg appearance-none cursor-pointer accent-[#800020]"
+              />
+            </div>
+          </div>
+
+          <!-- Controls -->
+          <div class="flex items-center gap-2.5 w-full sm:w-auto justify-end">
+            <button
+              type="button"
+              id="prevBtn"
+              disabled
+              title="Previous step"
+              class="p-2.5 rounded-xl border border-stone-200 text-stone-600 hover:bg-stone-50 disabled:opacity-35 disabled:cursor-not-allowed transition cursor-pointer"
+            >
+              ◀
+            </button>
+
+            <button
+              type="button"
+              id="resetBtn"
+              disabled
+              title="Reset to iteration 1"
+              class="px-3.5 py-2.5 rounded-xl border border-stone-200 text-xs font-semibold text-stone-600 hover:bg-stone-50 disabled:opacity-35 disabled:cursor-not-allowed transition cursor-pointer"
+            >
+              Reset
+            </button>
+
+            <button
+              type="button"
+              id="playBtn"
+              class="px-3.5 py-2.5 rounded-xl border border-stone-200 text-xs font-semibold text-stone-600 hover:bg-stone-50 transition cursor-pointer"
+            >
+              ▶ Auto Play
+            </button>
+
+            <button
+              type="button"
+              id="nextBtn"
+              class="px-5 py-2.5 rounded-xl font-semibold text-sm shadow-md bg-[#800020] text-white hover:bg-[#6b001b] transition cursor-pointer flex items-center gap-2"
+            >
+              <span>Next Iteration</span>
+              <span>▶</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Summary Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div class="bg-white rounded-xl border border-stone-200/90 p-4 shadow-sm">
+            <span class="text-[10px] font-semibold uppercase tracking-wider text-stone-500 block">
+              Final Root Estimate
+            </span>
+            <span id="finalRootStat" class="text-lg font-bold font-mono text-[#800020] mt-0.5 block">
+              x* ≈ -
+            </span>
+            <span id="finalFxStat" class="text-[11px] text-stone-500">
+              f(x*) ≈ -
+            </span>
+          </div>
+
+          <div class="bg-white rounded-xl border border-stone-200/90 p-4 shadow-sm">
+            <span class="text-[10px] font-semibold uppercase tracking-wider text-stone-500 block">
+              Convergence Status
+            </span>
+            <div id="convergenceStat" class="text-sm font-bold text-emerald-800 mt-0.5">
+              -
+            </div>
+            <span id="totalStepsStat" class="text-[11px] text-stone-500">
+              Tolerance: ≤ 0.0001%
+            </span>
+          </div>
+
+          <div class="bg-white rounded-xl border border-stone-200/90 p-4 shadow-sm">
+            <span class="text-[10px] font-semibold uppercase tracking-wider text-stone-500 block">
+              Final Relative Error
+            </span>
+            <span id="finalEaStat" class="text-lg font-bold font-mono text-emerald-700 mt-0.5 block">
+              -
+            </span>
+            <span class="text-[11px] text-stone-500">
+              Order p ≈ 1.84
+            </span>
+          </div>
+        </div>
+
+        <!-- Iteration Table -->
+        <div class="bg-white rounded-2xl border border-stone-200/90 shadow-lg shadow-stone-200/30 p-5 space-y-3">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="text-base">📋</span>
+              <h3 class="text-sm font-bold text-stone-900">
+                Muller's Method Iteration Table
+              </h3>
+              <span id="tableCountBadge" class="text-xs text-stone-500 font-mono">
+                (0 steps)
+              </span>
+            </div>
+
+            <button
+              type="button"
+              id="copyTableBtn"
+              class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium border border-stone-200 bg-stone-50 hover:bg-stone-100 text-stone-700 transition cursor-pointer"
+            >
+              <span>Copy TSV Data</span>
+            </button>
+          </div>
+
+          <div class="overflow-x-auto rounded-xl border border-stone-200 max-h-96 overflow-y-auto">
+            <table class="w-full text-left border-collapse text-xs">
+              <thead class="bg-stone-50 text-stone-700 font-semibold sticky top-0 border-b border-stone-200 z-10">
+                <tr>
+                  <th className="py-2.5 px-3 text-center">i</th>
+                  <th class="py-2.5 px-3">x₀</th>
+                  <th class="py-2.5 px-3">x₁</th>
+                  <th class="py-2.5 px-3">x₂</th>
+                  <th class="py-2.5 px-3">a</th>
+                  <th class="py-2.5 px-3">b</th>
+                  <th class="py-2.5 px-3">c</th>
+                  <th class="py-2.5 px-3">D = b² - 4ac</th>
+                  <th class="py-2.5 px-3 bg-amber-50/70 text-amber-900 font-bold">x₃ (Root)</th>
+                  <th class="py-2.5 px-3">f(x₃)</th>
+                  <th class="py-2.5 px-3 text-right">&epsilon;<sub>a</sub> (%)</th>
+                </tr>
+              </thead>
+              <tbody id="tableBody" class="divide-y divide-stone-100 font-mono text-[11px]">
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <script>
+    const PRESETS = [
+      {
+        label: 'Cubic Polynomial: x³ - 13x - 12 (Chapra & Canale)',
+        expr: 'x^3 - 13*x - 12',
+        x0: 4.5,
+        x1: 5.5,
+        x2: 5.0,
+        desc: 'Classic textbook example from Chapra & Canale. Three-point parabolic fitting locates root x = 4 in 4 steps!'
+      },
+      {
+        label: 'Plastic Ratio: x³ - x - 1',
+        expr: 'x^3 - x - 1',
+        x0: 1.0,
+        x1: 2.0,
+        x2: 1.5,
+        desc: 'Parabolic fitting locates the plastic constant x ≈ 1.324718 with near-quadratic speed.'
+      },
+      {
+        label: 'Transcendental: e⁻ˣ - x',
+        expr: 'exp(-x) - x',
+        x0: 0.0,
+        x1: 0.5,
+        x2: 1.0,
+        desc: 'Parabola curvature matches transcendental exponential-linear root x ≈ 0.567143 in 3 steps.'
+      },
+      {
+        label: 'Complex Conjugate Roots: x³ - 0.5x² + 4x - 2',
+        expr: 'x^3 - 0.5*x^2 + 4*x - 2',
+        x0: 0.0,
+        x1: 1.0,
+        x2: 0.5,
+        desc: 'Roots are x = 0.5 and x = ±2i. Demonstrates negative discriminant and complex root discovery!'
+      },
+      {
+        label: 'Quadratic Polynomial: x² - x - 2',
+        expr: 'x^2 - x - 2',
+        x0: 0.0,
+        x1: 1.0,
+        x2: 3.0,
+        desc: 'Exact quadratic match: fits the exact parabola and discovers root x = 2 in 1-2 steps.'
+      }
+    ];
+
+    let solution = null;
+    let currentStepIdx = 0;
+    let isPlaying = false;
+    let playTimer = null;
+    let showGhostParabolas = true;
+    let zoomToRoot = false;
+
+    function normalizeExpression(raw) {
+      if (!raw) return '';
+      let s = raw.trim();
+      s = s.replace(/[\u2010-\u2015\u2212\uFE58\uFE63\uFF0D]/g, '-');
+      s = s.replace(/[\u00D7\u22C5\u00B7]/g, '*');
+      s = s.replace(/[\u00F7]/g, '/');
+      s = s.replace(/\bln\b/g, 'log');
+      return s;
+    }
+
+    function formatNumber(val, decimals = 5) {
+      if (val === null || val === undefined || isNaN(val)) return '-';
+      if (Math.abs(val) < 1e-12) return '0.00000';
+      if (Math.abs(val) >= 1e4 || Math.abs(val) < 1e-4) {
+        return val.toExponential(4);
+      }
+      return val.toFixed(decimals);
+    }
+
+    function solveMuller(exprFStr, initialX0, initialX1, initialX2, maxIter = 20, tol = 0.0001) {
+      const normalized = normalizeExpression(exprFStr);
+      let compiledF;
+      try {
+        const baseNode = math.parse(normalized);
+        compiledF = baseNode.compile();
+      } catch (e) {
+        return { error: 'Syntax error in f(x): ' + e.message };
+      }
+
+      function evaluateF(xVal) {
+        try {
+          const res = compiledF.evaluate({ x: xVal, e: Math.E, pi: Math.PI });
+          const num = typeof res === 'number' ? res : Number(res);
+          return isFinite(num) ? num : NaN;
+        } catch {
+          return NaN;
+        }
+      }
+
+      let x0 = initialX0;
+      let x1 = initialX1;
+      let x2 = initialX2;
+
+      const steps = [];
+      let converged = false;
+      let diverged = false;
+      let warning = null;
+
+      for (let i = 0; i < maxIter; i++) {
+        const f0 = evaluateF(x0);
+        const f1 = evaluateF(x1);
+        const f2 = evaluateF(x2);
+
+        if (isNaN(f0) || isNaN(f1) || isNaN(f2) || !isFinite(f0) || !isFinite(f1) || !isFinite(f2) || Math.abs(x2) > 1e12) {
+          diverged = true;
+          warning = `Muller iteration diverged: overflow at step ${i + 1}.`;
+          break;
+        }
+
+        const h0 = x1 - x0;
+        const h1 = x2 - x1;
+
+        if (Math.abs(h0) < 1e-14 || Math.abs(h1) < 1e-14 || Math.abs(h1 + h0) < 1e-14) {
+          warning = `Coincident points encountered: initial guesses too close.`;
+          break;
+        }
+
+        const d0 = (f1 - f0) / h0;
+        const d1 = (f2 - f1) / h1;
+
+        const a = (d1 - d0) / (h1 + h0);
+        const b = a * h1 + d1;
+        const c = f2;
+
+        const disc = b * b - 4 * a * c;
+        let x3Real = x2;
+        let x3Imag = 0;
+        let isComplex = false;
+
+        if (disc >= 0) {
+          const sqrtDisc = Math.sqrt(disc);
+          const sign = b >= 0 ? 1 : -1;
+          const den = b + sign * sqrtDisc;
+
+          if (Math.abs(den) < 1e-14) {
+            warning = `Zero denominator at iteration ${i + 1}.`;
+            x3Real = x2 + 0.001;
+          } else {
+            const dx = (-2 * c) / den;
+            x3Real = x2 + dx;
+          }
+        } else {
+          isComplex = true;
+          const sqrtAbsDisc = Math.sqrt(-disc);
+          const denMagSq = b * b + (-disc);
+          if (denMagSq < 1e-14) {
+            warning = `Zero complex denominator at iteration ${i + 1}.`;
+          } else {
+            const dxReal = (-2 * c * b) / denMagSq;
+            const dxImag = (2 * c * sqrtAbsDisc) / denMagSq;
+            x3Real = x2 + dxReal;
+            x3Imag = dxImag;
+          }
+        }
+
+        const fx3 = isComplex ? null : evaluateF(x3Real);
+
+        let ea = null;
+        if (i > 0) {
+          const diffMag = Math.sqrt((x3Real - x2) * (x3Real - x2) + x3Imag * x3Imag);
+          const x3Mag = Math.sqrt(x3Real * x3Real + x3Imag * x3Imag);
+          if (x3Mag > 1e-14) {
+            ea = (diffMag / x3Mag) * 100;
+          }
+        }
+
+        const curA = a;
+        const curB = b;
+        const curC = c;
+        const curX2 = x2;
+        const evalParabola = (x) => {
+          const dx = x - curX2;
+          return curA * dx * dx + curB * dx + curC;
+        };
+
+        steps.push({
+          iteration: i + 1,
+          x0,
+          f0,
+          x1,
+          f1,
+          x2,
+          f2,
+          h0,
+          h1,
+          d0,
+          d1,
+          a,
+          b,
+          c,
+          discriminant: disc,
+          x3Real,
+          x3Imag,
+          fx3,
+          isComplex,
+          ea,
+          evalParabola
+        });
+
+        if (ea !== null && ea < tol) {
+          converged = true;
+          break;
+        }
+
+        if (!isComplex && fx3 !== null && Math.abs(fx3) < 1e-14) {
+          converged = true;
+          break;
+        }
+
+        x0 = x1;
+        x1 = x2;
+        x2 = x3Real;
+      }
+
+      return {
+        exprFStr,
+        evaluateF,
+        steps,
+        converged,
+        diverged,
+        warning
+      };
+    }
+
+    function renderPlot() {
+      if (!solution || solution.steps.length === 0) return;
+      const step = solution.steps[currentStepIdx];
+      const evaluateF = solution.evaluateF;
+
+      const allX = [parseFloat(document.getElementById('x0Input').value), parseFloat(document.getElementById('x1Input').value), parseFloat(document.getElementById('x2Input').value)];
+      solution.steps.slice(0, currentStepIdx + 1).forEach(s => {
+        allX.push(s.x0, s.x1, s.x2, s.x3Real);
+      });
+
+      let minX = Math.min(...allX);
+      let maxX = Math.max(...allX);
+
+      if (zoomToRoot && step) {
+        const center = step.x3Real;
+        const span = Math.abs(step.x3Real - step.x2) * 4 || 1.0;
+        minX = center - span;
+        maxX = center + span;
+      } else {
+        const span = maxX - minX || 2;
+        minX -= span * 0.35 || 1;
+        maxX += span * 0.35 || 1;
+      }
+
+      const N = 400;
+      const stepX = (maxX - minX) / (N - 1);
+      const xs = [];
+      const ys = [];
+      const validYs = [];
+
+      for (let i = 0; i < N; i++) {
+        const x = minX + i * stepX;
+        xs.push(x);
+        const y = evaluateF(x);
+        if (isFinite(y) && !isNaN(y) && Math.abs(y) < 1e5) {
+          ys.push(y);
+          validYs.push(y);
+        } else {
+          ys.push(null);
+        }
+      }
+
+      let minY = -5, maxY = 5;
+      if (validYs.length > 0) {
+        minY = Math.min(...validYs);
+        maxY = Math.max(...validYs);
+        const spanY = maxY - minY;
+        minY -= spanY * 0.25 || 1;
+        maxY += spanY * 0.25 || 1;
+      }
+
+      const traces = [];
+
+      // 1. Function Curve
+      traces.push({
+        x: xs,
+        y: ys,
+        type: 'scatter',
+        mode: 'lines',
+        name: 'f(x)',
+        line: { color: '#800020', width: 3 }
+      });
+
+      // 2. Ghost Parabolas
+      if (showGhostParabolas && currentStepIdx > 0) {
+        for (let idx = 0; idx < currentStepIdx; idx++) {
+          const s = solution.steps[idx];
+          const paraYs = xs.map(x => {
+            const val = s.evalParabola(x);
+            return isFinite(val) && Math.abs(val) < 1e5 ? val : null;
+          });
+          traces.push({
+            x: xs,
+            y: paraYs,
+            type: 'scatter',
+            mode: 'lines',
+            name: `Parabola (i=${s.iteration})`,
+            line: { color: 'rgba(217, 119, 6, 0.25)', width: 1.5, dash: 'dot' },
+            showlegend: idx === 0,
+            hoverinfo: 'none'
+          });
+        }
+      }
+
+      // 3. Current Parabola
+      if (step) {
+        const curParaYs = xs.map(x => {
+          const val = step.evalParabola(x);
+          return isFinite(val) && Math.abs(val) < 1e5 ? val : null;
+        });
+
+        traces.push({
+          x: xs,
+          y: curParaYs,
+          type: 'scatter',
+          mode: 'lines',
+          name: 'Parabola P(x)',
+          line: { color: '#D97706', width: 2.5 }
+        });
+
+        // 3 Base points
+        traces.push({
+          x: [step.x0, step.x1, step.x2],
+          y: [step.f0, step.f1, step.f2],
+          type: 'scatter',
+          mode: 'markers+text',
+          name: 'Points (x₀, x₁, x₂)',
+          text: ['x₀', 'x₁', 'x₂'],
+          textposition: ['top left', 'top center', 'top right'],
+          marker: { size: 9, color: ['#2563EB', '#6366F1', '#D97706'] }
+        });
+
+        // Root x3
+        if (!step.isComplex) {
+          if (step.fx3 !== null) {
+            traces.push({
+              x: [step.x3Real, step.x3Real],
+              y: [0, step.fx3],
+              type: 'scatter',
+              mode: 'lines',
+              name: 'Projection',
+              line: { color: '#10B981', width: 1.5, dash: 'dash' },
+              hoverinfo: 'none'
+            });
+          }
+
+          traces.push({
+            x: [step.x3Real],
+            y: [0],
+            type: 'scatter',
+            mode: 'markers+text',
+            name: `Root x₃ = ${formatNumber(step.x3Real, 5)}`,
+            text: [`x₃ = ${formatNumber(step.x3Real, 5)}`],
+            textposition: 'bottom center',
+            marker: { size: 12, color: '#10B981', symbol: 'star' }
+          });
+        } else {
+          traces.push({
+            x: [step.x3Real],
+            y: [0],
+            type: 'scatter',
+            mode: 'markers+text',
+            name: `Complex Root`,
+            text: [`Re(x₃)=${formatNumber(step.x3Real, 4)} ± ${formatNumber(step.x3Imag, 4)}i`],
+            textposition: 'bottom center',
+            marker: { size: 11, color: '#8B5CF6', symbol: 'diamond' }
+          });
+        }
+      }
+
+      const layout = {
+        autosize: true,
+        margin: { l: 55, r: 25, t: 30, b: 50 },
+        plot_bgcolor: '#FAF9F6',
+        paper_bgcolor: '#FFFFFF',
+        font: { family: 'inherit', color: '#292524' },
+        xaxis: {
+          title: { text: 'x', font: { size: 12, color: '#78716C' } },
+          zeroline: true,
+          zerolinecolor: '#44403C',
+          zerolinewidth: 1.5,
+          gridcolor: '#E7E5E4',
+          range: [minX, maxX]
+        },
+        yaxis: {
+          title: { text: 'f(x)', font: { size: 12, color: '#78716C' } },
+          zeroline: true,
+          zerolinecolor: '#44403C',
+          zerolinewidth: 1.5,
+          gridcolor: '#E7E5E4',
+          range: [Math.max(minY, -120), Math.min(maxY, 120)]
+        },
+        legend: {
+          orientation: 'h',
+          yanchor: 'bottom',
+          y: 1.02,
+          xanchor: 'right',
+          x: 1,
+          font: { size: 11 }
+        }
+      };
+
+      Plotly.react('plotCanvas', traces, layout, { responsive: true, displaylogo: false });
+    }
+
+    function updateUI() {
+      if (!solution) return;
+      const totalSteps = solution.steps.length;
+      const step = solution.steps[currentStepIdx];
+
+      document.getElementById('stepCounterLabel').textContent = `(Step ${currentStepIdx + 1} of ${totalSteps})`;
+      document.getElementById('activeIterBadge').textContent = `i = ${step ? step.iteration : 1}`;
+
+      if (step) {
+        if (step.isComplex) {
+          document.getElementById('activeRootBadge').textContent = `x₃ ≈ ${formatNumber(step.x3Real, 3)} ± ${formatNumber(step.x3Imag, 3)}i`;
+        } else {
+          document.getElementById('activeRootBadge').textContent = `x₃ ≈ ${formatNumber(step.x3Real, 5)}`;
+        }
+      }
+
+      document.getElementById('activeEaBadge').innerHTML = step && step.ea !== null ? `&epsilon;<sub>a</sub>: ${step.ea < 0.001 ? step.ea.toExponential(2) : step.ea.toFixed(4)}%` : `&epsilon;<sub>a</sub>: -`;
+
+      const scrubber = document.getElementById('stepScrubber');
+      scrubber.max = totalSteps;
+      scrubber.value = currentStepIdx + 1;
+      document.getElementById('scrubMaxLabel').textContent = totalSteps;
+
+      document.getElementById('prevBtn').disabled = currentStepIdx <= 0;
+      document.getElementById('resetBtn').disabled = currentStepIdx <= 0;
+      document.getElementById('nextBtn').disabled = currentStepIdx >= totalSteps - 1;
+
+      // Table highlight
+      const rows = document.querySelectorAll('#tableBody tr');
+      rows.forEach((r, idx) => {
+        if (idx === currentStepIdx) {
+          r.className = 'bg-[#800020]/10 font-bold text-stone-950 ring-1 ring-inset ring-[#800020]/30 cursor-pointer';
+        } else {
+          r.className = 'hover:bg-stone-50 text-stone-700 cursor-pointer';
+        }
+      });
+
+      renderPlot();
+    }
+
+    function populateTable() {
+      const tbody = document.getElementById('tableBody');
+      tbody.innerHTML = '';
+      if (!solution) return;
+
+      document.getElementById('tableCountBadge').textContent = `(${solution.steps.length} steps)`;
+
+      solution.steps.forEach((s, idx) => {
+        const tr = document.createElement('tr');
+        tr.onclick = () => {
+          currentStepIdx = idx;
+          updateUI();
+        };
+
+        const eaFormatted = s.ea === null ? '-' : s.ea < 0.0001 ? s.ea.toExponential(3) + '%' : s.ea.toFixed(5) + '%';
+        const eaClass = s.ea !== null && s.ea < 0.001 ? 'text-emerald-700 font-bold' : '';
+
+        const rootDisplay = s.isComplex ? `${formatNumber(s.x3Real, 4)} &plusmn; ${formatNumber(s.x3Imag, 4)}i` : formatNumber(s.x3Real);
+        const fxDisplay = s.fx3 !== null ? formatNumber(s.fx3) : '<span class="text-purple-600">Complex</span>';
+        const discClass = s.discriminant < 0 ? 'text-purple-600 font-bold' : '';
+
+        tr.innerHTML = `
+          <td class="py-2 px-3 text-center text-stone-500 font-bold">${s.iteration}</td>
+          <td class="py-2 px-3">${formatNumber(s.x0)}</td>
+          <td class="py-2 px-3">${formatNumber(s.x1)}</td>
+          <td class="py-2 px-3">${formatNumber(s.x2)}</td>
+          <td class="py-2 px-3">${formatNumber(s.a)}</td>
+          <td class="py-2 px-3">${formatNumber(s.b)}</td>
+          <td class="py-2 px-3">${formatNumber(s.c)}</td>
+          <td class="py-2 px-3 ${discClass}">${formatNumber(s.discriminant)}</td>
+          <td class="py-2 px-3 text-[#800020] font-bold bg-amber-50/40">${rootDisplay}</td>
+          <td class="py-2 px-3">${fxDisplay}</td>
+          <td class="py-2 px-3 text-right ${eaClass}">${eaFormatted}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function runCalculation() {
+      const expr = document.getElementById('exprFInput').value;
+      const x0 = parseFloat(document.getElementById('x0Input').value);
+      const x1 = parseFloat(document.getElementById('x1Input').value);
+      const x2 = parseFloat(document.getElementById('x2Input').value);
+      const tol = parseFloat(document.getElementById('tolInput').value) || 0.0001;
+      const maxIter = parseInt(document.getElementById('maxIterInput').value) || 20;
+
+      const errorAlert = document.getElementById('errorAlert');
+      const warningAlert = document.getElementById('warningAlert');
+      errorAlert.classList.add('hidden');
+      warningAlert.classList.add('hidden');
+
+      solution = solveMuller(expr, x0, x1, x2, maxIter, tol);
+
+      if (solution.error) {
+        errorAlert.textContent = solution.error;
+        errorAlert.classList.remove('hidden');
+        return;
+      }
+
+      if (solution.warning) {
+        warningAlert.textContent = solution.warning;
+        warningAlert.classList.remove('hidden');
+      }
+
+      currentStepIdx = 0;
+      populateTable();
+      updateUI();
+
+      // Stats
+      const lastStep = solution.steps[solution.steps.length - 1];
+      if (lastStep) {
+        if (lastStep.isComplex) {
+          document.getElementById('finalRootStat').textContent = `${formatNumber(lastStep.x3Real, 4)} ± ${formatNumber(lastStep.x3Imag, 4)}i`;
+          document.getElementById('finalFxStat').textContent = 'Complex Conjugate Root';
+        } else {
+          document.getElementById('finalRootStat').textContent = `x* ≈ ${formatNumber(lastStep.x3Real, 6)}`;
+          document.getElementById('finalFxStat').textContent = `f(x*) ≈ ${formatNumber(lastStep.fx3, 6)}`;
+        }
+        document.getElementById('finalEaStat').textContent = lastStep.ea !== null ? (lastStep.ea < 0.0001 ? lastStep.ea.toExponential(3) + '%' : lastStep.ea.toFixed(5) + '%') : '0.00000%';
+        document.getElementById('convergenceStat').textContent = solution.converged ? `Converged in ${solution.steps.length} steps` : 'Max Steps Reached';
+        document.getElementById('totalStepsStat').textContent = `Tolerance: ≤ ${tol}%`;
+      }
+    }
+
+    // Event listeners
+    document.getElementById('solverForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      runCalculation();
+    });
+
+    document.getElementById('presetSelect').addEventListener('change', (e) => {
+      const p = PRESETS[parseInt(e.target.value)];
+      if (p) {
+        document.getElementById('exprFInput').value = p.expr;
+        document.getElementById('x0Input').value = p.x0;
+        document.getElementById('x1Input').value = p.x1;
+        document.getElementById('x2Input').value = p.x2;
+        document.getElementById('presetDescription').textContent = p.desc;
+        runCalculation();
+      }
+    });
+
+    document.getElementById('nextBtn').addEventListener('click', () => {
+      if (solution && currentStepIdx < solution.steps.length - 1) {
+        currentStepIdx++;
+        updateUI();
+      }
+    });
+
+    document.getElementById('prevBtn').addEventListener('click', () => {
+      if (solution && currentStepIdx > 0) {
+        currentStepIdx--;
+        updateUI();
+      }
+    });
+
+    document.getElementById('resetBtn').addEventListener('click', () => {
+      currentStepIdx = 0;
+      updateUI();
+    });
+
+    document.getElementById('stepScrubber').addEventListener('input', (e) => {
+      currentStepIdx = parseInt(e.target.value) - 1;
+      updateUI();
+    });
+
+    document.getElementById('toggleGhostBtn').addEventListener('click', function() {
+      showGhostParabolas = !showGhostParabolas;
+      this.textContent = `Prior Parabolas: ${showGhostParabolas ? 'ON' : 'OFF'}`;
+      this.className = showGhostParabolas
+        ? 'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium border border-amber-300 bg-amber-50 text-amber-900 transition cursor-pointer'
+        : 'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium border border-stone-200 bg-stone-50 text-stone-600 hover:bg-stone-100 transition cursor-pointer';
+      renderPlot();
+    });
+
+    document.getElementById('toggleZoomBtn').addEventListener('click', function() {
+      zoomToRoot = !zoomToRoot;
+      this.textContent = zoomToRoot ? 'Reset Zoom' : 'Zoom to Root';
+      this.className = zoomToRoot
+        ? 'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium border border-[#800020] bg-[#800020] text-white transition cursor-pointer'
+        : 'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium border border-stone-200 bg-stone-50 text-stone-600 hover:bg-stone-100 transition cursor-pointer';
+      renderPlot();
+    });
+
+    document.getElementById('playBtn').addEventListener('click', function() {
+      if (isPlaying) {
+        clearInterval(playTimer);
+        isPlaying = false;
+        this.textContent = '▶ Auto Play';
+      } else {
+        if (!solution) return;
+        isPlaying = true;
+        this.textContent = '⏸ Pause';
+        playTimer = setInterval(() => {
+          if (currentStepIdx < solution.steps.length - 1) {
+            currentStepIdx++;
+            updateUI();
+          } else {
+            clearInterval(playTimer);
+            isPlaying = false;
+            document.getElementById('playBtn').textContent = '▶ Auto Play';
+          }
+        }, 1200);
+      }
+    });
+
+    document.getElementById('copyTableBtn').addEventListener('click', function() {
+      if (!solution) return;
+      const headers = ['i', 'x0', 'x1', 'x2', 'a', 'b', 'c', 'Discriminant', 'x3', 'f(x3)', 'ea(%)'];
+      const rows = solution.steps.map(s => [
+        s.iteration,
+        s.x0.toFixed(6),
+        s.x1.toFixed(6),
+        s.x2.toFixed(6),
+        s.a.toFixed(6),
+        s.b.toFixed(6),
+        s.c.toFixed(6),
+        s.discriminant.toFixed(6),
+        s.isComplex ? `${s.x3Real.toFixed(6)} ± ${s.x3Imag.toFixed(6)}i` : s.x3Real.toFixed(6),
+        s.fx3 !== null ? s.fx3.toFixed(6) : 'Complex',
+        s.ea !== null ? s.ea.toFixed(5) : '-'
+      ]);
+      const csv = [headers.join('\t'), ...rows.map(r => r.join('\t'))].join('\n');
+      navigator.clipboard.writeText(csv);
+      this.textContent = '✓ Copied TSV!';
+      setTimeout(() => { this.textContent = 'Copy TSV Data'; }, 2000);
+    });
+
+    // Initial calculation on page load
+    window.addEventListener('DOMContentLoaded', () => {
+      runCalculation();
+    });
+  </script>
+</body>
+</html>

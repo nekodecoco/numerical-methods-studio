@@ -1,13 +1,10 @@
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
 import './globals.css';
 
-const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
-
 export const metadata: Metadata = {
-  title: 'Taylor Series Visualizer | Numerical Methods',
+  title: 'Numerical Methods Studio',
   description:
-    'An interactive educational visualizer for Taylor polynomial series approximations, designed for Numerical Methods classes.',
+    'Interactive educational visualizer for root-finding algorithms and polynomial approximations.',
 };
 
 export default function RootLayout({
@@ -16,7 +13,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={inter.variable}>
+    <html lang="en">
       <body className="bg-[#FAF9F6] text-stone-900 min-h-screen antialiased selection:bg-[#800020] selection:text-white font-sans">
         {children}
       </body>

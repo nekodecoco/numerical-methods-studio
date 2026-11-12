@@ -1,18 +1,17 @@
 @import "tailwindcss";
 
-@keyframes fadeIn {
+/* Refined, subtle page transition without distracting layout shifts */
+@keyframes subtleFade {
   from {
-    opacity: 0;
-    transform: translateY(8px);
+    opacity: 0.85;
   }
   to {
     opacity: 1;
-    transform: translateY(0);
   }
 }
 
 .animate-fadeIn {
-  animation: fadeIn 350ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: subtleFade 150ms ease-out forwards;
 }
 
 @media (prefers-reduced-motion: reduce) {

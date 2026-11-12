@@ -1,0 +1,1813 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fixed Point / Position Visualizer | Numerical Methods Studio</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Plotly.js -->
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+  
+  <!-- Math.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/14.0.1/math.min.js"></script>
+  
+  <!-- KaTeX -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.21/dist/katex.min.css" />
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.21/dist/katex.min.js"></script>
+  
+  <!-- Canvas Confetti -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.4/dist/confetti.browser.min.js"></script>
+
+  <style>
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fadeIn {
+      animation: fadeIn 300ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+  </style>
+</head>
+<body class="bg-[#FAF9F6] text-stone-900 min-h-screen antialiased selection:bg-[#800020] selection:text-white font-sans flex flex-col">
+
+  <!-- Categorized Modern Header -->
+  <header class="border-b border-stone-200/80 bg-white/95 backdrop-blur-md sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+      <!-- Brand -->
+      <a href="index.html" class="flex items-center gap-3 group select-none flex-shrink-0">
+        <div class="w-9 h-9 rounded-lg bg-[#800020] text-white flex items-center justify-center font-mono font-bold text-sm shadow-sm group-hover:bg-[#6b001b] transition-colors">
+          <span class="tracking-tight text-amber-200 font-serif italic text-base">f</span>
+          <span class="text-[10px] text-white/90 -ml-0.5">(x)</span>
+        </div>
+        <div class="flex flex-col">
+          <div class="flex items-center gap-2">
+            <span class="text-sm sm:text-base font-semibold tracking-tight text-stone-900 font-sans">
+              Numerical Methods Studio
+            </span>
+            <span class="text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-stone-100 text-stone-600 border border-stone-200 hidden sm:inline-block">
+              v2.0
+            </span>
+          </div>
+          <span class="text-[11px] text-stone-400 font-mono hidden md:block">
+            Root-finding &amp; Taylor Series Workspace
+          </span>
+        </div>
+      </a>
+
+      <!-- Categorized Navigation -->
+      <nav class="flex items-center gap-1.5 text-xs font-medium">
+        <!-- Taylor Series -->
+        <a
+          href="index.html"
+          class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-stone-600 hover:text-stone-950 hover:bg-stone-100 transition-colors"
+        >
+          <span>Taylor Series</span>
+        </a>
+
+        <!-- Bracketing Methods Dropdown -->
+        <div class="relative group">
+          <button
+            type="button"
+            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-stone-600 hover:text-stone-950 hover:bg-stone-100 transition-colors cursor-pointer"
+          >
+            <span>Bracketing Methods</span>
+            <svg class="w-3.5 h-3.5 transition-transform group-hover:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+          <div class="absolute left-0 mt-1 w-64 rounded-xl bg-white border border-stone-200/90 shadow-xl shadow-stone-900/10 p-1.5 hidden group-hover:block z-50">
+            <div class="px-2.5 py-1.5 border-b border-stone-100 mb-1">
+              <span class="text-[10px] font-mono uppercase tracking-wider text-stone-400 font-semibold">
+                Enclosed Search Intervals
+              </span>
+            </div>
+            <a href="bisection.html" class="flex items-start gap-2.5 p-2 rounded-lg text-xs hover:bg-stone-50 text-stone-700 transition-colors">
+              <div>
+                <div class="font-semibold text-stone-900">Bisection Method</div>
+                <div class="text-[11px] text-stone-500">Interval halving · Guaranteed convergence</div>
+              </div>
+            </a>
+            <a href="false-position.html" class="flex items-start gap-2.5 p-2 rounded-lg text-xs hover:bg-stone-50 text-stone-700 transition-colors">
+              <div>
+                <div class="font-semibold text-stone-900">False Position</div>
+                <div class="text-[11px] text-stone-500">Regula Falsi · Linear interpolation</div>
+              </div>
+            </a>
+          </div>
+        </div>
+
+        <!-- Open Methods Dropdown (Active) -->
+        <div class="relative group">
+          <button
+            type="button"
+            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[#800020] bg-[#800020]/10 font-semibold border border-[#800020]/20 transition-colors cursor-pointer"
+          >
+            <span>Open Methods</span>
+            <svg class="w-3.5 h-3.5 transition-transform group-hover:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+          <div class="absolute right-0 sm:left-0 mt-1 w-72 rounded-xl bg-white border border-stone-200/90 shadow-xl shadow-stone-900/10 p-1.5 hidden group-hover:block z-50">
+            <div class="px-2.5 py-1.5 border-b border-stone-100 mb-1">
+              <span class="text-[10px] font-mono uppercase tracking-wider text-stone-400 font-semibold">
+                Single / Multi-Point Iteration
+              </span>
+            </div>
+            <a href="fixed-point.html" class="flex items-start gap-2.5 p-2 rounded-lg text-xs bg-[#800020]/8 text-[#800020] font-semibold transition-colors">
+              <div>
+                <div class="font-semibold text-stone-900">Fixed-Point Iteration</div>
+                <div class="text-[11px] text-stone-500 font-normal">x = g(x) · Cobweb analysis</div>
+              </div>
+            </a>
+            <a href="newton-raphson.html" class="flex items-start gap-2.5 p-2 rounded-lg text-xs hover:bg-stone-50 text-stone-700 transition-colors">
+              <div>
+                <div class="font-semibold text-stone-900">Newton-Raphson</div>
+                <div class="text-[11px] text-stone-500">Tangent projection · Quadratic convergence</div>
+              </div>
+            </a>
+            <a href="secant.html" class="flex items-start gap-2.5 p-2 rounded-lg text-xs hover:bg-stone-50 text-stone-700 transition-colors">
+              <div>
+                <div class="font-semibold text-stone-900">Secant Method</div>
+                <div class="text-[11px] text-stone-500">Finite difference · No derivative required</div>
+              </div>
+            </a>
+            <a href="mullers.html" class="flex items-start gap-2.5 p-2 rounded-lg text-xs hover:bg-stone-50 text-stone-700 transition-colors">
+              <div>
+                <div class="font-semibold text-stone-900">Muller's Method</div>
+                <div class="text-[11px] text-stone-500">Parabolic fit · Handles complex roots</div>
+              </div>
+            </a>
+          </div>
+        </div>
+
+        <!-- Study Guide -->
+        <a
+          href="tutorial.html"
+          class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-stone-600 hover:text-stone-950 hover:bg-stone-100 transition-colors"
+        >
+          <span>Study Guide</span>
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+    
+    <!-- Top Concept Banner -->
+    <section class="bg-gradient-to-r from-[#800020] to-[#5a0017] text-white rounded-2xl p-5 shadow-lg relative overflow-hidden">
+      <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div class="space-y-1">
+          <div class="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-white/15 text-amber-200 border border-white/20">
+            <span>One-Point Open Method</span>
+          </div>
+          <h2 class="text-xl sm:text-2xl font-bold font-serif tracking-tight">
+            Fixed Point Iteration: x = g(x)
+          </h2>
+          <p class="text-xs sm:text-sm text-stone-200 max-w-2xl leading-relaxed">
+            By rearranging <span class="font-serif italic font-semibold">f(x) = 0</span> into <span class="font-serif italic font-semibold">x = g(x)</span>, each step feeds the output back into the function: <span class="font-serif italic">x_{i+1} = g(x_i)</span>. 
+            On the graph, this traces the famous <strong>cobweb staircase</strong> between <span class="font-serif italic">y = g(x)</span> and the diagonal <span class="font-serif italic">y = x</span>!
+          </p>
+        </div>
+        <div class="flex-shrink-0 bg-white/10 backdrop-blur border border-white/20 p-3.5 rounded-xl text-center">
+          <span class="text-[10px] uppercase tracking-wider text-amber-200 font-bold block">Convergence Condition</span>
+          <span class="text-xl font-bold font-mono">|g'(x*)| &lt; 1</span>
+          <span class="text-[10px] text-stone-300 block">Contractive Mapping Theorem</span>
+        </div>
+      </div>
+    </section>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      
+      <!-- Left Column: Controls & Presets -->
+      <div class="lg:col-span-4 space-y-6">
+        
+        <!-- Controls Card -->
+        <div class="bg-white rounded-2xl border border-stone-200/90 shadow-lg shadow-stone-200/30 p-5 space-y-4">
+          <div class="flex items-center justify-between">
+            <h2 class="text-base font-semibold text-stone-900 flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-[#800020]"></span>
+              Iteration Setup
+            </h2>
+            <span class="text-[11px] font-mono text-stone-500">x = g(x)</span>
+          </div>
+
+          <!-- Step 1: Target Equation Selection -->
+          <div class="space-y-1.5">
+            <label class="text-[11px] font-bold uppercase tracking-wider text-stone-500 flex items-center justify-between">
+              <span class="flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full bg-[#800020]"></span>
+                <span>Target Equation f(x) = 0</span>
+              </span>
+              <span class="text-[10px] text-stone-400 font-normal">Step 1</span>
+            </label>
+            <select
+              id="equationSelect"
+              class="w-full px-3 py-2 text-xs font-medium bg-stone-50 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#800020]/30 focus:border-[#800020] text-stone-800 cursor-pointer"
+            >
+              <option value="quadratic">Quadratic: x² - x - 2 = 0</option>
+              <option value="burden-faires">Burden &amp; Faires: x³ + 4x² - 10 = 0</option>
+              <option value="transcendental">Exponential: e⁻ˣ - x = 0</option>
+              <option value="plastic-cubic">Plastic Ratio: x³ - x - 1 = 0</option>
+              <option value="trigonometric">Dottie Number: cos(x) - x = 0</option>
+              <option value="two-roots">Two Real Roots: 2x² - 5x + 2 = 0</option>
+              <option value="logarithmic">Logarithmic: x - ln(x) - 2 = 0</option>
+              <option value="custom">✏️ Custom Equation f(x) = 0...</option>
+            </select>
+
+            <div id="equationInfoBox" class="p-2.5 bg-stone-50 border border-stone-200/80 rounded-xl text-xs space-y-1">
+              <div class="flex items-center justify-between">
+                <span id="equationMathDisplay" class="font-serif font-bold text-stone-900"></span>
+                <span id="equationRootsBadge" class="text-[10px] font-mono text-stone-500 bg-white px-2 py-0.5 rounded-md border border-stone-200"></span>
+              </div>
+              <p id="equationDesc" class="text-[11px] text-stone-600 leading-relaxed"></p>
+            </div>
+
+            <!-- Custom f(x) Container -->
+            <div id="customFBox" class="p-3 bg-amber-50/60 border border-amber-200 rounded-xl space-y-2 text-xs hidden">
+              <label class="block text-[11px] font-semibold uppercase tracking-wider text-amber-900">
+                Enter Custom Equation f(x) = 0
+              </label>
+              <div class="flex gap-2">
+                <input
+                  type="text"
+                  id="customFInput"
+                  value="x^2 - 4*x + 3"
+                  placeholder="e.g. x^2 - 4*x + 3 = 0"
+                  class="flex-1 px-3 py-1.5 text-xs font-mono bg-white border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#800020]/30 focus:border-[#800020] text-stone-900"
+                />
+                <button
+                  type="button"
+                  id="customFBtn"
+                  class="px-3 py-1.5 bg-[#800020] text-white rounded-lg text-xs font-medium hover:bg-[#6b001b] transition cursor-pointer shadow-xs"
+                >
+                  Find g(x)
+                </button>
+              </div>
+              <p class="text-[10px] text-stone-500">
+                Enter expression equal to zero. The solver will automatically isolate terms and test contractive convergence.
+              </p>
+            </div>
+          </div>
+
+          <!-- Step 2: Selecting Stage - All Possible g(x) Options -->
+          <div class="space-y-2 pt-1">
+            <div class="flex items-center justify-between">
+              <label class="text-[11px] font-bold uppercase tracking-wider text-stone-500 flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full bg-[#800020]"></span>
+                <span>Possible g(x) Rearrangements</span>
+              </label>
+              <span id="x0EvalBadge" class="text-[10px] text-amber-800 font-mono bg-amber-100/70 px-2 py-0.5 rounded-full border border-amber-200">
+                Evaluated at x₀ = 1
+              </span>
+            </div>
+            <p class="text-[11px] text-stone-500 leading-snug">
+              Click any candidate below to select it and trace its cobweb diagram:
+            </p>
+
+            <div id="candidateList" class="space-y-2 max-h-[360px] overflow-y-auto pr-1">
+              <!-- Dynamically populated candidate cards -->
+            </div>
+          </div>
+
+          <!-- Form Inputs -->
+          <form id="solverForm" class="space-y-3.5 pt-2 border-t border-stone-200">
+            <div>
+              <div class="flex items-center justify-between mb-1">
+                <label class="block text-[11px] font-semibold uppercase tracking-wider text-stone-600">
+                  Active Iteration Function <span class="font-serif">g(x)</span>
+                </label>
+                <span id="activeConvergenceTag" class="text-[10px] font-bold"></span>
+              </div>
+              <input
+                type="text"
+                id="exprGInput"
+                value="sqrt(x + 2)"
+                placeholder="e.g. sqrt(x + 2), exp(-x), cos(x)"
+                class="w-full px-3 py-2 text-sm font-mono bg-stone-50 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#800020]/30 focus:border-[#800020] text-stone-900"
+                required
+              />
+              <div id="liveDerivativeDisplay" class="mt-1 px-2.5 py-1 bg-stone-50 rounded-lg border border-stone-200 text-[11px] text-stone-600 flex items-center justify-between">
+                <span id="liveDerivativeLatex"></span>
+                <span id="liveDerivativeSlope" class="font-mono font-medium text-stone-700"></span>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-[11px] font-semibold uppercase tracking-wider text-amber-700 mb-1 flex items-center justify-between">
+                <span class="flex items-center gap-1">
+                  <span class="w-2 h-2 rounded-full bg-amber-600"></span>
+                  <span>Initial Guess x₀</span>
+                </span>
+                <span class="text-[10px] text-stone-400 font-normal">
+                  Updating x₀ re-evaluates all candidate slopes
+                </span>
+              </label>
+              <input
+                type="number"
+                step="any"
+                id="x0Input"
+                value="1"
+                class="w-full px-3 py-1.5 text-sm font-mono bg-stone-50 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500/30 focus:border-amber-500 text-stone-900 font-medium"
+                required
+              />
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block text-[11px] font-semibold uppercase tracking-wider text-stone-500 mb-1">
+                  Stopping Tol <span class="font-serif">ε_s (%)</span>
+                </label>
+                <input
+                  type="number"
+                  step="any"
+                  min="0.0000001"
+                  id="tolInput"
+                  value="0.0001"
+                  class="w-full px-3 py-1.5 text-sm font-mono bg-stone-50 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#800020]/30 focus:border-[#800020] text-stone-900"
+                  required
+                />
+              </div>
+
+              <div>
+                <label class="block text-[11px] font-semibold uppercase tracking-wider text-stone-500 mb-1">
+                  Max Iterations <span class="font-serif">N</span>
+                </label>
+                <input
+                  type="number"
+                  min="1"
+                  max="50"
+                  step="1"
+                  id="maxIterInput"
+                  value="20"
+                  class="w-full px-3 py-1.5 text-sm font-mono bg-stone-50 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#800020]/30 focus:border-[#800020] text-stone-900"
+                  required
+                />
+              </div>
+            </div>
+
+            <!-- Error Alert -->
+            <div id="bracketAlert" class="hidden p-3 bg-red-50 border border-red-200 text-red-700 rounded-xl text-xs space-y-1">
+              <div class="font-bold flex items-center gap-1.5">
+                <span>⚠️ Input Error</span>
+              </div>
+              <p id="bracketAlertMsg" class="text-[11px] leading-relaxed"></p>
+            </div>
+
+            <!-- Warning Alert -->
+            <div id="warningAlert" class="hidden p-3 bg-amber-50 border border-amber-300 text-amber-900 rounded-xl text-xs space-y-1">
+              <div class="font-bold flex items-center gap-1.5">
+                <span>⚠️ Divergence / Behavior Alert</span>
+              </div>
+              <p id="warningAlertMsg" class="text-[11px] leading-relaxed"></p>
+            </div>
+
+            <button
+              type="submit"
+              class="w-full py-2.5 px-4 rounded-xl font-medium text-sm text-white bg-[#800020] hover:bg-[#6b001b] active:scale-[0.98] transition-all duration-150 flex items-center justify-center gap-2 shadow-md shadow-[#800020]/20 cursor-pointer"
+            >
+              <span>▶ Initialize &amp; Trace Cobweb</span>
+            </button>
+          </form>
+        </div>
+
+        <!-- Algorithm Step Card -->
+        <div class="bg-white rounded-2xl border border-stone-200/90 shadow-sm p-5 space-y-3">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-stone-500 flex items-center gap-1.5">
+            📖 Fixed-Point Recipe
+          </h3>
+          <ol class="text-xs text-stone-600 space-y-2 leading-relaxed list-decimal pl-4">
+            <li>
+              <strong>Rearrange:</strong> Transform <span class="font-mono">f(x) = 0</span> into <span class="font-mono text-[#800020] font-bold">x = g(x)</span>.
+            </li>
+            <li>
+              <strong>Check Derivative:</strong> Evaluate <span class="font-mono">|g'(x)|</span>. If <span class="font-mono">&lt; 1</span>, convergence is guaranteed locally!
+            </li>
+            <li>
+              <strong>Iterate:</strong> Evaluate <span class="font-mono">x_{i+1} = g(x_i)</span>.
+            </li>
+            <li>
+              <strong>Staircase Step:</strong>
+              <ul class="list-disc pl-4 mt-1 space-y-0.5 text-[11px]">
+                <li>Move vertically to <span class="font-mono">y = g(x_i)</span>.</li>
+                <li>Move horizontally to <span class="font-mono">y = x</span> to set <span class="font-mono">x_{i+1}</span>.</li>
+              </ul>
+            </li>
+            <li>
+              <strong>Check Error:</strong> <span class="font-mono">ε_a = |(x_{i+1} - x_i) / x_{i+1}| · 100%</span>.
+            </li>
+          </ol>
+        </div>
+
+      </div>
+
+      <!-- Right Column: Action Bar, Graph & Table -->
+      <div class="lg:col-span-8 space-y-6">
+        
+        <!-- Action Bar -->
+        <div class="bg-white rounded-2xl border border-stone-200/90 shadow-lg shadow-stone-200/40 p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div class="flex items-center gap-3">
+            <div class="flex flex-col">
+              <span class="text-[11px] uppercase tracking-wider font-semibold text-stone-500">
+                Current Iteration
+              </span>
+              <div class="flex items-center gap-2 mt-0.5">
+                <span class="text-2xl font-bold font-mono text-[#800020]" id="iterDisplay">
+                  i = 1
+                </span>
+                <span class="text-xs px-2.5 py-0.5 rounded-full font-medium bg-stone-100 text-stone-700 border border-stone-200" id="iterBadge">
+                  Cobweb Step
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Iteration Buttons & Auto-Play -->
+          <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
+            <button
+              type="button"
+              id="stepBackBtn"
+              title="Previous iteration"
+              class="p-2.5 rounded-xl border border-stone-200 text-stone-600 hover:bg-stone-50 disabled:opacity-35 disabled:cursor-not-allowed transition-all cursor-pointer"
+            >
+              ◀
+            </button>
+
+            <button
+              type="button"
+              id="resetBtn"
+              title="Reset to iteration 1"
+              class="px-3.5 py-2.5 rounded-xl border border-stone-200 text-xs font-semibold text-stone-600 hover:bg-stone-50 disabled:opacity-35 disabled:cursor-not-allowed transition-all cursor-pointer"
+            >
+              ↺ Reset
+            </button>
+
+            <button
+              type="button"
+              id="playBtn"
+              title="Auto step through iterations"
+              class="px-3.5 py-2.5 rounded-xl border border-stone-200 text-xs font-semibold text-stone-600 hover:bg-stone-50 transition-all cursor-pointer"
+            >
+              ▶ Auto Play
+            </button>
+
+            <button
+              type="button"
+              id="nextStepBtn"
+              class="relative px-5 py-2.5 rounded-xl font-semibold text-sm shadow-md transition-all duration-200 flex items-center justify-center gap-2 select-none overflow-hidden bg-[#800020] text-white hover:bg-[#6b001b] active:scale-95 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              <span id="nextBtnText">Next Cobweb Step (i → 2) 🎯</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Scrubber Slider -->
+        <div class="bg-white rounded-2xl border border-stone-200 p-4 shadow-sm flex items-center gap-4">
+          <span class="text-xs font-semibold text-stone-500 whitespace-nowrap">Iteration Scrubber:</span>
+          <input
+            type="range"
+            id="iterSlider"
+            min="1"
+            max="1"
+            value="1"
+            class="w-full accent-[#800020] cursor-pointer"
+          />
+          <span class="text-xs font-mono font-bold text-[#800020] whitespace-nowrap" id="sliderValueDisplay">
+            1 / 1
+          </span>
+        </div>
+
+        <!-- Live Step Math HUD -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
+          <div class="bg-white p-3 rounded-xl border border-stone-200 shadow-xs">
+            <span class="text-[10px] uppercase font-bold text-stone-500 block">Input x_i</span>
+            <span class="text-sm font-mono font-bold text-stone-900" id="hudXi">-</span>
+            <span class="text-[10px] text-stone-400 block" id="hudStepSub">Current Input</span>
+          </div>
+
+          <div class="bg-white p-3 rounded-xl border border-amber-300 bg-amber-50/40 shadow-xs">
+            <span class="text-[10px] uppercase font-bold text-amber-800 block">Next x_{i+1} = g(x_i)</span>
+            <span class="text-sm font-mono font-bold text-[#800020]" id="hudGxi">-</span>
+            <span class="text-[10px] text-stone-500 block">Estimate on y=x</span>
+          </div>
+
+          <div class="bg-white p-3 rounded-xl border border-stone-200 shadow-xs">
+            <span class="text-[10px] uppercase font-bold text-stone-500 block">Slope g'(x_i)</span>
+            <span class="text-sm font-mono font-bold text-stone-900" id="hudGPrime">-</span>
+            <span class="text-[10px] font-bold block" id="hudContractive">Slope Test</span>
+          </div>
+
+          <div class="bg-white p-3 rounded-xl border border-stone-200 shadow-xs">
+            <span class="text-[10px] uppercase font-bold text-stone-500 block">Rel Error ε_a</span>
+            <span class="text-sm font-mono font-bold text-emerald-700" id="hudEa">-</span>
+            <span class="text-[10px] text-stone-400 block" id="hudStatus">Status</span>
+          </div>
+        </div>
+
+        <!-- Graph Container -->
+        <div class="relative w-full rounded-2xl bg-white border border-stone-200/90 shadow-xl shadow-stone-200/40 overflow-hidden">
+          <div class="px-5 py-3 border-b border-stone-100 flex flex-wrap items-center justify-between gap-3 bg-gradient-to-r from-stone-50/80 via-white to-stone-50/80">
+            <div class="flex items-center gap-3">
+              <span class="inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#800020]/10 text-[#800020] border border-[#800020]/20">
+                y = g(x) Curve
+              </span>
+              <span class="inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-stone-100 text-stone-700 border border-stone-300">
+                y = x Diagonal
+              </span>
+              <span class="inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-900 border border-amber-300">
+                Cobweb Staircase
+              </span>
+            </div>
+            
+            <div class="flex items-center gap-4">
+              <label class="text-xs text-stone-600 flex items-center gap-1.5 cursor-pointer select-none">
+                <input type="checkbox" id="ghostToggle" checked class="accent-[#800020] rounded" />
+                <span>Show ghost steps</span>
+              </label>
+
+              <label class="text-xs text-stone-600 flex items-center gap-1.5 cursor-pointer select-none">
+                <input type="checkbox" id="zoomToggle" class="accent-[#800020] rounded" />
+                <span>Zoom to active point</span>
+              </label>
+            </div>
+          </div>
+
+          <div id="plotDiv" class="w-full h-[520px]"></div>
+        </div>
+
+        <!-- Full Iteration Accounting Table -->
+        <div class="bg-white rounded-2xl border border-stone-200/90 shadow-xl shadow-stone-200/40 p-5 space-y-4">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <h3 class="text-base font-semibold text-stone-900 flex items-center gap-2">
+                <span>📋 Values Accounting Table</span>
+                <span class="text-xs font-normal text-stone-500" id="tableRowCount">(0 iterations)</span>
+              </h3>
+              <p class="text-xs text-stone-500">
+                Complete audit trail of x_i, g(x_i), derivative contractive test |g'| &lt; 1, and relative errors.
+              </p>
+            </div>
+
+            <div class="flex items-center gap-2">
+              <button
+                type="button"
+                id="copyTsvBtn"
+                class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-stone-100 hover:bg-stone-200 text-stone-700 rounded-xl transition cursor-pointer"
+              >
+                <span>📋 Copy for Excel/Sheets</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="overflow-x-auto border border-stone-200 rounded-xl max-h-[380px]">
+            <table class="w-full text-left text-xs text-stone-700 font-mono">
+              <thead class="bg-stone-100/90 sticky top-0 border-b border-stone-200 text-stone-900 font-sans uppercase text-[10px] tracking-wider z-10">
+                <tr>
+                  <th class="py-2.5 px-3 text-center">Iter (i)</th>
+                  <th class="py-2.5 px-3">x_i</th>
+                  <th class="py-2.5 px-3 text-[#800020] font-bold">g(x_i) = x_{i+1}</th>
+                  <th class="py-2.5 px-3">g'(x_i)</th>
+                  <th class="py-2.5 px-3">|g'| &lt; 1?</th>
+                  <th class="py-2.5 px-3 text-emerald-700 font-bold">ε_a (%)</th>
+                </tr>
+              </thead>
+              <tbody id="tableBody" class="divide-y divide-stone-100 bg-white">
+                <!-- Rows injected by JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="border-t border-stone-200 bg-white py-6 text-center text-xs text-stone-500 mt-12">
+    <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+      <p>Numerical Methods Studio classroom suite for engineering and mathematics.</p>
+      <div class="flex items-center gap-3 text-stone-400">
+        <a href="index.html" class="hover:text-stone-700 underline">Taylor Series</a>
+        <span>•</span>
+        <a href="bisection.html" class="hover:text-stone-700 underline">Bisection</a>
+        <span>•</span>
+        <a href="false-position.html" class="hover:text-stone-700 underline">False Position</a>
+        <span>•</span>
+        <a href="fixed-point.html" class="hover:text-stone-700 underline">Fixed Point</a>
+        <span>•</span>
+        <a href="newton-raphson.html" class="hover:text-stone-700 underline">Newton-Raphson</a>
+        <span>•</span>
+        <a href="tutorial.html" class="hover:text-stone-700 underline">Study Guide</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Script Logic -->
+  <script>
+    const PROBLEMS = [
+      {
+        id: 'quadratic',
+        label: 'Quadratic: x² - x - 2 = 0',
+        equationMath: 'x^2 - x - 2 = 0',
+        fExpr: 'x^2 - x - 2',
+        desc: 'Standard textbook benchmark with roots at x = 2 and x = -1. Demonstrates both converging and runaway diverging rearrangements.',
+        defaultX0: 1,
+        roots: [2, -1],
+        candidates: [
+          {
+            id: 'quad-sqrt',
+            label: 'Form 1: Square Root Isolation',
+            expr: 'sqrt(x + 2)',
+            latex: '\\sqrt{x + 2}',
+            derivation: 'x² = x + 2 ⟹ x = √(x + 2)',
+            defaultX0: 1
+          },
+          {
+            id: 'quad-linear',
+            label: 'Form 2: Linear Term Isolation (Diverges!)',
+            expr: 'x^2 - 2',
+            latex: 'x^2 - 2',
+            derivation: 'Isolate linear x: x = x² - 2',
+            defaultX0: 2.1
+          },
+          {
+            id: 'quad-recip',
+            label: 'Form 3: Factoring & Reciprocal',
+            expr: '1 + 2/x',
+            latex: '1 + \\frac{2}{x}',
+            derivation: 'Divide by x: x - 1 - 2/x = 0 ⟹ x = 1 + 2/x',
+            defaultX0: 1.5
+          },
+          {
+            id: 'quad-factor',
+            label: 'Form 4: Factored Linear Term (Diverges!)',
+            expr: '2 / (x - 1)',
+            latex: '\\frac{2}{x - 1}',
+            derivation: 'Factor: x(x - 1) = 2 ⟹ x = 2/(x - 1)',
+            defaultX0: 1.5
+          }
+        ]
+      },
+      {
+        id: 'burden-faires',
+        label: 'Burden & Faires Benchmark: x³ + 4x² - 10 = 0',
+        equationMath: 'x^3 + 4x^2 - 10 = 0',
+        fExpr: 'x^3 + 4*x^2 - 10',
+        desc: 'The premier university benchmark from Burden & Faires Chapter 2.2. Compares 5 classic rearrangements for root p ≈ 1.36523.',
+        defaultX0: 1.5,
+        roots: [1.36523],
+        candidates: [
+          {
+            id: 'bf-sqrt-cubic',
+            label: 'Form A: Isolating 4x² Sqrt (Burden Form c)',
+            expr: '0.5 * sqrt(10 - x^3)',
+            latex: '\\frac{1}{2}\\sqrt{10 - x^3}',
+            derivation: '4x² = 10 - x³ ⟹ x = ½√(10 - x³)',
+            defaultX0: 1.5
+          },
+          {
+            id: 'bf-factored-sqrt',
+            label: 'Form B: Factoring x²(x + 4) (Burden Form d)',
+            expr: 'sqrt(10 / (x + 4))',
+            latex: '\\sqrt{\\frac{10}{x + 4}}',
+            derivation: 'x²(x + 4) = 10 ⟹ x = √(10/(x + 4))',
+            defaultX0: 1.5
+          },
+          {
+            id: 'bf-additive',
+            label: 'Form C: Additive x = x - f(x) (Burden Form a - Diverges!)',
+            expr: 'x - x^3 - 4*x^2 + 10',
+            latex: 'x - x^3 - 4x^2 + 10',
+            derivation: 'x = x - (x³ + 4x² - 10)',
+            defaultX0: 1.5
+          },
+          {
+            id: 'bf-cube-root',
+            label: 'Form D: Isolating x³ Cube Root (Diverges!)',
+            expr: '(10 - 4*x^2)^(1/3)',
+            latex: '(10 - 4x^2)^{1/3}',
+            derivation: 'x³ = 10 - 4x² ⟹ x = (10 - 4x²)^{1/3}',
+            defaultX0: 1.5
+          },
+          {
+            id: 'bf-newton-fixed',
+            label: 'Form E: Newton-Steffensen Fixed Point (Burden Form e)',
+            expr: 'x - (x^3 + 4*x^2 - 10) / (3*x^2 + 8*x)',
+            latex: 'x - \\frac{x^3 + 4x^2 - 10}{3x^2 + 8x}',
+            derivation: 'x = x - f(x)/f\'(x)',
+            defaultX0: 1.5
+          }
+        ]
+      },
+      {
+        id: 'transcendental',
+        label: 'Exponential Balance: e⁻ˣ - x = 0',
+        equationMath: 'e^{-x} - x = 0',
+        fExpr: 'exp(-x) - x',
+        desc: 'Classic transcendental equation discovering the Omega fixed point x ≈ 0.567143.',
+        defaultX0: 0,
+        roots: [0.567143],
+        candidates: [
+          {
+            id: 'trans-exp',
+            label: 'Form 1: Direct Exponential Isolation',
+            expr: 'exp(-x)',
+            latex: 'e^{-x}',
+            derivation: 'Isolate x: x = e⁻ˣ',
+            defaultX0: 0
+          },
+          {
+            id: 'trans-log',
+            label: 'Form 2: Natural Logarithm (Diverges!)',
+            expr: '-log(x)',
+            latex: '-\\ln(x)',
+            derivation: 'Take ln of both sides: -x = ln(x) ⟹ x = -ln(x)',
+            defaultX0: 0.5
+          },
+          {
+            id: 'trans-avg',
+            label: 'Form 3: Averaging Relaxation',
+            expr: '(x + exp(-x)) / 2',
+            latex: '\\frac{x + e^{-x}}{2}',
+            derivation: 'Average of x and e⁻ˣ: x = (x + e⁻ˣ)/2',
+            defaultX0: 0
+          }
+        ]
+      },
+      {
+        id: 'plastic-cubic',
+        label: 'Plastic Ratio: x³ - x - 1 = 0',
+        equationMath: 'x^3 - x - 1 = 0',
+        fExpr: 'x^3 - x - 1',
+        desc: 'Discovers the unique real root known as the Plastic Ratio (Padovan constant) x ≈ 1.324718.',
+        defaultX0: 1,
+        roots: [1.324718],
+        candidates: [
+          {
+            id: 'plastic-cube-root',
+            label: 'Form 1: Cube Root Isolation',
+            expr: '(x + 1)^(1/3)',
+            latex: '(x + 1)^{1/3}',
+            derivation: 'x³ = x + 1 ⟹ x = (x + 1)^{1/3}',
+            defaultX0: 1
+          },
+          {
+            id: 'plastic-linear',
+            label: 'Form 2: Linear Isolation (Diverges!)',
+            expr: 'x^3 - 1',
+            latex: 'x^3 - 1',
+            derivation: 'Isolate linear x: x = x³ - 1',
+            defaultX0: 1.2
+          },
+          {
+            id: 'plastic-recip',
+            label: 'Form 3: Factoring Reciprocal (Diverges!)',
+            expr: '1 / (x^2 - 1)',
+            latex: '\\frac{1}{x^2 - 1}',
+            derivation: 'Factor: x(x² - 1) = 1 ⟹ x = 1/(x² - 1)',
+            defaultX0: 1.5
+          },
+          {
+            id: 'plastic-sqrt-recip',
+            label: 'Form 4: Divided Sqrt Rearrangement',
+            expr: 'sqrt(1 + 1/x)',
+            latex: '\\sqrt{1 + \\frac{1}{x}}',
+            derivation: 'Divide by x²: x² = 1 + 1/x ⟹ x = √(1 + 1/x)',
+            defaultX0: 1
+          }
+        ]
+      },
+      {
+        id: 'trigonometric',
+        label: 'Dottie Number: cos(x) - x = 0',
+        equationMath: '\\cos(x) - x = 0',
+        fExpr: 'cos(x) - x',
+        desc: 'Solves cos(x) = x, converging to the transcendental Dottie number x ≈ 0.739085.',
+        defaultX0: 0.5,
+        roots: [0.739085],
+        candidates: [
+          {
+            id: 'dottie-cos',
+            label: 'Form 1: Direct Cosine Iteration',
+            expr: 'cos(x)',
+            latex: '\\cos(x)',
+            derivation: 'Isolate x: x = cos(x)',
+            defaultX0: 0.5
+          },
+          {
+            id: 'dottie-acos',
+            label: 'Form 2: Arccosine (Diverges!)',
+            expr: 'acos(x)',
+            latex: '\\arccos(x)',
+            derivation: 'Take inverse cosine: x = arccos(x)',
+            defaultX0: 0.7
+          },
+          {
+            id: 'dottie-avg',
+            label: 'Form 3: Averaging Relaxation',
+            expr: '(x + cos(x)) / 2',
+            latex: '\\frac{x + \\cos(x)}{2}',
+            derivation: 'Average iteration: x = (x + cos(x))/2',
+            defaultX0: 0.5
+          }
+        ]
+      },
+      {
+        id: 'two-roots',
+        label: 'Two Real Roots: 2x² - 5x + 2 = 0',
+        equationMath: '2x^2 - 5x + 2 = 0',
+        fExpr: '2*x^2 - 5*x + 2',
+        desc: 'Demonstrates how different rearrangements converge to different roots (x = 2 or x = 0.5)!',
+        defaultX0: 0.2,
+        roots: [0.5, 2],
+        candidates: [
+          {
+            id: 'two-linear',
+            label: 'Form 1: Linear 5x Isolation (Targets x = 0.5)',
+            expr: '(2*x^2 + 2) / 5',
+            latex: '\\frac{2x^2 + 2}{5}',
+            derivation: '5x = 2x² + 2 ⟹ x = (2x² + 2)/5',
+            defaultX0: 0.2
+          },
+          {
+            id: 'two-sqrt',
+            label: 'Form 2: Sqrt Isolation (Targets x = 2)',
+            expr: 'sqrt((5*x - 2) / 2)',
+            latex: '\\sqrt{\\frac{5x - 2}{2}}',
+            derivation: '2x² = 5x - 2 ⟹ x = √((5x - 2)/2)',
+            defaultX0: 1.5
+          },
+          {
+            id: 'two-factor',
+            label: 'Form 3: Factoring Form (Targets x = 0.5)',
+            expr: '2 / (5 - 2*x)',
+            latex: '\\frac{2}{5 - 2x}',
+            derivation: 'x(5 - 2x) = 2 ⟹ x = 2/(5 - 2x)',
+            defaultX0: 0.1
+          }
+        ]
+      },
+      {
+        id: 'logarithmic',
+        label: 'Logarithmic Balance: x - ln(x) - 2 = 0',
+        equationMath: 'x - \\ln(x) - 2 = 0',
+        fExpr: 'x - log(x) - 2',
+        desc: 'Two roots at x ≈ 3.14619 and x ≈ 0.15859. Different rearrangements target each root.',
+        defaultX0: 3.0,
+        roots: [3.14619, 0.15859],
+        candidates: [
+          {
+            id: 'log-direct',
+            label: 'Form 1: Direct Log Isolation (Targets x ≈ 3.146)',
+            expr: 'log(x) + 2',
+            latex: '\\ln(x) + 2',
+            derivation: 'Isolate x: x = ln(x) + 2',
+            defaultX0: 3.0
+          },
+          {
+            id: 'log-exp',
+            label: 'Form 2: Exponential Inversion (Targets x ≈ 0.158)',
+            expr: 'exp(x - 2)',
+            latex: 'e^{x - 2}',
+            derivation: 'ln(x) = x - 2 ⟹ x = e^{x - 2}',
+            defaultX0: 0.1
+          }
+        ]
+      }
+    ];
+
+    let currentProblemId = 'quadratic';
+    let currentCandidates = PROBLEMS[0].candidates;
+    let selectedCandidateId = PROBLEMS[0].candidates[0].id;
+
+    let solution = null;
+    let currentStepIdx = 0;
+    let isPlaying = false;
+    let playTimer = null;
+
+    function normalizeExpression(raw) {
+      if (!raw) return '';
+      let s = raw.trim();
+      s = s.replace(/[\u2010-\u2015\u2212\uFE58\uFE63\uFF0D]/g, '-');
+      s = s.replace(/[\u00D7\u22C5\u00B7]/g, '*');
+      s = s.replace(/[\u00F7]/g, '/');
+      s = s.replace(/\bln\b/g, 'log');
+      return s;
+    }
+
+    function formatNumber(val, decimals = 5) {
+      if (val === null || val === undefined || isNaN(val)) return '-';
+      if (Math.abs(val) < 1e-12) return '0.00000';
+      if (Math.abs(val) >= 1e4 || Math.abs(val) < 1e-4) {
+        return val.toExponential(4);
+      }
+      return val.toFixed(decimals);
+    }
+
+    function solveFixedPoint(exprGStr, initialX0, maxIter = 25, tol = 0.0001) {
+      const normalized = normalizeExpression(exprGStr);
+      let compiledG, compiledGPrime;
+      try {
+        const baseNode = math.parse(normalized);
+        compiledG = baseNode.compile();
+        try {
+          const derivNode = math.derivative(baseNode, 'x');
+          compiledGPrime = derivNode.compile();
+        } catch {
+          compiledGPrime = null;
+        }
+      } catch (e) {
+        return { error: 'Syntax error in g(x): ' + e.message };
+      }
+
+      function evaluateG(xVal) {
+        try {
+          const res = compiledG.evaluate({ x: xVal, e: Math.E, pi: Math.PI });
+          const num = typeof res === 'number' ? res : Number(res);
+          return isFinite(num) ? num : NaN;
+        } catch {
+          return NaN;
+        }
+      }
+
+      function evaluateGPrime(xVal) {
+        if (compiledGPrime) {
+          try {
+            const res = compiledGPrime.evaluate({ x: xVal, e: Math.E, pi: Math.PI });
+            const num = typeof res === 'number' ? res : Number(res);
+            if (isFinite(num)) return num;
+          } catch {}
+        }
+        const h = 1e-6;
+        return (evaluateG(xVal + h) - evaluateG(xVal - h)) / (2 * h);
+      }
+
+      const g0 = evaluateG(initialX0);
+      if (isNaN(g0)) {
+        return { error: `g(x) evaluated to NaN or is undefined at x₀ = ${initialX0}.` };
+      }
+
+      let xi = initialX0;
+      const steps = [];
+      let converged = false;
+      let diverged = false;
+      let warning = null;
+
+      for (let i = 0; i < maxIter; i++) {
+        const gxi = evaluateG(xi);
+        const gPrimeXi = evaluateGPrime(xi);
+
+        if (isNaN(gxi) || !isFinite(gxi) || Math.abs(gxi) > 1e12) {
+          diverged = true;
+          warning = `Iteration diverged: values exceeded numerical bounds (|x| > 10¹²) at step ${i + 1}. |g'(x)| > 1 caused runaway expansion.`;
+          break;
+        }
+
+        const isContractive = Math.abs(gPrimeXi) < 1.0;
+        let ea = null;
+        if (i > 0 && Math.abs(gxi) > 1e-14) {
+          ea = Math.abs((gxi - xi) / gxi) * 100;
+        }
+
+        steps.push({
+          iteration: i + 1,
+          xi,
+          gxi,
+          gPrimeXi,
+          isContractive,
+          ea
+        });
+
+        if (ea !== null && ea < tol) {
+          converged = true;
+          break;
+        }
+
+        if (Math.abs(gxi - xi) < 1e-14) {
+          converged = true;
+          break;
+        }
+
+        xi = gxi;
+      }
+
+      return {
+        exprGStr,
+        evaluateG,
+        initialX0,
+        steps,
+        converged,
+        diverged,
+        warning
+      };
+    }
+
+    function renderPlot() {
+      if (!solution || solution.steps.length === 0) return;
+
+      const step = solution.steps[currentStepIdx];
+      const zoomToActive = document.getElementById('zoomToggle').checked;
+      const showGhost = document.getElementById('ghostToggle').checked;
+
+      const allX = [solution.initialX0];
+      solution.steps.slice(0, currentStepIdx + 1).forEach(s => {
+        if (isFinite(s.xi)) allX.push(s.xi);
+        if (isFinite(s.gxi)) allX.push(s.gxi);
+      });
+
+      let minX = Math.min(...allX);
+      let maxX = Math.max(...allX);
+
+      if (zoomToActive) {
+        const center = step.gxi;
+        const span = Math.abs(step.gxi - step.xi) * 3 || 0.5;
+        minX = center - span;
+        maxX = center + span;
+      } else {
+        const span = maxX - minX || 2;
+        const pad = span * 0.35 || 1;
+        minX -= pad;
+        maxX += pad;
+      }
+
+      const N = 400;
+      const stepX = (maxX - minX) / (N - 1);
+      const xs = [];
+      const yg = [];
+      const validYs = [];
+
+      for (let i = 0; i < N; i++) {
+        const x = minX + i * stepX;
+        xs.push(x);
+        const y = solution.evaluateG(x);
+        if (isFinite(y) && !isNaN(y) && Math.abs(y) < 1e5) {
+          yg.push(y);
+          validYs.push(y);
+        } else {
+          yg.push(null);
+        }
+      }
+
+      let minY = minX;
+      let maxY = maxX;
+      if (validYs.length > 0) {
+        const gMin = Math.min(...validYs);
+        const gMax = Math.max(...validYs);
+        minY = Math.min(minX, gMin);
+        maxY = Math.max(maxX, gMax);
+        const spanY = maxY - minY;
+        const padY = spanY * 0.15 || 1;
+        minY -= padY;
+        maxY += padY;
+      }
+
+      const traces = [];
+
+      // 1. Diagonal Line y = x
+      traces.push({
+        x: [minX, maxX],
+        y: [minX, maxX],
+        type: 'scatter',
+        mode: 'lines',
+        name: 'y = x (Fixed Point Line)',
+        line: { color: '#64748B', width: 2, dash: 'dash' },
+        hovertemplate: '<b>y = x</b>: %{y:.4f}<extra></extra>'
+      });
+
+      // 2. Iteration Function y = g(x)
+      traces.push({
+        x: xs,
+        y: yg,
+        type: 'scatter',
+        mode: 'lines',
+        name: `g(x) = ${solution.exprGStr}`,
+        line: { color: '#800020', width: 3.5 },
+        hovertemplate: `<b>g(x)</b>: %{y:.5f}<br>x: %{x:.5f}<extra></extra>`
+      });
+
+      // 3. Ghost Cobweb Steps
+      if (showGhost && currentStepIdx > 0) {
+        const ghostXs = [];
+        const ghostYs = [];
+        for (let i = 0; i < currentStepIdx; i++) {
+          const s = solution.steps[i];
+          if (i === 0) {
+            ghostXs.push(s.xi, s.xi, s.gxi);
+            ghostYs.push(0, s.gxi, s.gxi);
+          } else {
+            ghostXs.push(s.xi, s.xi, s.gxi);
+            ghostYs.push(s.xi, s.gxi, s.gxi);
+          }
+        }
+        traces.push({
+          x: ghostXs,
+          y: ghostYs,
+          type: 'scatter',
+          mode: 'lines+markers',
+          name: 'Prior Steps (Ghost)',
+          line: { color: 'rgba(148, 163, 184, 0.7)', width: 1.8, dash: 'dot' },
+          marker: { size: 5, color: 'rgba(148, 163, 184, 0.7)' },
+          hoverinfo: 'skip'
+        });
+      }
+
+      // 4. Active Step Cobweb
+      const activeXs = [];
+      const activeYs = [];
+      if (currentStepIdx === 0) {
+        activeXs.push(step.xi, step.xi, step.gxi);
+        activeYs.push(0, step.gxi, step.gxi);
+      } else {
+        activeXs.push(step.xi, step.xi, step.gxi);
+        activeYs.push(step.xi, step.gxi, step.gxi);
+      }
+
+      traces.push({
+        x: activeXs,
+        y: activeYs,
+        type: 'scatter',
+        mode: 'lines+markers',
+        name: `Active Step ${step.iteration}`,
+        line: { color: '#D97706', width: 3.2 },
+        marker: { size: 8, color: '#D97706' },
+        hovertemplate: `<b>Step ${step.iteration}</b><br>x: %{x:.5f}<br>y: %{y:.5f}<extra></extra>`
+      });
+
+      // Point on g(x)
+      traces.push({
+        x: [step.xi],
+        y: [step.gxi],
+        type: 'scatter',
+        mode: 'markers',
+        name: `g(x_${step.iteration - 1})`,
+        marker: {
+          size: 13,
+          color: '#800020',
+          symbol: 'diamond',
+          line: { color: '#F59E0B', width: 2.5 }
+        },
+        hovertemplate: `<b>Curve Point</b><br>x: %{x:.5f}<br>g(x): %{y:.5f}<extra></extra>`
+      });
+
+      // New Estimate Point on y=x
+      traces.push({
+        x: [step.gxi],
+        y: [step.gxi],
+        type: 'scatter',
+        mode: 'markers+text',
+        name: `Root Est x_${step.iteration}`,
+        marker: {
+          size: 15,
+          color: '#D97706',
+          line: { color: '#FFFFFF', width: 3 }
+        },
+        text: [`x_${step.iteration} = ${step.gxi.toFixed(4)}`],
+        textposition: 'top center',
+        textfont: { family: 'sans-serif', size: 12, color: '#800020', weight: 700 },
+        hovertemplate: `<b>New Estimate x_${step.iteration}</b>: %{x:.6f}<extra></extra>`
+      });
+
+      const layout = {
+        autosize: true,
+        height: 520,
+        margin: { l: 55, r: 25, t: 45, b: 50 },
+        paper_bgcolor: 'rgba(255, 255, 255, 0)',
+        plot_bgcolor: '#FAFBFC',
+        font: { family: 'sans-serif', color: '#475569' },
+        xaxis: {
+          title: { text: 'x', font: { size: 13, color: '#475569' } },
+          range: [minX, maxX],
+          showgrid: true,
+          gridcolor: '#EDF2F7',
+          zeroline: true,
+          zerolinecolor: '#94A3B8',
+          zerolinewidth: 2
+        },
+        yaxis: {
+          title: { text: 'y', font: { size: 13, color: '#475569' } },
+          range: [minY, maxY],
+          showgrid: true,
+          gridcolor: '#EDF2F7',
+          zeroline: true,
+          zerolinecolor: '#94A3B8',
+          zerolinewidth: 2
+        },
+        legend: {
+          orientation: 'h',
+          x: 0,
+          y: 1.14,
+          font: { size: 11, color: '#334155' },
+          bgcolor: 'rgba(255, 255, 255, 0.85)'
+        }
+      };
+
+      Plotly.react('plotDiv', traces, layout, { responsive: true, displaylogo: false });
+    }
+
+    function updateUI() {
+      if (!solution || solution.steps.length === 0) return;
+
+      const totalSteps = solution.steps.length;
+      const step = solution.steps[currentStepIdx];
+      const isLast = currentStepIdx === totalSteps - 1;
+
+      document.getElementById('iterDisplay').innerText = `i = ${step.iteration}`;
+
+      let badgeText = 'Active Cobweb Step';
+      let badgeBg = 'bg-stone-100 text-stone-700 border-stone-200';
+      if (isLast && solution.converged) {
+        badgeText = '🎯 Converged within Tolerance';
+        badgeBg = 'bg-emerald-100 text-emerald-900 border-emerald-300 font-bold';
+      } else if (!step.isContractive) {
+        badgeText = '⚠ Divergence Risk (|g\'| >= 1)';
+        badgeBg = 'bg-red-100 text-red-900 border-red-300 font-bold';
+      } else {
+        badgeText = '✓ Contractive Mapping (|g\'| < 1)';
+        badgeBg = 'bg-emerald-50 text-emerald-800 border-emerald-200';
+      }
+      const badgeEl = document.getElementById('iterBadge');
+      badgeEl.innerText = badgeText;
+      badgeEl.className = `text-xs px-2.5 py-0.5 rounded-full font-medium border ${badgeBg}`;
+
+      const slider = document.getElementById('iterSlider');
+      slider.max = totalSteps;
+      slider.value = currentStepIdx + 1;
+      document.getElementById('sliderValueDisplay').innerText = `${currentStepIdx + 1} / ${totalSteps}`;
+
+      document.getElementById('stepBackBtn').disabled = currentStepIdx === 0;
+      document.getElementById('resetBtn').disabled = currentStepIdx === 0;
+      const nextBtn = document.getElementById('nextStepBtn');
+      nextBtn.disabled = isLast;
+      if (isLast) {
+        document.getElementById('nextBtnText').innerText = solution.converged ? '✓ Fully Converged' : 'Max Step Reached';
+      } else {
+        document.getElementById('nextBtnText').innerText = `Next Cobweb Step (i → ${step.iteration + 1}) 🎯`;
+      }
+
+      // HUD
+      document.getElementById('hudXi').innerText = formatNumber(step.xi, 5);
+      document.getElementById('hudGxi').innerText = formatNumber(step.gxi, 5);
+      document.getElementById('hudGPrime').innerText = formatNumber(step.gPrimeXi, 4);
+      const contractiveEl = document.getElementById('hudContractive');
+      contractiveEl.innerText = step.isContractive ? '✓ |g\'| < 1 (Contractive)' : '⚠ |g\'| >= 1 (Expansive)';
+      contractiveEl.className = `text-[10px] font-bold block ${step.isContractive ? 'text-emerald-700' : 'text-red-600'}`;
+
+      document.getElementById('hudEa').innerText = step.ea !== null ? `${step.ea.toFixed(4)}%` : 'Initial Step';
+      document.getElementById('hudStatus').innerText = isLast && solution.converged ? 'Converged' : 'In Progress';
+
+      const rows = document.querySelectorAll('#tableBody tr');
+      rows.forEach((r, idx) => {
+        if (idx === currentStepIdx) {
+          r.className = 'bg-amber-50/90 font-bold border-l-4 border-l-[#800020] text-stone-900';
+        } else {
+          r.className = 'hover:bg-stone-50/80 transition-colors';
+        }
+      });
+
+      if (isLast && solution.converged && window.confetti) {
+        window.confetti({ particleCount: 50, spread: 60, origin: { y: 0.7 } });
+      }
+
+      renderPlot();
+    }
+
+    function renderTable() {
+      const tbody = document.getElementById('tableBody');
+      tbody.innerHTML = '';
+      if (!solution) return;
+
+      document.getElementById('tableRowCount').innerText = `(${solution.steps.length} iterations)`;
+
+      solution.steps.forEach((step, idx) => {
+        const tr = document.createElement('tr');
+        tr.className = idx === currentStepIdx ? 'bg-amber-50 font-bold' : 'hover:bg-stone-50';
+        tr.style.cursor = 'pointer';
+        tr.addEventListener('click', () => {
+          currentStepIdx = idx;
+          updateUI();
+        });
+
+        tr.innerHTML = `
+          <td class="py-2.5 px-3 text-center font-bold text-[#800020]">${step.iteration}</td>
+          <td class="py-2.5 px-3">${formatNumber(step.xi, 5)}</td>
+          <td class="py-2.5 px-3 font-bold text-amber-900">${formatNumber(step.gxi, 6)}</td>
+          <td class="py-2.5 px-3">${formatNumber(step.gPrimeXi, 4)}</td>
+          <td class="py-2.5 px-3 font-semibold ${step.isContractive ? 'text-emerald-700' : 'text-red-600'}">
+            ${step.isContractive ? '✓ Contractive' : '⚠ Expansive'}
+          </td>
+          <td class="py-2.5 px-3 font-bold text-emerald-700">${step.ea !== null ? step.ea.toFixed(4) + '%' : '-'}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function runSolver() {
+      const expr = document.getElementById('exprGInput').value;
+      const x0 = parseFloat(document.getElementById('x0Input').value);
+      const tol = parseFloat(document.getElementById('tolInput').value);
+      const maxIter = parseInt(document.getElementById('maxIterInput').value, 10);
+
+      const alertEl = document.getElementById('bracketAlert');
+      const alertMsg = document.getElementById('bracketAlertMsg');
+      alertEl.classList.add('hidden');
+
+      const warnEl = document.getElementById('warningAlert');
+      const warnMsg = document.getElementById('warningAlertMsg');
+      warnEl.classList.add('hidden');
+
+      const res = solveFixedPoint(expr, x0, maxIter, tol);
+      if (res.error) {
+        alertMsg.innerText = res.error;
+        alertEl.classList.remove('hidden');
+        return;
+      }
+
+      if (res.warning) {
+        warnMsg.innerText = res.warning;
+        warnEl.classList.remove('hidden');
+      }
+
+      solution = res;
+      currentStepIdx = 0;
+      renderTable();
+      updateUI();
+    }
+
+    function evaluateCandidateG(exprGStr, x0) {
+      const norm = normalizeExpression(exprGStr);
+      let baseNode, derivNode;
+      try {
+        baseNode = math.parse(norm);
+      } catch (e) {
+        return {
+          status: 'invalid',
+          absGPrime: NaN,
+          originalLatex: exprGStr,
+          derivativeLatex: "g'(x)",
+          behaviorNote: 'Parse error in formula'
+        };
+      }
+
+      let originalLatex = norm;
+      try {
+        originalLatex = baseNode.toTex({ parenthesis: 'auto' });
+      } catch(e) {}
+
+      try {
+        derivNode = math.derivative(baseNode, 'x');
+      } catch(e) {
+        derivNode = baseNode;
+      }
+
+      let derivativeLatex = "g'(x)";
+      try {
+        derivativeLatex = derivNode.toTex({ parenthesis: 'auto' });
+      } catch(e) {}
+
+      let compG, compD;
+      try {
+        compG = baseNode.compile();
+        compD = derivNode.compile();
+      } catch(e) {
+        return { status: 'invalid', absGPrime: NaN, originalLatex, derivativeLatex, behaviorNote: 'Compile error' };
+      }
+
+      function evalNum(comp, val) {
+        try {
+          const res = comp.evaluate({ x: val, e: Math.E, pi: Math.PI });
+          if (res && typeof res === 'object' && 're' in res) return NaN;
+          const num = typeof res === 'number' ? res : Number(res);
+          return isFinite(num) ? num : NaN;
+        } catch(e) {
+          return NaN;
+        }
+      }
+
+      const g0 = evalNum(compG, x0);
+      let d0 = evalNum(compD, x0);
+      if (isNaN(d0) && !isNaN(g0)) {
+        const h = 1e-6;
+        const gp = evalNum(compG, x0 + h);
+        const gm = evalNum(compG, x0 - h);
+        if (!isNaN(gp) && !isNaN(gm)) {
+          d0 = (gp - gm) / (2 * h);
+        }
+      }
+
+      const absD = isNaN(d0) ? NaN : Math.abs(d0);
+      if (isNaN(g0) || isNaN(absD) || !isFinite(absD)) {
+        return {
+          status: 'invalid',
+          absGPrime: NaN,
+          originalLatex,
+          derivativeLatex,
+          behaviorNote: 'Undefined or complex outside real domain at x₀'
+        };
+      }
+
+      let status = 'diverges';
+      let behaviorNote = '';
+      if (absD < 0.9999) {
+        status = 'converges';
+        if (d0 >= 0) {
+          behaviorNote = 'Monotonic Staircase (Contractive, approaches root directly without oscillation)';
+        } else {
+          behaviorNote = 'Oscillating Spiral Cobweb (Contractive, winds inward across root)';
+        }
+        if (absD < 0.05) {
+          behaviorNote = 'Rapid Superlinear Convergence (|g\'(x₀)| ≈ 0 near root)';
+        }
+      } else if (absD > 1.0001) {
+        status = 'diverges';
+        if (d0 > 0) {
+          behaviorNote = 'Monotonic Runaway Divergence (Expansive, |g\'(x₀)| > 1 shoots away from root)';
+        } else {
+          behaviorNote = 'Oscillating Outward Spiral Divergence (Expansive, oscillates with growing amplitude)';
+        }
+      } else {
+        status = 'inconclusive';
+        behaviorNote = 'Marginally Stable (|g\'(x₀)| ≈ 1, very slow convergence or unstable boundary)';
+      }
+
+      return {
+        status,
+        dVal: d0,
+        absGPrime: absD,
+        originalLatex,
+        derivativeLatex,
+        behaviorNote
+      };
+    }
+
+    function autoGenerateCandidateGs(fClean, x0) {
+      fClean = normalizeExpression(fClean).replace(/=\s*0$/, '').trim();
+      if (!fClean) return [];
+
+      const candidates = [];
+      const seen = new Set();
+
+      function register(expr, label, derivation) {
+        const trimmed = expr.trim();
+        if (!trimmed || seen.has(trimmed)) return;
+        const evalRes = evaluateCandidateG(trimmed, x0);
+        if (evalRes.status === 'invalid') return;
+        seen.add(trimmed);
+        candidates.push({
+          id: 'auto-' + (candidates.length + 1),
+          label: label,
+          expr: trimmed,
+          latex: evalRes.originalLatex,
+          derivation: derivation,
+          defaultX0: x0
+        });
+      }
+
+      register(`x - (${fClean})`, 'Additive Relaxation: x = x - f(x)', 'Rearranged as x = x - f(x)');
+      register(`x + (${fClean})`, 'Additive Form: x = x + f(x)', 'Rearranged as x = x + f(x)');
+
+      try {
+        const fNode = math.parse(fClean);
+        const dfNode = math.derivative(fNode, 'x');
+        register(`x - (${fClean}) / (${dfNode.toString()})`, "Newton-Steffensen Fixed Point: x = x - f(x)/f'(x)", "High-order contractive fixed point");
+      } catch(e) {}
+
+      try {
+        const fNode = math.parse(fClean);
+        const terms = [];
+        function traverse(n, sign = 1) {
+          if (n.type === 'OperatorNode' && (n.op === '+' || n.op === '-')) {
+            traverse(n.args[0], sign);
+            const rightSign = n.op === '+' ? sign : -sign;
+            traverse(n.args[1], rightSign);
+          } else {
+            terms.push({ node: n, sign });
+          }
+        }
+        traverse(fNode, 1);
+
+        for (let i = 0; i < terms.length; i++) {
+          const t = terms[i];
+          const restTerms = terms.filter((_, idx) => idx !== i);
+          let restStr = '';
+          restTerms.forEach((rt, idx) => {
+            const effectiveSign = -rt.sign * t.sign;
+            const signStr = effectiveSign > 0 ? (idx === 0 ? '' : ' + ') : ' - ';
+            restStr += signStr + rt.node.toString();
+          });
+          if (!restStr) restStr = '0';
+
+          const tStr = t.node.toString().replace(/\s+/g, '');
+          if (tStr === 'x') {
+            register(restStr, 'Isolate linear x', `Linear term isolated: x = ${restStr}`);
+          } else if (tStr === 'x^2') {
+            register(`sqrt(${restStr})`, 'Isolate x² (Square Root)', `x² = ${restStr} ⟹ x = √(${restStr})`);
+          } else if (tStr === 'x^3') {
+            register(`(${restStr})^(1/3)`, 'Isolate x³ (Cube Root)', `x³ = ${restStr} ⟹ x = (${restStr})^(1/3)`);
+          } else if (tStr.endsWith('*x^2') || tStr.includes('*x^2')) {
+            const coeff = tStr.split('*x^2')[0] || '1';
+            register(`sqrt((${restStr}) / ${coeff})`, `Isolate ${coeff}x² (Square Root)`, `${coeff}x² = ${restStr} ⟹ x = √((${restStr})/${coeff})`);
+          } else if (tStr.endsWith('*x') || tStr.includes('*x')) {
+            const coeff = tStr.split('*x')[0] || '1';
+            register(`(${restStr}) / ${coeff}`, `Isolate ${coeff}x (Linear)`, `${coeff}x = ${restStr} ⟹ x = (${restStr})/${coeff}`);
+          }
+        }
+      } catch(e) {}
+
+      if (fClean.includes('exp(-x)')) {
+        register('exp(-x)', 'Isolate Exponential: x = e⁻ˣ', 'e⁻ˣ = x ⟹ x = e⁻ˣ');
+        register('-log(x)', 'Natural Logarithm: x = -ln(x)', '-x = ln(x) ⟹ x = -ln(x)');
+        register('(x + exp(-x)) / 2', 'Relaxed Average: (x + e⁻ˣ)/2', 'Average of x and e⁻ˣ');
+      }
+      if (fClean.includes('cos(x)')) {
+        register('cos(x)', 'Isolate Cosine: x = cos(x)', 'x = cos(x)');
+        register('acos(x)', 'Inverse Cosine: x = arccos(x)', 'x = arccos(x)');
+        register('(x + cos(x)) / 2', 'Averaged Cosine: (x + cos(x))/2', 'Relaxed average');
+      }
+
+      return candidates;
+    }
+
+    function renderCandidateList() {
+      const container = document.getElementById('candidateList');
+      container.innerHTML = '';
+      const currentX0 = parseFloat(document.getElementById('x0Input').value) || 0;
+      const currentExprG = document.getElementById('exprGInput').value.trim();
+
+      document.getElementById('x0EvalBadge').innerText = `Evaluated at x₀ = ${currentX0}`;
+
+      if (!currentCandidates || currentCandidates.length === 0) {
+        container.innerHTML = '<div class="p-3 text-center text-xs text-stone-400 bg-stone-50 rounded-xl border border-dashed border-stone-200">No candidates available</div>';
+        return;
+      }
+
+      currentCandidates.forEach((cand) => {
+        const evalRes = evaluateCandidateG(cand.expr, currentX0);
+        const isSelected = selectedCandidateId === cand.id || currentExprG === cand.expr.trim();
+
+        const card = document.createElement('div');
+        card.className = `p-3 rounded-xl border transition-all cursor-pointer text-left space-y-1.5 ${
+          isSelected
+            ? 'border-[#800020] bg-[#800020]/5 ring-2 ring-[#800020]/20 shadow-xs'
+            : 'border-stone-200 hover:border-stone-400 hover:bg-stone-50/80 bg-white'
+        }`;
+
+        let badgeHtml = '';
+        if (evalRes.status === 'converges') {
+          badgeHtml = `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300 flex-shrink-0">
+            <span>✓ Converges (|g\'| = ${evalRes.absGPrime.toFixed(3)})</span>
+          </span>`;
+        } else if (evalRes.status === 'diverges') {
+          badgeHtml = `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-100 text-red-800 border border-red-300 flex-shrink-0">
+            <span>✕ Diverges (|g\'| = ${evalRes.absGPrime.toFixed(3)})</span>
+          </span>`;
+        } else if (evalRes.status === 'inconclusive') {
+          badgeHtml = `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-300 flex-shrink-0">
+            <span>~ Borderline (|g\'| ≈ 1)</span>
+          </span>`;
+        } else {
+          badgeHtml = `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-stone-100 text-stone-600 border border-stone-200 flex-shrink-0">
+            <span>Undefined at x₀</span>
+          </span>`;
+        }
+
+        const noteColor = evalRes.status === 'converges' ? 'text-emerald-700 font-medium' : (evalRes.status === 'diverges' ? 'text-red-700 font-medium' : 'text-stone-500');
+
+        card.innerHTML = `
+          <div class="flex items-start justify-between gap-2">
+            <span class="text-xs font-bold text-stone-900 line-clamp-1 flex items-center gap-1.5">
+              ${isSelected ? '<span class="w-2 h-2 rounded-full bg-[#800020] flex-shrink-0"></span>' : ''}
+              <span>${cand.label}</span>
+            </span>
+            ${badgeHtml}
+          </div>
+          <div class="bg-white/90 px-2.5 py-1.5 rounded-lg border border-stone-200/60 text-sm font-serif text-stone-900 flex items-center justify-between">
+            <div id="math-cand-${cand.id}"></div>
+            ${isSelected ? '<span class="text-[10px] font-sans font-bold text-[#800020] uppercase tracking-wider">✓ Selected</span>' : ''}
+          </div>
+          <div class="text-[11px] text-stone-600 space-y-0.5">
+            <div class="text-[10px] text-stone-500">
+              <span class="font-semibold text-stone-700">Rearrangement:</span> <span class="font-mono">${cand.derivation}</span>
+            </div>
+            <div class="font-serif italic font-bold text-stone-800" id="deriv-cand-${cand.id}"></div>
+          </div>
+          <div class="text-[10px] ${noteColor} leading-relaxed pt-0.5">
+            ${evalRes.status === 'converges' ? '✓ ' : (evalRes.status === 'diverges' ? '⚠ ' : '')}${evalRes.behaviorNote}
+          </div>
+        `;
+
+        card.addEventListener('click', () => {
+          selectedCandidateId = cand.id;
+          document.getElementById('exprGInput').value = cand.expr;
+          if (cand.defaultX0 !== undefined) {
+            document.getElementById('x0Input').value = cand.defaultX0;
+          }
+          renderCandidateList();
+          updateActiveDerivativeDisplay();
+          runSolver();
+        });
+
+        container.appendChild(card);
+
+        // Render KaTeX for candidate
+        const mathEl = document.getElementById(`math-cand-${cand.id}`);
+        if (mathEl && window.katex) {
+          window.katex.render(`x = g(x) = ${cand.latex || cand.expr}`, mathEl, { throwOnError: false });
+        }
+        const derivEl = document.getElementById(`deriv-cand-${cand.id}`);
+        if (derivEl && window.katex) {
+          window.katex.render(`g'(x) = ${evalRes.derivativeLatex}`, derivEl, { throwOnError: false });
+        }
+      });
+    }
+
+    function updateActiveDerivativeDisplay() {
+      const expr = document.getElementById('exprGInput').value.trim();
+      const x0 = parseFloat(document.getElementById('x0Input').value) || 0;
+      const tagEl = document.getElementById('activeConvergenceTag');
+      const latexEl = document.getElementById('liveDerivativeLatex');
+      const slopeEl = document.getElementById('liveDerivativeSlope');
+
+      if (!expr) {
+        tagEl.innerText = '';
+        latexEl.innerText = '';
+        slopeEl.innerText = '';
+        return;
+      }
+
+      const evalRes = evaluateCandidateG(expr, x0);
+      if (evalRes.status === 'converges') {
+        tagEl.innerText = '✓ Contractive (|g\'| < 1)';
+        tagEl.className = 'text-[10px] font-bold text-emerald-700';
+      } else if (evalRes.status === 'diverges') {
+        tagEl.innerText = '⚠ Expansive (|g\'| > 1)';
+        tagEl.className = 'text-[10px] font-bold text-red-600';
+      } else {
+        tagEl.innerText = '';
+      }
+
+      if (window.katex && evalRes.derivativeLatex) {
+        window.katex.render(`g'(x) = ${evalRes.derivativeLatex}`, latexEl, { throwOnError: false });
+      } else {
+        latexEl.innerText = "g'(x)";
+      }
+
+      slopeEl.innerText = `|g'(${x0})| = ${isNaN(evalRes.absGPrime) ? 'NaN' : evalRes.absGPrime.toFixed(4)}`;
+    }
+
+    function selectProblem(probId) {
+      currentProblemId = probId;
+      const infoBox = document.getElementById('equationInfoBox');
+      const customBox = document.getElementById('customFBox');
+
+      if (probId === 'custom') {
+        infoBox.classList.add('hidden');
+        customBox.classList.remove('hidden');
+        const customF = document.getElementById('customFInput').value;
+        const x0 = parseFloat(document.getElementById('x0Input').value) || 1;
+        currentCandidates = autoGenerateCandidateGs(customF, x0);
+        if (currentCandidates.length > 0) {
+          selectedCandidateId = currentCandidates[0].id;
+          document.getElementById('exprGInput').value = currentCandidates[0].expr;
+        }
+      } else {
+        infoBox.classList.remove('hidden');
+        customBox.classList.add('hidden');
+        const prob = PROBLEMS.find(p => p.id === probId);
+        if (prob) {
+          document.getElementById('equationDesc').innerText = prob.desc;
+          document.getElementById('equationRootsBadge').innerText = `Root(s): ${prob.roots.join(', ')}`;
+          if (window.katex) {
+            window.katex.render(`f(x) = ${prob.equationMath}`, document.getElementById('equationMathDisplay'), { throwOnError: false });
+          }
+          currentCandidates = prob.candidates;
+          selectedCandidateId = prob.candidates[0].id;
+          document.getElementById('exprGInput').value = prob.candidates[0].expr;
+          const targetX0 = prob.candidates[0].defaultX0 !== undefined ? prob.candidates[0].defaultX0 : prob.defaultX0;
+          document.getElementById('x0Input').value = targetX0;
+        }
+      }
+
+      renderCandidateList();
+      updateActiveDerivativeDisplay();
+      runSolver();
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const eqSelect = document.getElementById('equationSelect');
+      eqSelect.addEventListener('change', (e) => {
+        selectProblem(e.target.value);
+      });
+
+      document.getElementById('customFBtn').addEventListener('click', () => {
+        const customF = document.getElementById('customFInput').value;
+        const x0 = parseFloat(document.getElementById('x0Input').value) || 1;
+        currentCandidates = autoGenerateCandidateGs(customF, x0);
+        if (currentCandidates.length > 0) {
+          selectedCandidateId = currentCandidates[0].id;
+          document.getElementById('exprGInput').value = currentCandidates[0].expr;
+        }
+        renderCandidateList();
+        updateActiveDerivativeDisplay();
+        runSolver();
+      });
+
+      document.getElementById('x0Input').addEventListener('input', () => {
+        renderCandidateList();
+        updateActiveDerivativeDisplay();
+      });
+
+      document.getElementById('exprGInput').addEventListener('input', () => {
+        updateActiveDerivativeDisplay();
+      });
+
+      document.getElementById('solverForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        runSolver();
+      });
+
+      document.getElementById('nextStepBtn').addEventListener('click', () => {
+        if (!solution) return;
+        if (currentStepIdx < solution.steps.length - 1) {
+          currentStepIdx++;
+          updateUI();
+        }
+      });
+
+      document.getElementById('stepBackBtn').addEventListener('click', () => {
+        if (currentStepIdx > 0) {
+          currentStepIdx--;
+          updateUI();
+        }
+      });
+
+      document.getElementById('resetBtn').addEventListener('click', () => {
+        currentStepIdx = 0;
+        updateUI();
+      });
+
+      document.getElementById('iterSlider').addEventListener('input', (e) => {
+        currentStepIdx = parseInt(e.target.value, 10) - 1;
+        updateUI();
+      });
+
+      document.getElementById('zoomToggle').addEventListener('change', () => renderPlot());
+      document.getElementById('ghostToggle').addEventListener('change', () => renderPlot());
+
+      const playBtn = document.getElementById('playBtn');
+      playBtn.addEventListener('click', () => {
+        if (isPlaying) {
+          clearInterval(playTimer);
+          isPlaying = false;
+          playBtn.innerText = '▶ Auto Play';
+        } else {
+          isPlaying = true;
+          playBtn.innerText = '⏸ Pause';
+          playTimer = setInterval(() => {
+            if (!solution || currentStepIdx >= solution.steps.length - 1) {
+              clearInterval(playTimer);
+              isPlaying = false;
+              playBtn.innerText = '▶ Auto Play';
+              return;
+            }
+            currentStepIdx++;
+            updateUI();
+          }, 800);
+        }
+      });
+
+      document.getElementById('copyTsvBtn').addEventListener('click', () => {
+        if (!solution || solution.steps.length === 0) return;
+        const headers = ['Iteration', 'xi', 'g(xi)', "g'(xi)", 'Contractive', 'ea(%)'];
+        const rows = solution.steps.map(s => [
+          s.iteration,
+          s.xi.toFixed(6),
+          s.gxi.toFixed(6),
+          s.gPrimeXi.toFixed(6),
+          s.isContractive ? 'Yes' : 'No',
+          s.ea !== null ? s.ea.toFixed(6) : ''
+        ].join('\t'));
+        const tsv = [headers.join('\t'), ...rows].join('\n');
+        navigator.clipboard.writeText(tsv).then(() => {
+          const btn = document.getElementById('copyTsvBtn');
+          const oldText = btn.innerText;
+          btn.innerText = '✓ Copied to Clipboard!';
+          setTimeout(() => { btn.innerText = oldText; }, 2000);
+        });
+      });
+
+      selectProblem('quadratic');
+    });
+  </script>
+</body>
+</html>

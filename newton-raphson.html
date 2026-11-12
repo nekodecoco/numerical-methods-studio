@@ -1,0 +1,1169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Newton-Raphson Visualizer | Numerical Methods Studio</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Plotly.js -->
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+  
+  <!-- Math.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/14.0.1/math.min.js"></script>
+  
+  <!-- KaTeX -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.21/dist/katex.min.css" />
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.21/dist/katex.min.js"></script>
+  
+  <!-- Canvas Confetti -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.4/dist/confetti.browser.min.js"></script>
+
+  <style>
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fadeIn {
+      animation: fadeIn 300ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+  </style>
+</head>
+<body class="bg-[#FAF9F6] text-stone-900 min-h-screen antialiased selection:bg-[#800020] selection:text-white font-sans flex flex-col">
+
+  <!-- Categorized Modern Header -->
+  <header class="border-b border-stone-200/80 bg-white/95 backdrop-blur-md sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+      <!-- Brand -->
+      <a href="index.html" class="flex items-center gap-3 group select-none flex-shrink-0">
+        <div class="w-9 h-9 rounded-lg bg-[#800020] text-white flex items-center justify-center font-mono font-bold text-sm shadow-sm group-hover:bg-[#6b001b] transition-colors">
+          <span class="tracking-tight text-amber-200 font-serif italic text-base">f</span>
+          <span class="text-[10px] text-white/90 -ml-0.5">(x)</span>
+        </div>
+        <div class="flex flex-col">
+          <div class="flex items-center gap-2">
+            <span class="text-sm sm:text-base font-semibold tracking-tight text-stone-900 font-sans">
+              Numerical Methods Studio
+            </span>
+            <span class="text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-stone-100 text-stone-600 border border-stone-200 hidden sm:inline-block">
+              v2.0
+            </span>
+          </div>
+          <span class="text-[11px] text-stone-400 font-mono hidden md:block">
+            Root-finding &amp; Taylor Series Workspace
+          </span>
+        </div>
+      </a>
+
+      <!-- Categorized Navigation -->
+      <nav class="flex items-center gap-1.5 text-xs font-medium">
+        <!-- Taylor Series -->
+        <a
+          href="index.html"
+          class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-stone-600 hover:text-stone-950 hover:bg-stone-100 transition-colors"
+        >
+          <span>Taylor Series</span>
+        </a>
+
+        <!-- Bracketing Methods Dropdown -->
+        <div class="relative group">
+          <button
+            type="button"
+            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-stone-600 hover:text-stone-950 hover:bg-stone-100 transition-colors cursor-pointer"
+          >
+            <span>Bracketing Methods</span>
+            <svg class="w-3.5 h-3.5 transition-transform group-hover:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+          <div class="absolute left-0 mt-1 w-64 rounded-xl bg-white border border-stone-200/90 shadow-xl shadow-stone-900/10 p-1.5 hidden group-hover:block z-50">
+            <div class="px-2.5 py-1.5 border-b border-stone-100 mb-1">
+              <span class="text-[10px] font-mono uppercase tracking-wider text-stone-400 font-semibold">
+                Enclosed Search Intervals
+              </span>
+            </div>
+            <a href="bisection.html" class="flex items-start gap-2.5 p-2 rounded-lg text-xs hover:bg-stone-50 text-stone-700 transition-colors">
+              <div>
+                <div class="font-semibold text-stone-900">Bisection Method</div>
+                <div class="text-[11px] text-stone-500">Interval halving · Guaranteed convergence</div>
+              </div>
+            </a>
+            <a href="false-position.html" class="flex items-start gap-2.5 p-2 rounded-lg text-xs hover:bg-stone-50 text-stone-700 transition-colors">
+              <div>
+                <div class="font-semibold text-stone-900">False Position</div>
+                <div class="text-[11px] text-stone-500">Regula Falsi · Linear interpolation</div>
+              </div>
+            </a>
+          </div>
+        </div>
+
+        <!-- Open Methods Dropdown (Active) -->
+        <div class="relative group">
+          <button
+            type="button"
+            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[#800020] bg-[#800020]/10 font-semibold border border-[#800020]/20 transition-colors cursor-pointer"
+          >
+            <span>Open Methods</span>
+            <svg class="w-3.5 h-3.5 transition-transform group-hover:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+          <div class="absolute right-0 sm:left-0 mt-1 w-72 rounded-xl bg-white border border-stone-200/90 shadow-xl shadow-stone-900/10 p-1.5 hidden group-hover:block z-50">
+            <div class="px-2.5 py-1.5 border-b border-stone-100 mb-1">
+              <span class="text-[10px] font-mono uppercase tracking-wider text-stone-400 font-semibold">
+                Single / Multi-Point Iteration
+              </span>
+            </div>
+            <a href="fixed-point.html" class="flex items-start gap-2.5 p-2 rounded-lg text-xs hover:bg-stone-50 text-stone-700 transition-colors">
+              <div>
+                <div class="font-semibold text-stone-900">Fixed-Point Iteration</div>
+                <div class="text-[11px] text-stone-500">x = g(x) · Cobweb analysis</div>
+              </div>
+            </a>
+            <a href="newton-raphson.html" class="flex items-start gap-2.5 p-2 rounded-lg text-xs bg-[#800020]/8 text-[#800020] font-semibold transition-colors">
+              <div>
+                <div class="font-semibold text-stone-900">Newton-Raphson</div>
+                <div class="text-[11px] text-stone-500 font-normal">Tangent projection · Quadratic convergence</div>
+              </div>
+            </a>
+            <a href="secant.html" class="flex items-start gap-2.5 p-2 rounded-lg text-xs hover:bg-stone-50 text-stone-700 transition-colors">
+              <div>
+                <div class="font-semibold text-stone-900">Secant Method</div>
+                <div class="text-[11px] text-stone-500">Finite difference · No derivative required</div>
+              </div>
+            </a>
+            <a href="mullers.html" class="flex items-start gap-2.5 p-2 rounded-lg text-xs hover:bg-stone-50 text-stone-700 transition-colors">
+              <div>
+                <div class="font-semibold text-stone-900">Muller's Method</div>
+                <div class="text-[11px] text-stone-500">Parabolic fit · Handles complex roots</div>
+              </div>
+            </a>
+          </div>
+        </div>
+
+        <!-- Study Guide -->
+        <a
+          href="tutorial.html"
+          class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-stone-600 hover:text-stone-950 hover:bg-stone-100 transition-colors"
+        >
+          <span>Study Guide</span>
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+    
+    <!-- Top Concept Banner -->
+    <section class="bg-gradient-to-r from-amber-700 via-amber-800 to-[#5a0017] text-white rounded-2xl p-5 shadow-lg relative overflow-hidden">
+      <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div class="space-y-1">
+          <div class="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-white/15 text-amber-200 border border-white/20">
+            <span>Tangent Projection Open Method</span>
+          </div>
+          <h2 class="text-xl sm:text-2xl font-bold font-serif tracking-tight">
+            Newton-Raphson Method
+          </h2>
+          <p class="text-xs sm:text-sm text-stone-200 max-w-2xl leading-relaxed">
+            By fitting a tangent line with slope <span class="font-serif italic font-semibold">f'(x_i)</span> at <span class="font-serif italic">(x_i, f(x_i))</span>, the next root estimate is where this line cuts the x-axis: <span class="font-serif italic">x_{i+1} = x_i - f(x_i)/f'(x_i)</span>. 
+            Once near a simple root, the number of accurate decimal digits approximately <strong>doubles every iteration</strong>!
+          </p>
+        </div>
+        <div class="flex-shrink-0 bg-white/10 backdrop-blur border border-white/20 p-3.5 rounded-xl text-center">
+          <span class="text-[10px] uppercase tracking-wider text-amber-200 font-bold block">Quadratic Convergence</span>
+          <span class="text-base font-bold font-mono">x_{i+1} = x_i - \frac{f(x_i)}{f'(x_i)}</span>
+          <span class="text-[10px] text-stone-300 block">Error Squares Each Step: E_{i+1} ≈ C E_i²</span>
+        </div>
+      </div>
+    </section>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      
+      <!-- Left Column: Controls & Presets -->
+      <div class="lg:col-span-4 space-y-6">
+        
+        <!-- Controls Card -->
+        <div class="bg-white rounded-2xl border border-stone-200/90 shadow-lg shadow-stone-200/30 p-5 space-y-4">
+          <div class="flex items-center justify-between">
+            <h2 class="text-base font-semibold text-stone-900 flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-amber-600"></span>
+              Tangent Setup
+            </h2>
+            <span class="text-[11px] font-mono text-stone-500">f(x) = 0</span>
+          </div>
+
+          <!-- Presets Dropdown -->
+          <div class="space-y-1.5">
+            <label class="block text-[11px] font-semibold uppercase tracking-wider text-stone-500">
+              Textbook Presets
+            </label>
+            <select
+              id="presetSelect"
+              class="w-full px-3 py-2 text-xs font-medium bg-stone-50 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500/30 focus:border-amber-600 text-stone-800 cursor-pointer"
+            >
+              <option value="0">Cubic Polynomial: x³ - x - 2</option>
+              <option value="1">Babylonian √5: x² - 5</option>
+              <option value="2">Transcendental: e⁻ˣ - x</option>
+              <option value="3">Trigonometric: cos(x) - x</option>
+              <option value="4">Cycling Trap: x³ - 5x (Cautionary)</option>
+              <option value="5">Extremum Trap: x³ - 2x + 2</option>
+            </select>
+            <p id="presetDescription" class="text-[11px] text-stone-500 italic">
+              Standard textbook cubic. Exhibits dramatic quadratic convergence to x ≈ 1.52095 in 4 steps!
+            </p>
+          </div>
+
+          <!-- Form Inputs -->
+          <form id="solverForm" class="space-y-3.5 pt-1">
+            <div>
+              <label class="block text-[11px] font-semibold uppercase tracking-wider text-stone-500 mb-1">
+                Function Expression <span class="font-serif">f(x)</span>
+              </label>
+              <input
+                type="text"
+                id="exprFInput"
+                value="x^3 - x - 2"
+                placeholder="e.g. x^3 - x - 2"
+                class="w-full px-3 py-2 text-sm font-mono bg-stone-50 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500/30 focus:border-amber-600 text-stone-900"
+                required
+              />
+            </div>
+
+            <!-- Symbolic Derivative Preview -->
+            <div id="derivPreviewCard" class="p-2.5 bg-stone-50 rounded-xl border border-stone-200 space-y-1">
+              <span class="text-[10px] uppercase font-bold text-stone-400 block tracking-wider">
+                Computed Derivative f'(x)
+              </span>
+              <div id="derivDisplay" class="text-xs font-serif text-[#800020] font-bold">
+                f'(x) = 3x² - 1
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-[11px] font-semibold uppercase tracking-wider text-amber-700 mb-1 flex items-center gap-1">
+                <span class="w-2 h-2 rounded-full bg-amber-600"></span>
+                Initial Guess <span class="font-serif">x_0</span>
+              </label>
+              <input
+                type="number"
+                step="any"
+                id="x0Input"
+                value="1"
+                class="w-full px-3 py-1.5 text-sm font-mono bg-stone-50 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500/30 focus:border-amber-500 text-stone-900 font-medium"
+                required
+              />
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block text-[11px] font-semibold uppercase tracking-wider text-stone-500 mb-1">
+                  Stopping Tol <span class="font-serif">ε_s (%)</span>
+                </label>
+                <input
+                  type="number"
+                  step="any"
+                  min="0.0000001"
+                  id="tolInput"
+                  value="0.0001"
+                  class="w-full px-3 py-1.5 text-sm font-mono bg-stone-50 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500/30 focus:border-amber-600 text-stone-900"
+                  required
+                />
+              </div>
+
+              <div>
+                <label class="block text-[11px] font-semibold uppercase tracking-wider text-stone-500 mb-1">
+                  Max Iterations <span class="font-serif">N</span>
+                </label>
+                <input
+                  type="number"
+                  min="1"
+                  max="50"
+                  step="1"
+                  id="maxIterInput"
+                  value="20"
+                  class="w-full px-3 py-1.5 text-sm font-mono bg-stone-50 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500/30 focus:border-amber-600 text-stone-900"
+                  required
+                />
+              </div>
+            </div>
+
+            <!-- Error Alert -->
+            <div id="bracketAlert" class="hidden p-3 bg-red-50 border border-red-200 text-red-700 rounded-xl text-xs space-y-1">
+              <div class="font-bold flex items-center gap-1.5">
+                <span>⚠️ Input Error</span>
+              </div>
+              <p id="bracketAlertMsg" class="text-[11px] leading-relaxed"></p>
+            </div>
+
+            <!-- Warning Alert -->
+            <div id="warningAlert" class="hidden p-3 bg-amber-50 border border-amber-300 text-amber-900 rounded-xl text-xs space-y-1">
+              <div class="font-bold flex items-center gap-1.5">
+                <span>⚠️ Pitfall Alert</span>
+              </div>
+              <p id="warningAlertMsg" class="text-[11px] leading-relaxed"></p>
+            </div>
+
+            <button
+              type="submit"
+              class="w-full py-2.5 px-4 rounded-xl font-medium text-sm text-white bg-amber-600 hover:bg-amber-700 active:scale-[0.98] transition-all duration-150 flex items-center justify-center gap-2 shadow-md shadow-amber-600/20 cursor-pointer"
+            >
+              <span>▶ Initialize &amp; Trace Tangent</span>
+            </button>
+          </form>
+        </div>
+
+        <!-- Algorithm Step Card -->
+        <div class="bg-white rounded-2xl border border-stone-200/90 shadow-sm p-5 space-y-3">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-stone-500 flex items-center gap-1.5">
+            📖 Newton-Raphson Recipe
+          </h3>
+          <ol class="text-xs text-stone-600 space-y-2 leading-relaxed list-decimal pl-4">
+            <li>
+              <strong>Differentiate:</strong> Compute symbolic derivative <span class="font-mono text-blue-700 font-bold">f'(x)</span>.
+            </li>
+            <li>
+              <strong>Check Slope:</strong> If <span class="font-mono">f'(x_i) ≈ 0</span>, division by zero occurs!
+            </li>
+            <li>
+              <strong>Tangent Intercept:</strong>
+              <div class="p-1.5 bg-stone-50 rounded border border-stone-200 font-mono text-[11px] text-[#800020] font-bold my-1">
+                x_{i+1} = x_i - f(x_i) / f'(x_i)
+              </div>
+            </li>
+            <li>
+              <strong>Check Error:</strong> <span class="font-mono">ε_a = |(x_{i+1} - x_i) / x_{i+1}| · 100%</span>.
+            </li>
+          </ol>
+        </div>
+
+      </div>
+
+      <!-- Right Column: Action Bar, Graph & Table -->
+      <div class="lg:col-span-8 space-y-6">
+        
+        <!-- Action Bar -->
+        <div class="bg-white rounded-2xl border border-stone-200/90 shadow-lg shadow-stone-200/40 p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div class="flex items-center gap-3">
+            <div class="flex flex-col">
+              <span class="text-[11px] uppercase tracking-wider font-semibold text-stone-500">
+                Current Iteration
+              </span>
+              <div class="flex items-center gap-2 mt-0.5">
+                <span class="text-2xl font-bold font-mono text-amber-700" id="iterDisplay">
+                  i = 1
+                </span>
+                <span class="text-xs px-2.5 py-0.5 rounded-full font-medium bg-stone-100 text-stone-700 border border-stone-200" id="iterBadge">
+                  Tangent Projection
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Iteration Buttons & Auto-Play -->
+          <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
+            <button
+              type="button"
+              id="stepBackBtn"
+              title="Previous iteration"
+              class="p-2.5 rounded-xl border border-stone-200 text-stone-600 hover:bg-stone-50 disabled:opacity-35 disabled:cursor-not-allowed transition-all cursor-pointer"
+            >
+              ◀
+            </button>
+
+            <button
+              type="button"
+              id="resetBtn"
+              title="Reset to iteration 1"
+              class="px-3.5 py-2.5 rounded-xl border border-stone-200 text-xs font-semibold text-stone-600 hover:bg-stone-50 disabled:opacity-35 disabled:cursor-not-allowed transition-all cursor-pointer"
+            >
+              ↺ Reset
+            </button>
+
+            <button
+              type="button"
+              id="playBtn"
+              title="Auto step through iterations"
+              class="px-3.5 py-2.5 rounded-xl border border-stone-200 text-xs font-semibold text-stone-600 hover:bg-stone-50 transition-all cursor-pointer"
+            >
+              ▶ Auto Play
+            </button>
+
+            <button
+              type="button"
+              id="nextStepBtn"
+              class="relative px-5 py-2.5 rounded-xl font-semibold text-sm shadow-md transition-all duration-200 flex items-center justify-center gap-2 select-none overflow-hidden bg-amber-600 text-white hover:bg-amber-700 active:scale-95 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              <span id="nextBtnText">Next Tangent (i → 2) ⚡</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Scrubber Slider -->
+        <div class="bg-white rounded-2xl border border-stone-200 p-4 shadow-sm flex items-center gap-4">
+          <span class="text-xs font-semibold text-stone-500 whitespace-nowrap">Iteration Scrubber:</span>
+          <input
+            type="range"
+            id="iterSlider"
+            min="1"
+            max="1"
+            value="1"
+            class="w-full accent-amber-600 cursor-pointer"
+          />
+          <span class="text-xs font-mono font-bold text-amber-700 whitespace-nowrap" id="sliderValueDisplay">
+            1 / 1
+          </span>
+        </div>
+
+        <!-- Live Step Math HUD -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
+          <div class="bg-white p-3 rounded-xl border border-stone-200 shadow-xs">
+            <span class="text-[10px] uppercase font-bold text-stone-500 block">Current x_i</span>
+            <span class="text-sm font-mono font-bold text-stone-900" id="hudXi">-</span>
+            <span class="text-[10px] text-stone-400 block" id="hudFxi">f(xi) = -</span>
+          </div>
+
+          <div class="bg-white p-3 rounded-xl border border-stone-200 shadow-xs">
+            <span class="text-[10px] uppercase font-bold text-blue-700 block">Slope f'(x_i)</span>
+            <span class="text-sm font-mono font-bold text-blue-900" id="hudDfxi">-</span>
+            <span class="text-[10px] text-stone-400 block">Tangent Slope</span>
+          </div>
+
+          <div class="bg-white p-3 rounded-xl border border-amber-300 bg-amber-50/40 shadow-xs">
+            <span class="text-[10px] uppercase font-bold text-amber-800 block">Next Root x_{i+1}</span>
+            <span class="text-sm font-mono font-bold text-[#800020]" id="hudXNext">-</span>
+            <span class="text-[10px] text-stone-500 block">x-intercept</span>
+          </div>
+
+          <div class="bg-white p-3 rounded-xl border border-stone-200 shadow-xs">
+            <span class="text-[10px] uppercase font-bold text-stone-500 block">Rel Error ε_a</span>
+            <span class="text-sm font-mono font-bold text-emerald-700" id="hudEa">-</span>
+            <span class="text-[10px] text-stone-400 block" id="hudStatus">Status</span>
+          </div>
+        </div>
+
+        <!-- Graph Container -->
+        <div class="relative w-full rounded-2xl bg-white border border-stone-200/90 shadow-xl shadow-stone-200/40 overflow-hidden">
+          <div class="px-5 py-3 border-b border-stone-100 flex flex-wrap items-center justify-between gap-3 bg-gradient-to-r from-stone-50/80 via-white to-stone-50/80">
+            <div class="flex items-center gap-3">
+              <span class="inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#800020]/10 text-[#800020] border border-[#800020]/20">
+                f(x) Function Curve
+              </span>
+              <span class="inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-900 border border-amber-300">
+                Active Tangent Line
+              </span>
+              <span class="inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-50 text-blue-800 border border-blue-200">
+                Projection to f(x_{i+1})
+              </span>
+            </div>
+            
+            <div class="flex items-center gap-4">
+              <label class="text-xs text-stone-600 flex items-center gap-1.5 cursor-pointer select-none">
+                <input type="checkbox" id="ghostToggle" checked class="accent-amber-600 rounded" />
+                <span>Show ghost tangent</span>
+              </label>
+
+              <label class="text-xs text-stone-600 flex items-center gap-1.5 cursor-pointer select-none">
+                <input type="checkbox" id="zoomToggle" class="accent-amber-600 rounded" />
+                <span>Zoom to active root</span>
+              </label>
+            </div>
+          </div>
+
+          <div id="plotDiv" class="w-full h-[520px]"></div>
+        </div>
+
+        <!-- Full Iteration Accounting Table -->
+        <div class="bg-white rounded-2xl border border-stone-200/90 shadow-xl shadow-stone-200/40 p-5 space-y-4">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <h3 class="text-base font-semibold text-stone-900 flex items-center gap-2">
+                <span>📋 Values Accounting Table</span>
+                <span class="text-xs font-normal text-stone-500" id="tableRowCount">(0 iterations)</span>
+              </h3>
+              <p class="text-xs text-stone-500">
+                Complete audit trail of tangent slopes, intercept progression, and quadratic error reduction.
+              </p>
+            </div>
+
+            <div class="flex items-center gap-2">
+              <button
+                type="button"
+                id="copyTsvBtn"
+                class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-stone-100 hover:bg-stone-200 text-stone-700 rounded-xl transition cursor-pointer"
+              >
+                <span>📋 Copy for Excel/Sheets</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="overflow-x-auto border border-stone-200 rounded-xl max-h-[380px]">
+            <table class="w-full text-left text-xs text-stone-700 font-mono">
+              <thead class="bg-stone-100/90 sticky top-0 border-b border-stone-200 text-stone-900 font-sans uppercase text-[10px] tracking-wider z-10">
+                <tr>
+                  <th class="py-2.5 px-3 text-center">Iter (i)</th>
+                  <th class="py-2.5 px-3">x_i</th>
+                  <th class="py-2.5 px-3">f(x_i)</th>
+                  <th class="py-2.5 px-3">f'(x_i)</th>
+                  <th class="py-2.5 px-3 text-[#800020] font-bold">x_{i+1} (Tangent Intercept)</th>
+                  <th class="py-2.5 px-3 text-emerald-700 font-bold">ε_a (%)</th>
+                </tr>
+              </thead>
+              <tbody id="tableBody" class="divide-y divide-stone-100 bg-white">
+                <!-- Rows injected by JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="border-t border-stone-200 bg-white py-6 text-center text-xs text-stone-500 mt-12">
+    <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+      <p>Numerical Methods Studio classroom suite for engineering and mathematics.</p>
+      <div class="flex items-center gap-3 text-stone-400">
+        <a href="index.html" class="hover:text-stone-700 underline">Taylor Series</a>
+        <span>•</span>
+        <a href="bisection.html" class="hover:text-stone-700 underline">Bisection</a>
+        <span>•</span>
+        <a href="false-position.html" class="hover:text-stone-700 underline">False Position</a>
+        <span>•</span>
+        <a href="fixed-point.html" class="hover:text-stone-700 underline">Fixed Point</a>
+        <span>•</span>
+        <a href="newton-raphson.html" class="hover:text-stone-700 underline">Newton-Raphson</a>
+        <span>•</span>
+        <a href="tutorial.html" class="hover:text-stone-700 underline">Study Guide</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Script Logic -->
+  <script>
+    const PRESETS = [
+      {
+        label: 'Cubic Polynomial: x³ - x - 2',
+        expr: 'x^3 - x - 2',
+        x0: 1,
+        desc: 'Standard textbook cubic. Exhibits dramatic quadratic convergence to x ≈ 1.52095 in 4 steps!'
+      },
+      {
+        label: 'Babylonian √5: x² - 5',
+        expr: 'x^2 - 5',
+        x0: 2,
+        desc: 'Ancient Babylonian method for calculating √5 ≈ 2.236068 with doubled precision every step.'
+      },
+      {
+        label: 'Transcendental: e⁻ˣ - x',
+        expr: 'exp(-x) - x',
+        x0: 0,
+        desc: 'Nonlinear exponential-linear balance. Rapid convergence to x ≈ 0.567143.'
+      },
+      {
+        label: 'Trigonometric: cos(x) - x',
+        expr: 'cos(x) - x',
+        x0: 1,
+        desc: 'Solves cos(x) = x. Reaches 6-decimal precision in 3 steps.'
+      },
+      {
+        label: 'Cycling Trap: x³ - 5x (Cautionary)',
+        expr: 'x^3 - 5*x',
+        x0: 1,
+        desc: 'With guess x₀ = 1, Newton-Raphson bounces indefinitely between +1 and -1 in an endless cycle.'
+      },
+      {
+        label: 'Extremum Trap: x³ - 2x + 2',
+        expr: 'x^3 - 2*x + 2',
+        x0: 0,
+        desc: 'Near local extremum where f\'(x) ≈ 0, the tangent line shoots far away, illustrating sensitivity.'
+      }
+    ];
+
+    let solution = null;
+    let currentStepIdx = 0;
+    let isPlaying = false;
+    let playTimer = null;
+
+    function normalizeExpression(raw) {
+      if (!raw) return '';
+      let s = raw.trim();
+      s = s.replace(/[\u2010-\u2015\u2212\uFE58\uFE63\uFF0D]/g, '-');
+      s = s.replace(/[\u00D7\u22C5\u00B7]/g, '*');
+      s = s.replace(/[\u00F7]/g, '/');
+      s = s.replace(/\bln\b/g, 'log');
+      return s;
+    }
+
+    function formatNumber(val, decimals = 5) {
+      if (val === null || val === undefined || isNaN(val)) return '-';
+      if (Math.abs(val) < 1e-12) return '0.00000';
+      if (Math.abs(val) >= 1e4 || Math.abs(val) < 1e-4) {
+        return val.toExponential(4);
+      }
+      return val.toFixed(decimals);
+    }
+
+    function solveNewtonRaphson(exprFStr, initialX0, maxIter = 25, tol = 0.0001) {
+      const normalized = normalizeExpression(exprFStr);
+      let compiledF, compiledDF, derivTex = '';
+      try {
+        const baseNode = math.parse(normalized);
+        compiledF = baseNode.compile();
+        try {
+          const derivNode = math.derivative(baseNode, 'x');
+          compiledDF = derivNode.compile();
+          derivTex = derivNode.toTex({ parenthesis: 'auto' });
+        } catch {
+          compiledDF = null;
+        }
+      } catch (e) {
+        return { error: 'Syntax error in f(x): ' + e.message };
+      }
+
+      function evaluateF(xVal) {
+        try {
+          const res = compiledF.evaluate({ x: xVal, e: Math.E, pi: Math.PI });
+          const num = typeof res === 'number' ? res : Number(res);
+          return isFinite(num) ? num : NaN;
+        } catch {
+          return NaN;
+        }
+      }
+
+      function evaluateDF(xVal) {
+        if (compiledDF) {
+          try {
+            const res = compiledDF.evaluate({ x: xVal, e: Math.E, pi: Math.PI });
+            const num = typeof res === 'number' ? res : Number(res);
+            if (isFinite(num)) return num;
+          } catch {}
+        }
+        const h = 1e-6;
+        return (evaluateF(xVal + h) - evaluateF(xVal - h)) / (2 * h);
+      }
+
+      const f0 = evaluateF(initialX0);
+      if (isNaN(f0)) {
+        return { error: `f(x) evaluated to NaN or is undefined at x₀ = ${initialX0}.` };
+      }
+
+      let xi = initialX0;
+      const steps = [];
+      let converged = false;
+      let diverged = false;
+      let warning = null;
+
+      for (let i = 0; i < maxIter; i++) {
+        const fxi = evaluateF(xi);
+        const dfxi = evaluateDF(xi);
+
+        if (isNaN(fxi) || !isFinite(fxi) || Math.abs(fxi) > 1e12 || Math.abs(xi) > 1e12) {
+          diverged = true;
+          warning = `Iteration diverged: values exceeded numerical bounds at step ${i + 1}.`;
+          break;
+        }
+
+        let zeroSlope = false;
+        let xNext;
+
+        if (Math.abs(dfxi) < 1e-12) {
+          zeroSlope = true;
+          warning = `Zero slope encountered: f'(x) ≈ 0 at x = ${formatNumber(xi)}. Tangent line is horizontal.`;
+          xNext = xi + 0.001;
+        } else {
+          xNext = xi - fxi / dfxi;
+        }
+
+        let ea = null;
+        if (i > 0 && Math.abs(xNext) > 1e-14) {
+          ea = Math.abs((xNext - xi) / xNext) * 100;
+        }
+
+        const tangentSlope = dfxi;
+        const tangentIntercept = fxi - dfxi * xi;
+
+        steps.push({
+          iteration: i + 1,
+          xi,
+          fxi,
+          dfxi,
+          xNext,
+          ea,
+          tangentSlope,
+          tangentIntercept,
+          zeroSlope
+        });
+
+        if (ea !== null && ea < tol) {
+          converged = true;
+          break;
+        }
+
+        if (Math.abs(fxi) < 1e-14) {
+          converged = true;
+          break;
+        }
+
+        // Cycle detection check
+        if (steps.length >= 3) {
+          const prev2 = steps[steps.length - 3];
+          if (Math.abs(xNext - prev2.xi) < 1e-6 && Math.abs(xNext - xi) > 0.01) {
+            warning = `Cycle detected! Newton-Raphson is trapped bouncing between x ≈ ${formatNumber(xi)} and x ≈ ${formatNumber(xNext)}.`;
+            break;
+          }
+        }
+
+        xi = xNext;
+      }
+
+      return {
+        exprFStr,
+        derivTex,
+        evaluateF,
+        initialX0,
+        steps,
+        converged,
+        diverged,
+        warning
+      };
+    }
+
+    function renderPlot() {
+      if (!solution || solution.steps.length === 0) return;
+
+      const step = solution.steps[currentStepIdx];
+      const prevStep = currentStepIdx > 0 ? solution.steps[currentStepIdx - 1] : null;
+      const zoomToActive = document.getElementById('zoomToggle').checked;
+      const showGhost = document.getElementById('ghostToggle').checked;
+
+      const allX = [solution.initialX0];
+      solution.steps.slice(0, currentStepIdx + 1).forEach(s => {
+        if (isFinite(s.xi)) allX.push(s.xi);
+        if (isFinite(s.xNext)) allX.push(s.xNext);
+      });
+
+      let minX = Math.min(...allX);
+      let maxX = Math.max(...allX);
+
+      if (zoomToActive) {
+        const center = step.xNext;
+        const span = Math.abs(step.xNext - step.xi) * 3 || 0.5;
+        minX = center - span;
+        maxX = center + span;
+      } else {
+        const span = maxX - minX || 2;
+        const pad = span * 0.35 || 1;
+        minX -= pad;
+        maxX += pad;
+      }
+
+      const N = 400;
+      const stepX = (maxX - minX) / (N - 1);
+      const xs = [];
+      const ys = [];
+      const validYs = [];
+
+      for (let i = 0; i < N; i++) {
+        const x = minX + i * stepX;
+        xs.push(x);
+        const y = solution.evaluateF(x);
+        if (isFinite(y) && !isNaN(y) && Math.abs(y) < 1e5) {
+          ys.push(y);
+          validYs.push(y);
+        } else {
+          ys.push(null);
+        }
+      }
+
+      let minY = -5;
+      let maxY = 5;
+      if (validYs.length > 0) {
+        minY = Math.min(...validYs);
+        maxY = Math.max(...validYs);
+        const spanY = maxY - minY;
+        const padY = spanY * 0.2 || 1;
+        minY -= padY;
+        maxY += padY;
+      }
+      if (minY > -0.5) minY = -0.5;
+      if (maxY < 0.5) maxY = 0.5;
+
+      const traces = [];
+
+      // 1. Zero Axis
+      traces.push({
+        x: [minX, maxX],
+        y: [0, 0],
+        type: 'scatter',
+        mode: 'lines',
+        line: { color: '#64748B', width: 1.8, dash: 'dot' },
+        name: 'Zero Axis (y = 0)',
+        hoverinfo: 'skip'
+      });
+
+      // 2. Function Curve f(x)
+      traces.push({
+        x: xs,
+        y: ys,
+        type: 'scatter',
+        mode: 'lines',
+        name: `f(x) = ${solution.exprFStr}`,
+        line: { color: '#800020', width: 3.5 },
+        hovertemplate: `<b>f(x)</b>: %{y:.5f}<br>x: %{x:.5f}<extra></extra>`
+      });
+
+      // 3. Ghost Tangent Line
+      if (showGhost && prevStep) {
+        traces.push({
+          x: [prevStep.xi, prevStep.xNext],
+          y: [prevStep.fxi, 0],
+          type: 'scatter',
+          mode: 'lines',
+          name: `Prev Tangent (Iter ${prevStep.iteration})`,
+          line: { color: 'rgba(148, 163, 184, 0.75)', width: 2, dash: 'dash' },
+          hovertemplate: `<b>Previous Tangent</b><extra></extra>`
+        });
+      }
+
+      // 4. Active Tangent Line
+      const tx0 = step.xi;
+      const ty0 = step.fxi;
+      const tx1 = step.xNext;
+      const ty1 = 0;
+      const dx = tx1 - tx0;
+      const xStart = tx0 - dx * 0.15;
+      const yStart = ty0 + (step.tangentSlope * (xStart - tx0));
+      const xEnd = tx1 + dx * 0.15;
+      const yEnd = ty1 + (step.tangentSlope * (xEnd - tx1));
+
+      traces.push({
+        x: [xStart, tx0, tx1, xEnd],
+        y: [yStart, ty0, ty1, yEnd],
+        type: 'scatter',
+        mode: 'lines',
+        name: `Active Tangent (Iter ${step.iteration})`,
+        line: { color: '#D97706', width: 3.2 },
+        hovertemplate: `<b>Tangent Line</b>: slope = ${step.dfxi.toFixed(4)}<extra></extra>`
+      });
+
+      // Point at (xi, f(xi))
+      traces.push({
+        x: [step.xi],
+        y: [step.fxi],
+        type: 'scatter',
+        mode: 'markers+text',
+        name: `(x_${step.iteration - 1}, f)`,
+        marker: {
+          size: 13,
+          color: '#800020',
+          symbol: 'diamond',
+          line: { color: '#F59E0B', width: 2.5 }
+        },
+        text: [`(x_${step.iteration - 1}, f)`],
+        textposition: step.fxi >= 0 ? 'top center' : 'bottom center',
+        textfont: { size: 10, color: '#800020', weight: 600 },
+        hovertemplate: `<b>Curve Point</b><br>x: %{x:.5f}<br>f(x): %{y:.5f}<extra></extra>`
+      });
+
+      // Vertical projection line from xNext to curve f(xNext)
+      const nextY = solution.evaluateF(step.xNext);
+      if (isFinite(nextY)) {
+        traces.push({
+          x: [step.xNext, step.xNext],
+          y: [0, nextY],
+          type: 'scatter',
+          mode: 'lines+markers',
+          name: 'Vertical Projection',
+          line: { color: '#2563EB', width: 2, dash: 'dot' },
+          marker: { size: 7, color: '#2563EB' },
+          hoverinfo: 'skip'
+        });
+      }
+
+      // Root Estimate Marker on x-axis: (xNext, 0)
+      traces.push({
+        x: [step.xNext],
+        y: [0],
+        type: 'scatter',
+        mode: 'markers+text',
+        name: `Root Est x_${step.iteration}`,
+        marker: {
+          size: 15,
+          color: '#D97706',
+          line: { color: '#800020', width: 3 }
+        },
+        text: [`x_${step.iteration} = ${step.xNext.toFixed(4)}`],
+        textposition: 'top center',
+        textfont: { family: 'sans-serif', size: 12, color: '#800020', weight: 700 },
+        hovertemplate: `<b>Root Estimate x_${step.iteration}</b>: %{x:.6f}<extra></extra>`
+      });
+
+      const layout = {
+        autosize: true,
+        height: 520,
+        margin: { l: 55, r: 25, t: 45, b: 50 },
+        paper_bgcolor: 'rgba(255, 255, 255, 0)',
+        plot_bgcolor: '#FAFBFC',
+        font: { family: 'sans-serif', color: '#475569' },
+        xaxis: {
+          title: { text: 'x', font: { size: 13, color: '#475569' } },
+          range: [minX, maxX],
+          showgrid: true,
+          gridcolor: '#EDF2F7',
+          zeroline: true,
+          zerolinecolor: '#94A3B8',
+          zerolinewidth: 2
+        },
+        yaxis: {
+          title: { text: 'f(x)', font: { size: 13, color: '#475569' } },
+          range: [minY, maxY],
+          showgrid: true,
+          gridcolor: '#EDF2F7',
+          zeroline: true,
+          zerolinecolor: '#94A3B8',
+          zerolinewidth: 2
+        },
+        legend: {
+          orientation: 'h',
+          x: 0,
+          y: 1.14,
+          font: { size: 11, color: '#334155' },
+          bgcolor: 'rgba(255, 255, 255, 0.85)'
+        }
+      };
+
+      Plotly.react('plotDiv', traces, layout, { responsive: true, displaylogo: false });
+    }
+
+    function updateUI() {
+      if (!solution || solution.steps.length === 0) return;
+
+      const totalSteps = solution.steps.length;
+      const step = solution.steps[currentStepIdx];
+      const isLast = currentStepIdx === totalSteps - 1;
+
+      document.getElementById('iterDisplay').innerText = `i = ${step.iteration}`;
+
+      let badgeText = 'Active Tangent Step';
+      let badgeBg = 'bg-stone-100 text-stone-700 border-stone-200';
+      if (isLast && solution.converged) {
+        badgeText = '🎯 Quadratic Convergence Reached';
+        badgeBg = 'bg-emerald-100 text-emerald-900 border-emerald-300 font-bold';
+      } else if (step.zeroSlope) {
+        badgeText = '⚠ Flat Tangent Warning (f\' ≈ 0)';
+        badgeBg = 'bg-red-100 text-red-900 border-red-300 font-bold';
+      } else {
+        badgeText = '✓ Tangent Projection Step';
+        badgeBg = 'bg-amber-100 text-amber-900 border-amber-300 font-medium';
+      }
+      const badgeEl = document.getElementById('iterBadge');
+      badgeEl.innerText = badgeText;
+      badgeEl.className = `text-xs px-2.5 py-0.5 rounded-full font-medium border ${badgeBg}`;
+
+      const slider = document.getElementById('iterSlider');
+      slider.max = totalSteps;
+      slider.value = currentStepIdx + 1;
+      document.getElementById('sliderValueDisplay').innerText = `${currentStepIdx + 1} / ${totalSteps}`;
+
+      document.getElementById('stepBackBtn').disabled = currentStepIdx === 0;
+      document.getElementById('resetBtn').disabled = currentStepIdx === 0;
+      const nextBtn = document.getElementById('nextStepBtn');
+      nextBtn.disabled = isLast;
+      if (isLast) {
+        document.getElementById('nextBtnText').innerText = solution.converged ? '✓ Fully Converged' : 'Max Step Reached';
+      } else {
+        document.getElementById('nextBtnText').innerText = `Next Tangent (i → ${step.iteration + 1}) ⚡`;
+      }
+
+      // HUD
+      document.getElementById('hudXi').innerText = formatNumber(step.xi, 5);
+      document.getElementById('hudFxi').innerText = `f(xi) = ${formatNumber(step.fxi, 4)}`;
+      document.getElementById('hudDfxi').innerText = formatNumber(step.dfxi, 4);
+      document.getElementById('hudXNext').innerText = formatNumber(step.xNext, 6);
+      document.getElementById('hudEa').innerText = step.ea !== null ? `${step.ea.toFixed(4)}%` : 'Initial Step';
+      document.getElementById('hudStatus').innerText = isLast && solution.converged ? 'Converged' : 'In Progress';
+
+      const rows = document.querySelectorAll('#tableBody tr');
+      rows.forEach((r, idx) => {
+        if (idx === currentStepIdx) {
+          r.className = 'bg-amber-50/90 font-bold border-l-4 border-l-amber-600 text-stone-900';
+        } else {
+          r.className = 'hover:bg-stone-50/80 transition-colors';
+        }
+      });
+
+      if (isLast && solution.converged && window.confetti) {
+        window.confetti({ particleCount: 50, spread: 60, origin: { y: 0.7 } });
+      }
+
+      renderPlot();
+    }
+
+    function renderTable() {
+      const tbody = document.getElementById('tableBody');
+      tbody.innerHTML = '';
+      if (!solution) return;
+
+      document.getElementById('tableRowCount').innerText = `(${solution.steps.length} iterations)`;
+
+      solution.steps.forEach((step, idx) => {
+        const tr = document.createElement('tr');
+        tr.className = idx === currentStepIdx ? 'bg-amber-50 font-bold' : 'hover:bg-stone-50';
+        tr.style.cursor = 'pointer';
+        tr.addEventListener('click', () => {
+          currentStepIdx = idx;
+          updateUI();
+        });
+
+        tr.innerHTML = `
+          <td class="py-2.5 px-3 text-center font-bold text-amber-800">${step.iteration}</td>
+          <td class="py-2.5 px-3">${formatNumber(step.xi, 5)}</td>
+          <td class="py-2.5 px-3">${formatNumber(step.fxi, 4)}</td>
+          <td class="py-2.5 px-3 font-semibold ${step.zeroSlope ? 'text-red-600' : ''}">${formatNumber(step.dfxi, 4)}</td>
+          <td class="py-2.5 px-3 font-bold text-[#800020]">${formatNumber(step.xNext, 6)}</td>
+          <td class="py-2.5 px-3 font-bold text-emerald-700">${step.ea !== null ? step.ea.toFixed(4) + '%' : '-'}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function runSolver() {
+      const expr = document.getElementById('exprFInput').value;
+      const x0 = parseFloat(document.getElementById('x0Input').value);
+      const tol = parseFloat(document.getElementById('tolInput').value);
+      const maxIter = parseInt(document.getElementById('maxIterInput').value, 10);
+
+      const alertEl = document.getElementById('bracketAlert');
+      const alertMsg = document.getElementById('bracketAlertMsg');
+      alertEl.classList.add('hidden');
+
+      const warnEl = document.getElementById('warningAlert');
+      const warnMsg = document.getElementById('warningAlertMsg');
+      warnEl.classList.add('hidden');
+
+      const res = solveNewtonRaphson(expr, x0, maxIter, tol);
+      if (res.error) {
+        alertMsg.innerText = res.error;
+        alertEl.classList.remove('hidden');
+        return;
+      }
+
+      if (res.warning) {
+        warnMsg.innerText = res.warning;
+        warnEl.classList.remove('hidden');
+      }
+
+      if (res.derivTex) {
+        document.getElementById('derivDisplay').innerText = `f'(x) = ${res.derivTex}`;
+      }
+
+      solution = res;
+      currentStepIdx = 0;
+      renderTable();
+      updateUI();
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const presetSelect = document.getElementById('presetSelect');
+      presetSelect.addEventListener('change', (e) => {
+        const p = PRESETS[parseInt(e.target.value, 10)];
+        if (p) {
+          document.getElementById('exprFInput').value = p.expr;
+          document.getElementById('x0Input').value = p.x0;
+          document.getElementById('presetDescription').innerText = p.desc;
+          runSolver();
+        }
+      });
+
+      document.getElementById('solverForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        runSolver();
+      });
+
+      document.getElementById('nextStepBtn').addEventListener('click', () => {
+        if (!solution) return;
+        if (currentStepIdx < solution.steps.length - 1) {
+          currentStepIdx++;
+          updateUI();
+        }
+      });
+
+      document.getElementById('stepBackBtn').addEventListener('click', () => {
+        if (currentStepIdx > 0) {
+          currentStepIdx--;
+          updateUI();
+        }
+      });
+
+      document.getElementById('resetBtn').addEventListener('click', () => {
+        currentStepIdx = 0;
+        updateUI();
+      });
+
+      document.getElementById('iterSlider').addEventListener('input', (e) => {
+        currentStepIdx = parseInt(e.target.value, 10) - 1;
+        updateUI();
+      });
+
+      document.getElementById('zoomToggle').addEventListener('change', () => renderPlot());
+      document.getElementById('ghostToggle').addEventListener('change', () => renderPlot());
+
+      const playBtn = document.getElementById('playBtn');
+      playBtn.addEventListener('click', () => {
+        if (isPlaying) {
+          clearInterval(playTimer);
+          isPlaying = false;
+          playBtn.innerText = '▶ Auto Play';
+        } else {
+          isPlaying = true;
+          playBtn.innerText = '⏸ Pause';
+          playTimer = setInterval(() => {
+            if (!solution || currentStepIdx >= solution.steps.length - 1) {
+              clearInterval(playTimer);
+              isPlaying = false;
+              playBtn.innerText = '▶ Auto Play';
+              return;
+            }
+            currentStepIdx++;
+            updateUI();
+          }, 800);
+        }
+      });
+
+      document.getElementById('copyTsvBtn').addEventListener('click', () => {
+        if (!solution || solution.steps.length === 0) return;
+        const headers = ['Iteration', 'xi', 'f(xi)', "f'(xi)", 'x_{i+1}', 'ea(%)'];
+        const rows = solution.steps.map(s => [
+          s.iteration,
+          s.xi.toFixed(6),
+          s.fxi.toFixed(6),
+          s.dfxi.toFixed(6),
+          s.xNext.toFixed(6),
+          s.ea !== null ? s.ea.toFixed(6) : ''
+        ].join('\t'));
+        const tsv = [headers.join('\t'), ...rows].join('\n');
+        navigator.clipboard.writeText(tsv).then(() => {
+          const btn = document.getElementById('copyTsvBtn');
+          const oldText = btn.innerText;
+          btn.innerText = '✓ Copied to Clipboard!';
+          setTimeout(() => { btn.innerText = oldText; }, 2000);
+        });
+      });
+
+      runSolver();
+    });
+  </script>
+</body>
+</html>
