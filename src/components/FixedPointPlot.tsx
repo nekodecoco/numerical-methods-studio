@@ -15,10 +15,10 @@ const Plot = dynamic<any>(
   {
     ssr: false,
     loading: () => (
-      <div className="w-full h-[520px] flex items-center justify-center bg-stone-50/50 rounded-2xl border border-stone-200/80">
-        <div className="flex flex-col items-center gap-3 text-stone-500">
-          <div className="w-8 h-8 border-3 border-[#800020] border-t-transparent rounded-full animate-spin" />
-          <span className="text-sm font-medium">Initializing Cobweb Canvas...</span>
+      <div className="w-full h-[520px] flex items-center justify-center bg-[#0a0a0c] rounded-2xl border border-white/10">
+        <div className="flex flex-col items-center gap-3 text-stone-400">
+          <div className="w-8 h-8 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin" />
+          <span className="text-xs font-mono uppercase tracking-wider text-stone-400">Initializing Cobweb Precision Canvas...</span>
         </div>
       </div>
     ),
@@ -131,7 +131,7 @@ export const FixedPointPlot: React.FC<FixedPointPlotProps> = ({
       hovertemplate: '<b>y = x</b>: %{y:.4f}<extra></extra>',
     });
 
-    // 2. Iteration Function y = g(x) (Royal Maroon)
+    // 2. Iteration Function y = g(x) (Luminous Emerald)
     traces.push({
       x: xValues,
       y: yGValues,
@@ -139,8 +139,8 @@ export const FixedPointPlot: React.FC<FixedPointPlotProps> = ({
       mode: 'lines',
       name: `g(x) = ${exprGStr}`,
       line: {
-        color: '#800020',
-        width: 3.5,
+        color: '#10b981',
+        width: 3,
       },
       hovertemplate: `<b>g(x)</b>: %{y:.5f}<br>x: %{x:.5f}<extra></extra>`,
     });
@@ -168,13 +168,13 @@ export const FixedPointPlot: React.FC<FixedPointPlotProps> = ({
         mode: 'lines+markers',
         name: 'Prior Steps (Ghost)',
         line: {
-          color: 'rgba(148, 163, 184, 0.7)',
-          width: 1.8,
+          color: 'rgba(148, 163, 184, 0.45)',
+          width: 1.5,
           dash: 'dot',
         },
         marker: {
-          size: 5,
-          color: 'rgba(148, 163, 184, 0.7)',
+          size: 4,
+          color: 'rgba(148, 163, 184, 0.45)',
         },
         hoverinfo: 'skip',
       });
@@ -202,12 +202,12 @@ export const FixedPointPlot: React.FC<FixedPointPlotProps> = ({
         mode: 'lines+markers',
         name: `Active Step ${currentIter}`,
         line: {
-          color: '#D97706', // Amber gold
-          width: 3.2,
+          color: '#fbbf24', // Amber gold
+          width: 2.8,
         },
         marker: {
-          size: 8,
-          color: '#D97706',
+          size: 7,
+          color: '#fbbf24',
         },
         hovertemplate: `<b>Cobweb Step ${currentIter}</b><br>x: %{x:.5f}<br>y: %{y:.5f}<extra></extra>`,
       });
@@ -220,12 +220,12 @@ export const FixedPointPlot: React.FC<FixedPointPlotProps> = ({
         mode: 'markers',
         name: `g(x_${currentIter - 1})`,
         marker: {
-          size: 13,
-          color: '#800020',
+          size: 11,
+          color: '#10b981',
           symbol: 'diamond',
           line: {
-            color: '#F59E0B',
-            width: 2.5,
+            color: '#fbbf24',
+            width: 2,
           },
         },
         hovertemplate: `<b>Evaluation Point</b><br>x_${currentIter - 1}: %{x:.5f}<br>g(x): %{y:.5f}<extra></extra>`,
@@ -239,20 +239,20 @@ export const FixedPointPlot: React.FC<FixedPointPlotProps> = ({
         mode: 'markers+text',
         name: `Root Estimate x_${currentIter}`,
         marker: {
-          size: 15,
-          color: '#D97706',
+          size: 13,
+          color: '#f59e0b',
           symbol: 'circle',
           line: {
-            color: '#FFFFFF',
-            width: 3,
+            color: '#ffffff',
+            width: 2.5,
           },
         },
         text: [`x_${currentIter} = ${currentStep.gxi.toFixed(4)}`],
         textposition: 'top center',
         textfont: {
-          family: 'Inter, sans-serif',
-          size: 12,
-          color: '#800020',
+          family: 'var(--font-geist-mono), monospace',
+          size: 11,
+          color: '#fbbf24',
           weight: 700,
         },
         hovertemplate: `<b>New Estimate x_${currentIter}</b>: %{x:.6f}<extra></extra>`,
@@ -279,83 +279,90 @@ export const FixedPointPlot: React.FC<FixedPointPlotProps> = ({
       autosize: true,
       height: 520,
       margin: { l: 55, r: 25, t: 45, b: 50 },
-      paper_bgcolor: 'rgba(255, 255, 255, 0)',
-      plot_bgcolor: '#FAFBFC',
+      paper_bgcolor: 'rgba(0, 0, 0, 0)',
+      plot_bgcolor: '#0a0a0c',
       font: {
-        family: 'Inter, system-ui, -apple-system, sans-serif',
-        color: '#475569',
+        family: 'var(--font-geist-sans), Inter, system-ui, -apple-system, sans-serif',
+        color: '#a1a1aa',
       },
       xaxis: {
-        title: { text: 'x', font: { size: 13, color: '#475569' } },
+        title: { text: 'x', font: { size: 12, color: '#a1a1aa' } },
         range: [plotXMin, plotXMax],
         fixedrange: false,
         showgrid: true,
-        gridcolor: '#EDF2F7',
-        gridwidth: 1.2,
+        gridcolor: 'rgba(255, 255, 255, 0.07)',
+        gridwidth: 1,
         zeroline: true,
-        zerolinecolor: '#94A3B8',
-        zerolinewidth: 2,
-        tickfont: { size: 11, color: '#64748B' },
+        zerolinecolor: 'rgba(255, 255, 255, 0.25)',
+        zerolinewidth: 1.5,
+        tickfont: { size: 11, color: '#71717a' },
       },
       yaxis: {
-        title: { text: 'y', font: { size: 13, color: '#475569' } },
+        title: { text: 'y', font: { size: 12, color: '#a1a1aa' } },
         range: [yMinPlot, yMaxPlot],
         fixedrange: false,
         showgrid: true,
-        gridcolor: '#EDF2F7',
-        gridwidth: 1.2,
+        gridcolor: 'rgba(255, 255, 255, 0.07)',
+        gridwidth: 1,
         zeroline: true,
-        zerolinecolor: '#94A3B8',
-        zerolinewidth: 2,
-        tickfont: { size: 11, color: '#64748B' },
+        zerolinecolor: 'rgba(255, 255, 255, 0.25)',
+        zerolinewidth: 1.5,
+        tickfont: { size: 11, color: '#71717a' },
       },
       legend: {
         orientation: 'h',
         x: 0,
         y: 1.14,
-        font: { size: 11, color: '#334155' },
-        bgcolor: 'rgba(255, 255, 255, 0.85)',
+        font: { size: 11, color: '#e4e4e7' },
+        bgcolor: 'rgba(18, 18, 21, 0.85)',
+        bordercolor: 'rgba(255, 255, 255, 0.1)',
+      },
+      hovermode: 'closest',
+      hoverlabel: {
+        bgcolor: '#18181b',
+        font: { color: '#FFFFFF', size: 12 },
+        bordercolor: 'rgba(255, 255, 255, 0.15)',
       },
     }),
     [plotXMin, plotXMax, yMinPlot, yMaxPlot]
   );
 
   return (
-    <div className="relative w-full rounded-2xl bg-white border border-stone-200/90 shadow-xl shadow-stone-200/40 overflow-hidden">
+    <div className="relative w-full rounded-2xl bg-[#121215] border border-white/10 overflow-hidden">
       {/* Graph Toolbar */}
-      <div className="px-5 py-3 border-b border-stone-100 flex flex-wrap items-center justify-between gap-3 bg-gradient-to-r from-stone-50/80 via-white to-stone-50/80">
+      <div className="px-5 py-3 border-b border-white/10 flex flex-wrap items-center justify-between gap-3 bg-[#0a0a0c]">
         <div className="flex items-center gap-3">
-          <span className="inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#800020]/10 text-[#800020] border border-[#800020]/20">
+          <span className="inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-xs font-mono font-semibold bg-emerald-500/10 text-emerald-300 border border-emerald-500/20">
             y = g(x) Curve
           </span>
-          <span className="inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-stone-100 text-stone-700 border border-stone-300">
+          <span className="inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-xs font-mono font-semibold bg-white/5 text-stone-300 border border-white/10">
             y = x Diagonal
           </span>
-          <span className="inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-900 border border-amber-300">
+          <span className="inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-xs font-mono font-semibold bg-amber-500/10 text-amber-300 border border-amber-500/20">
             Cobweb Staircase
           </span>
         </div>
 
         <div className="flex items-center gap-4">
-          <label className="text-xs text-stone-600 flex items-center gap-1.5 cursor-pointer select-none">
+          <label className="text-xs font-mono text-stone-400 flex items-center gap-1.5 cursor-pointer select-none">
             <input
               type="checkbox"
               checked={showAllSteps}
               onChange={(e) => setShowAllSteps(e.target.checked)}
-              className="accent-[#800020] rounded"
+              className="accent-emerald-500 rounded"
             />
-            <span>Show prior ghost steps</span>
+            <span>Show ghost steps</span>
           </label>
 
-          <label className="text-xs text-stone-600 flex items-center gap-1.5 cursor-pointer select-none">
+          <label className="text-xs font-mono text-stone-400 flex items-center gap-1.5 cursor-pointer select-none">
             <input
               type="checkbox"
               checked={zoomToCluster}
               onChange={(e) => setZoomToCluster(e.target.checked)}
-              className="accent-[#800020] rounded"
+              className="accent-emerald-500 rounded"
             />
-            <ZoomIn className="w-3.5 h-3.5 text-stone-500" />
-            <span>Zoom to active point</span>
+            <ZoomIn className="w-3.5 h-3.5 text-stone-400" />
+            <span>Focus point</span>
           </label>
         </div>
       </div>

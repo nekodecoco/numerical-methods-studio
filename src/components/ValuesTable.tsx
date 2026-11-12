@@ -61,22 +61,22 @@ export const ValuesTable: React.FC<ValuesTableProps> = ({
   return (
     <div className="space-y-4">
       {/* Table Probe Controls Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-3 p-3 bg-stone-50 rounded-xl border border-stone-200/80 text-xs">
+      <div className="flex flex-wrap items-center justify-between gap-3 p-3 bg-black/40 rounded-xl border border-white/10 text-xs">
         <div className="flex items-center gap-2">
-          <Calculator className="w-4 h-4 text-[#800020]" />
-          <span className="font-semibold text-stone-700">Point Evaluation Probe:</span>
-          <div className="flex items-center gap-1.5 bg-white px-2 py-1 rounded-lg border border-stone-300">
-            <span className="font-serif italic text-stone-500">x =</span>
+          <Calculator className="w-4 h-4 text-amber-400" />
+          <span className="font-semibold text-stone-300">Point Evaluation Probe:</span>
+          <div className="flex items-center gap-1.5 bg-black/60 px-2.5 py-1 rounded-lg border border-white/10">
+            <span className="font-serif italic text-stone-400">x =</span>
             <input
               type="number"
               step="any"
               value={evalX}
               onChange={(e) => setEvalX(parseFloat(e.target.value) || 0)}
-              className="w-20 font-mono text-stone-900 bg-transparent focus:outline-none"
+              className="w-20 font-mono text-white bg-transparent focus:outline-none"
             />
           </div>
           {isValidTrueVal && (
-            <span className="text-stone-500 font-mono hidden sm:inline">
+            <span className="text-stone-400 font-mono hidden sm:inline">
               True <MathView math={`f(${evalX}) \\approx ${trueValAtX.toFixed(6)}`} />
             </span>
           )}
@@ -85,34 +85,34 @@ export const ValuesTable: React.FC<ValuesTableProps> = ({
         <button
           type="button"
           onClick={handleCopyTable}
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-stone-200 hover:bg-stone-100 rounded-lg text-stone-700 font-medium transition cursor-pointer"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white/5 border border-white/10 hover:bg-white/10 rounded-lg text-stone-300 font-mono text-xs transition cursor-pointer"
           title="Copy table data as TSV (pasteable into Excel / Google Sheets)"
         >
-          {copied ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+          {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
           <span>{copied ? 'Copied TSV!' : 'Copy Table Data'}</span>
         </button>
       </div>
 
       {/* Values Data Table */}
-      <div className="overflow-x-auto rounded-xl border border-stone-200 shadow-xs bg-white">
-        <table className="w-full text-left text-xs text-stone-700 border-collapse">
+      <div className="overflow-x-auto rounded-xl border border-white/10 bg-black/40">
+        <table className="w-full text-left text-xs text-stone-300 border-collapse">
           <thead>
-            <tr className="bg-stone-100/80 border-b border-stone-200 text-[11px] uppercase tracking-wider text-stone-600 font-semibold">
-              <th className="py-2.5 px-3">Order <span className="font-serif">k</span></th>
-              <th className="py-2.5 px-3">Derivative <span className="font-serif">f^(k)(x)</span></th>
-              <th className="py-2.5 px-3">At Center <span className="font-serif">f^(k)(a)</span></th>
-              <th className="py-2.5 px-3">Factorial <span className="font-serif">k!</span></th>
-              <th className="py-2.5 px-3">Coefficient <span className="font-serif">c_k</span></th>
+            <tr className="bg-white/5 border-b border-white/10 text-[11px] uppercase tracking-wider text-stone-400 font-mono">
+              <th className="py-2.5 px-3">Order <span className="font-serif normal-case">k</span></th>
+              <th className="py-2.5 px-3">Derivative <span className="font-serif normal-case">f^(k)(x)</span></th>
+              <th className="py-2.5 px-3">At Center <span className="font-serif normal-case">f^(k)(a)</span></th>
+              <th className="py-2.5 px-3">Factorial <span className="font-serif normal-case">k!</span></th>
+              <th className="py-2.5 px-3">Coefficient <span className="font-serif normal-case">c_k</span></th>
               <th className="py-2.5 px-3">Added Term</th>
-              <th className="py-2.5 px-3 bg-amber-50/60 text-amber-950">
+              <th className="py-2.5 px-3 bg-amber-500/10 text-amber-300">
                 P_k({evalX})
               </th>
-              <th className="py-2.5 px-3 bg-red-50/40 text-stone-900">
+              <th className="py-2.5 px-3 bg-rose-500/10 text-rose-300">
                 Absolute Error |f - P_k|
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-stone-100 font-mono">
+          <tbody className="divide-y divide-white/5 font-mono">
             {visibleSteps.map((s, idx) => {
               const isLatest = idx === currentOrder;
               const pVal = s.evalPolynomial(evalX);
@@ -124,19 +124,19 @@ export const ValuesTable: React.FC<ValuesTableProps> = ({
                   key={s.order}
                   className={`transition-colors ${
                     isLatest
-                      ? 'bg-amber-50/50 font-medium'
+                      ? 'bg-amber-500/10 font-medium text-amber-200'
                       : idx % 2 === 0
-                      ? 'bg-white'
-                      : 'bg-stone-50/40'
-                  } hover:bg-stone-100/60`}
+                      ? 'bg-transparent'
+                      : 'bg-white/[0.02]'
+                  } hover:bg-white/5`}
                 >
                   {/* Order */}
                   <td className="py-2.5 px-3">
                     <span
-                      className={`inline-flex items-center justify-center w-6 h-6 rounded-md text-xs font-bold ${
+                      className={`inline-flex items-center justify-center w-6 h-6 rounded-md text-xs font-mono font-bold ${
                         isLatest
-                          ? 'bg-[#800020] text-white'
-                          : 'bg-stone-200 text-stone-700'
+                          ? 'bg-amber-500 text-black'
+                          : 'bg-white/10 text-stone-400'
                       }`}
                     >
                       {s.order}
@@ -144,22 +144,22 @@ export const ValuesTable: React.FC<ValuesTableProps> = ({
                   </td>
 
                   {/* Symbolic f^(k)(x) */}
-                  <td className="py-2.5 px-3 max-w-[160px] truncate font-serif text-sm">
+                  <td className="py-2.5 px-3 max-w-[160px] truncate font-serif text-sm text-stone-200">
                     <MathView math={s.derivativeLatex || s.derivativeExpr} />
                   </td>
 
                   {/* f^(k)(a) */}
-                  <td className="py-2.5 px-3 font-semibold text-stone-900">
+                  <td className="py-2.5 px-3 font-semibold text-white">
                     {s.derivativeAtAFormatted}
                   </td>
 
                   {/* k! */}
-                  <td className="py-2.5 px-3 text-stone-500">
+                  <td className="py-2.5 px-3 text-stone-400">
                     {s.factorialVal}
                   </td>
 
                   {/* Coefficient c_k */}
-                  <td className="py-2.5 px-3 text-stone-900 font-medium">
+                  <td className="py-2.5 px-3 text-stone-300 font-medium">
                     {Math.abs(s.coefficient) < 1e-12
                       ? '0'
                       : Math.abs(s.coefficient) < 0.0001
@@ -168,25 +168,25 @@ export const ValuesTable: React.FC<ValuesTableProps> = ({
                   </td>
 
                   {/* Added Term */}
-                  <td className="py-2.5 px-3 text-[#800020] font-serif text-xs max-w-[150px] truncate">
+                  <td className="py-2.5 px-3 text-amber-300 font-serif text-xs max-w-[150px] truncate">
                     <MathView math={s.termLatex || '0'} />
                   </td>
 
                   {/* P_k(evalX) */}
-                  <td className="py-2.5 px-3 bg-amber-50/40 font-semibold text-amber-900">
+                  <td className="py-2.5 px-3 bg-amber-500/5 font-semibold text-amber-300">
                     {isFinite(pVal) ? pVal.toFixed(6) : 'Undefined'}
                   </td>
 
                   {/* Absolute Error */}
-                  <td className="py-2.5 px-3 bg-red-50/30">
+                  <td className="py-2.5 px-3 bg-rose-500/5">
                     {absErr !== null ? (
                       <span
                         className={`inline-block px-1.5 py-0.5 rounded text-[11px] ${
                           absErr < 1e-5
-                            ? 'bg-emerald-100 text-emerald-800 font-bold'
+                            ? 'bg-emerald-500/20 text-emerald-300 font-bold'
                             : absErr < 0.01
-                            ? 'bg-blue-100 text-blue-800 font-medium'
-                            : 'text-stone-700'
+                            ? 'bg-sky-500/20 text-sky-300 font-medium'
+                            : 'text-stone-400'
                         }`}
                       >
                         {absErr < 1e-4 ? absErr.toExponential(4) : absErr.toFixed(6)}

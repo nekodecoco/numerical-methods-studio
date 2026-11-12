@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { NavBar } from '@/components/NavBar';
+import { Footer } from '@/components/Footer';
 import { MullerControl } from '@/components/MullerControl';
 import { MullerPlot } from '@/components/MullerPlot';
 import { MullerTable } from '@/components/MullerTable';
@@ -83,33 +84,33 @@ export default function MullerPage() {
   const finalEa = lastStep ? lastStep.ea : null;
 
   return (
-    <div className="min-h-screen bg-[#FAF9F6] text-stone-900 flex flex-col">
+    <div className="min-h-screen bg-[#09090b] text-white flex flex-col selection:bg-amber-500/30 selection:text-amber-200">
       <NavBar />
 
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
         {/* Method Banner */}
-        <div className="bg-white border border-stone-200/90 rounded-xl p-5 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div className="space-y-1">
+        <div className="bg-[#121215] border border-white/10 rounded-2xl p-6 relative overflow-hidden backdrop-blur-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="space-y-1 relative z-10">
             <div className="flex items-center gap-2">
-              <span className="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded bg-[#800020]/10 text-[#800020] font-semibold border border-[#800020]/15">
+              <span className="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-300 font-semibold border border-indigo-500/20">
                 Open Method
               </span>
-              <span className="text-xs text-stone-400 font-mono">Parabolic Interpolation</span>
+              <span className="text-xs text-stone-500 font-mono">Parabolic Interpolation</span>
             </div>
-            <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-stone-900 font-sans">
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white font-sans">
               Muller&apos;s Method Visualizer
             </h1>
-            <p className="text-xs text-stone-600 max-w-2xl leading-relaxed">
+            <p className="text-xs text-stone-400 max-w-2xl leading-relaxed">
               Interpolate a quadratic parabola through three points to discover real and complex roots with near-quadratic convergence (<MathView math="p \approx 1.84" />).
             </p>
           </div>
 
-          <div className="bg-stone-50 border border-stone-200 rounded-lg px-3.5 py-2 text-xs hidden md:block">
-            <div className="text-[9px] uppercase tracking-wider font-mono text-stone-500 font-semibold mb-0.5">
+          <div className="bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-xs hidden md:block relative z-10">
+            <div className="text-[9px] uppercase tracking-wider font-mono text-stone-400 font-semibold mb-1">
               Parabolic Root Formula
             </div>
-            <div className="text-stone-900 text-sm font-bold flex items-center gap-2">
-              <MathView math="x_3 = x_2 - \frac{2c}{b \pm \sqrt{b^2 - 4ac}}" block={false} />
+            <div className="text-white text-sm font-bold flex items-center gap-2 font-serif">
+              <MathView math="x_3 = x_2 - \frac{2c}{b \pm \sqrt{b^2 - 4ac}}" block={false} className="text-indigo-300" />
             </div>
           </div>
         </div>
@@ -138,16 +139,16 @@ export default function MullerPage() {
             />
 
             {/* Educational Insight Card */}
-            <div className="bg-white rounded-2xl border border-stone-200/90 shadow-lg shadow-stone-200/30 p-5 space-y-3">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-stone-500 flex items-center gap-1.5">
-                <Lightbulb className="w-4 h-4 text-amber-600" />
-                <span>Why Muller's Method Excels</span>
+            <div className="bg-[#121215] rounded-2xl border border-white/10 p-5 space-y-3">
+              <h3 className="text-xs font-bold font-mono uppercase tracking-wider text-stone-400 flex items-center gap-1.5">
+                <Lightbulb className="w-4 h-4 text-indigo-400" />
+                <span>Why Muller&apos;s Method Excels</span>
               </h3>
-              <p className="text-xs text-stone-600 leading-relaxed">
-                <strong>Parabolic Curvature:</strong> Secant method fits a straight line through 2 points; Muller fits a parabola through 3 points, better matching nonlinear curvature.
+              <p className="text-xs text-stone-400 leading-relaxed">
+                <strong className="text-stone-200">Parabolic Curvature:</strong> Secant method fits a straight line through 2 points; Muller fits a parabola through 3 points, better matching nonlinear curvature.
               </p>
-              <p className="text-xs text-stone-600 leading-relaxed">
-                <strong>Complex Roots:</strong> Because the quadratic formula involves <MathView math="\sqrt{b^2 - 4ac}" />, negative discriminants produce imaginary components, enabling Muller's method to discover complex conjugate roots automatically!
+              <p className="text-xs text-stone-400 leading-relaxed">
+                <strong className="text-indigo-300">Complex Roots:</strong> Because the quadratic formula involves <MathView math="\sqrt{b^2 - 4ac}" />, negative discriminants produce imaginary components, enabling Muller&apos;s method to discover complex conjugate roots automatically!
               </p>
             </div>
           </div>
@@ -179,61 +180,61 @@ export default function MullerPage() {
 
             {/* Convergence Status Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <div className="bg-white rounded-xl border border-stone-200/90 p-4 shadow-sm">
-                <span className="text-[10px] font-semibold uppercase tracking-wider text-stone-500 block">
+              <div className="bg-[#121215] rounded-xl border border-white/10 p-4">
+                <span className="text-[10px] font-semibold uppercase tracking-wider text-stone-500 font-mono block">
                   Root Estimate x*
                 </span>
-                <span className="text-lg font-bold font-mono text-[#800020] mt-0.5 block">
+                <span className="text-lg font-bold font-mono text-indigo-300 mt-0.5 block">
                   {isComplex
                     ? `${formatNum(finalRootReal, 4)} ± ${formatNum(finalRootImag, 4)}i`
                     : `x* ≈ ${formatNum(finalRootReal, 6)}`}
                 </span>
-                <span className="text-[11px] text-stone-500">
+                <span className="text-[11px] text-stone-500 font-mono">
                   {isComplex
                     ? 'Complex Conjugate Pair'
                     : `f(x*) ≈ ${formatNum(evalF(finalRootReal), 6)}`}
                 </span>
               </div>
 
-              <div className="bg-white rounded-xl border border-stone-200/90 p-4 shadow-sm">
-                <span className="text-[10px] font-semibold uppercase tracking-wider text-stone-500 block">
+              <div className="bg-[#121215] rounded-xl border border-white/10 p-4">
+                <span className="text-[10px] font-semibold uppercase tracking-wider text-stone-500 font-mono block">
                   Total Steps / Status
                 </span>
                 <div className="flex items-center gap-1.5 mt-0.5">
                   {converged ? (
                     <>
-                      <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                      <span className="text-sm font-bold text-emerald-800">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                      <span className="text-sm font-bold text-emerald-300 font-mono">
                         Converged in {steps.length} steps
                       </span>
                     </>
                   ) : diverged ? (
-                    <span className="text-sm font-bold text-rose-600">
+                    <span className="text-sm font-bold text-rose-400 font-mono">
                       Diverged / Exceeded Bounds
                     </span>
                   ) : (
-                    <span className="text-sm font-bold text-stone-700">
+                    <span className="text-sm font-bold text-stone-300 font-mono">
                       {steps.length} steps computed
                     </span>
                   )}
                 </div>
-                <span className="text-[11px] text-stone-500">
+                <span className="text-[11px] text-stone-500 font-mono">
                   Tolerance: &le; {tolInput}%
                 </span>
               </div>
 
-              <div className="bg-white rounded-xl border border-stone-200/90 p-4 shadow-sm">
-                <span className="text-[10px] font-semibold uppercase tracking-wider text-stone-500 block">
+              <div className="bg-[#121215] rounded-xl border border-white/10 p-4">
+                <span className="text-[10px] font-semibold uppercase tracking-wider text-stone-500 font-mono block">
                   Final Relative Error
                 </span>
-                <span className="text-lg font-bold font-mono text-emerald-700 mt-0.5 block">
+                <span className="text-lg font-bold font-mono text-emerald-400 mt-0.5 block">
                   {finalEa !== null
                     ? finalEa < 0.0001
                       ? finalEa.toExponential(3) + '%'
                       : finalEa.toFixed(5) + '%'
                     : 'N/A'}
                 </span>
-                <span className="text-[11px] text-stone-500">
+                <span className="text-[11px] text-stone-500 font-mono">
                   Order p &approx; 1.84
                 </span>
               </div>
@@ -247,6 +248,8 @@ export default function MullerPage() {
           </div>
         </div>
       </main>
+
+      <Footer />
     </div>
   );
 }

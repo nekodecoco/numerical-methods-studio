@@ -43,15 +43,15 @@ export const MullerTable: React.FC<MullerTableProps> = ({
   };
 
   return (
-    <div className="bg-white rounded-2xl border border-stone-200/90 shadow-lg shadow-stone-200/30 p-5 space-y-3">
+    <div className="bg-[#121215] rounded-2xl border border-white/10 p-5 space-y-3 text-white">
       {/* Table Header & Copy Button */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <TableIcon className="w-4 h-4 text-[#800020]" />
-          <h3 className="text-sm font-bold text-stone-900">
-            Muller's Method Iteration Table
+          <TableIcon className="w-4 h-4 text-indigo-400" />
+          <h3 className="text-sm font-bold text-white">
+            Muller&apos;s Method Iteration Table
           </h3>
-          <span className="text-xs text-stone-500 font-mono">
+          <span className="text-xs text-stone-400 font-mono">
             ({steps.length} steps computed)
           </span>
         </div>
@@ -59,17 +59,17 @@ export const MullerTable: React.FC<MullerTableProps> = ({
         <button
           type="button"
           onClick={copyToClipboard}
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium border border-stone-200 bg-stone-50 hover:bg-stone-100 text-stone-700 transition cursor-pointer"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-mono font-medium border border-white/10 bg-white/5 hover:bg-white/10 text-stone-300 transition cursor-pointer"
         >
-          {copied ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+          {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5 text-stone-400" />}
           <span>{copied ? 'Copied TSV' : 'Copy Data'}</span>
         </button>
       </div>
 
       {/* Table Body */}
-      <div className="overflow-x-auto rounded-xl border border-stone-200 max-h-96 overflow-y-auto">
+      <div className="overflow-x-auto rounded-xl border border-white/10 max-h-96 overflow-y-auto bg-black/40">
         <table className="w-full text-left border-collapse text-xs">
-          <thead className="bg-stone-50 text-stone-700 font-semibold sticky top-0 border-b border-stone-200 z-10">
+          <thead className="bg-[#0a0a0c] text-stone-400 font-mono font-semibold sticky top-0 border-b border-white/10 z-10 text-[11px] uppercase tracking-wider">
             <tr>
               <th className="py-2.5 px-3 text-center">i</th>
               <th className="py-2.5 px-3">x<sub>0</sub></th>
@@ -79,12 +79,12 @@ export const MullerTable: React.FC<MullerTableProps> = ({
               <th className="py-2.5 px-3">b</th>
               <th className="py-2.5 px-3">c</th>
               <th className="py-2.5 px-3">D = b² - 4ac</th>
-              <th className="py-2.5 px-3 bg-amber-50/70 text-amber-900">x<sub>3</sub> (Root)</th>
+              <th className="py-2.5 px-3 bg-indigo-500/10 text-indigo-300 font-bold">x<sub>3</sub> (Root)</th>
               <th className="py-2.5 px-3">f(x<sub>3</sub>)</th>
-              <th className="py-2.5 px-3 text-right">&epsilon;<sub>a</sub> (%)</th>
+              <th className="py-2.5 px-3 text-right text-amber-300">&epsilon;<sub>a</sub> (%)</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-stone-100 font-mono text-[11px]">
+          <tbody className="divide-y divide-white/5 font-mono text-[11px] text-stone-300">
             {steps.map((s) => {
               const isActive = s.iteration === currentIter;
               return (
@@ -93,11 +93,11 @@ export const MullerTable: React.FC<MullerTableProps> = ({
                   onClick={() => onSelectIter(s.iteration)}
                   className={`cursor-pointer transition ${
                     isActive
-                      ? 'bg-[#800020]/10 font-bold text-stone-950 ring-1 ring-inset ring-[#800020]/30'
-                      : 'hover:bg-stone-50 text-stone-700'
+                      ? 'bg-indigo-500/10 font-bold text-indigo-200 border-l-2 border-l-indigo-400'
+                      : 'hover:bg-white/5 text-stone-300'
                   }`}
                 >
-                  <td className="py-2 px-3 text-center text-stone-500 font-bold">
+                  <td className="py-2 px-3 text-center text-indigo-400 font-bold">
                     {s.iteration}
                   </td>
                   <td className="py-2 px-3">{formatNum(s.x0)}</td>
@@ -106,28 +106,28 @@ export const MullerTable: React.FC<MullerTableProps> = ({
                   <td className="py-2 px-3">{formatNum(s.a)}</td>
                   <td className="py-2 px-3">{formatNum(s.b)}</td>
                   <td className="py-2 px-3">{formatNum(s.c)}</td>
-                  <td className={`py-2 px-3 ${s.discriminant < 0 ? 'text-purple-600 font-bold' : ''}`}>
+                  <td className={`py-2 px-3 ${s.discriminant < 0 ? 'text-purple-400 font-bold' : ''}`}>
                     {formatNum(s.discriminant)}
                   </td>
-                  <td className="py-2 px-3 text-[#800020] font-bold bg-amber-50/40">
+                  <td className="py-2 px-3 text-indigo-300 font-bold bg-indigo-500/5">
                     {s.isComplex
                       ? `${formatNum(s.x3Real)} ± ${formatNum(s.x3Imag)}i`
                       : formatNum(s.x3Real)}
                   </td>
                   <td className="py-2 px-3">
-                    {s.fx3 !== null ? formatNum(s.fx3) : <span className="text-purple-600">Complex</span>}
+                    {s.fx3 !== null ? formatNum(s.fx3) : <span className="text-purple-400">Complex</span>}
                   </td>
                   <td className="py-2 px-3 text-right">
                     {s.ea === null ? (
-                      <span className="text-stone-400">-</span>
+                      <span className="text-stone-600">-</span>
                     ) : (
                       <span
                         className={
                           s.ea < 0.001
-                            ? 'text-emerald-700 font-bold'
+                            ? 'text-emerald-400 font-bold'
                             : s.ea < 0.1
-                            ? 'text-emerald-600'
-                            : 'text-stone-700'
+                            ? 'text-indigo-300'
+                            : 'text-amber-300'
                         }
                       >
                         {s.ea < 0.0001 ? s.ea.toExponential(3) : s.ea.toFixed(5)}%

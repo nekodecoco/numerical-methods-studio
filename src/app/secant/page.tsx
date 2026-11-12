@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { NavBar } from '@/components/NavBar';
+import { Footer } from '@/components/Footer';
 import { SecantControl } from '@/components/SecantControl';
 import { SecantPlot } from '@/components/SecantPlot';
 import { SecantTable } from '@/components/SecantTable';
@@ -75,33 +76,33 @@ export default function SecantPage() {
   const finalEa = steps.length > 0 ? steps[steps.length - 1].ea : null;
 
   return (
-    <div className="min-h-screen bg-[#FAF9F6] text-stone-900 flex flex-col">
+    <div className="min-h-screen bg-[#09090b] text-white flex flex-col selection:bg-amber-500/30 selection:text-amber-200">
       <NavBar />
 
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
         {/* Method Banner */}
-        <div className="bg-white border border-stone-200/90 rounded-xl p-5 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div className="space-y-1">
+        <div className="bg-[#121215] border border-white/10 rounded-2xl p-6 relative overflow-hidden backdrop-blur-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="space-y-1 relative z-10">
             <div className="flex items-center gap-2">
-              <span className="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded bg-[#800020]/10 text-[#800020] font-semibold border border-[#800020]/15">
+              <span className="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded bg-cyan-500/10 text-cyan-300 font-semibold border border-cyan-500/20">
                 Open Method
               </span>
-              <span className="text-xs text-stone-400 font-mono">Secant Projection</span>
+              <span className="text-xs text-stone-500 font-mono">Secant Projection</span>
             </div>
-            <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-stone-900 font-sans">
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white font-sans">
               Secant Method Visualizer
             </h1>
-            <p className="text-xs text-stone-600 max-w-2xl leading-relaxed">
+            <p className="text-xs text-stone-400 max-w-2xl leading-relaxed">
               Connect two points on the function curve with a secant line and project its x-intercept to find the next root estimate with superlinear convergence (<MathView math="p \approx 1.618" />) without requiring analytic differentiation.
             </p>
           </div>
 
-          <div className="bg-stone-50 border border-stone-200 rounded-lg px-3.5 py-2 text-xs hidden md:block">
-            <div className="text-[9px] uppercase tracking-wider font-mono text-stone-500 font-semibold mb-0.5">
+          <div className="bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-xs hidden md:block relative z-10">
+            <div className="text-[9px] uppercase tracking-wider font-mono text-stone-400 font-semibold mb-1">
               Secant Difference Quotient
             </div>
-            <div className="text-stone-900 text-sm font-bold flex items-center gap-2">
-              <MathView math="x_{i+1} = x_i - f(x_i) \frac{x_i - x_{i-1}}{f(x_i) - f(x_{i-1})}" block={false} />
+            <div className="text-white text-sm font-bold flex items-center gap-2 font-serif">
+              <MathView math="x_{i+1} = x_i - f(x_i) \frac{x_i - x_{i-1}}{f(x_i) - f(x_{i-1})}" block={false} className="text-cyan-300" />
             </div>
           </div>
         </div>
@@ -128,16 +129,16 @@ export default function SecantPage() {
             />
 
             {/* Educational Insight Card */}
-            <div className="bg-white rounded-2xl border border-stone-200/90 shadow-lg shadow-stone-200/30 p-5 space-y-3">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-stone-500 flex items-center gap-1.5">
-                <Lightbulb className="w-4 h-4 text-amber-600" />
+            <div className="bg-[#121215] rounded-2xl border border-white/10 p-5 space-y-3">
+              <h3 className="text-xs font-bold font-mono uppercase tracking-wider text-stone-400 flex items-center gap-1.5">
+                <Lightbulb className="w-4 h-4 text-cyan-400" />
                 <span>Secant vs. False Position</span>
               </h3>
-              <p className="text-xs text-stone-600 leading-relaxed">
-                While both use a secant line through two points, <strong>False Position</strong> is a bracketing method that strictly maintains <MathView math="f(a)f(b) < 0" />.
+              <p className="text-xs text-stone-400 leading-relaxed">
+                While both use a secant line through two points, <strong className="text-stone-200">False Position</strong> is a bracketing method that strictly maintains <MathView math="f(a)f(b) < 0" />.
               </p>
-              <p className="text-xs text-stone-600 leading-relaxed">
-                The <strong>Secant Method</strong> replaces the oldest point regardless of sign, achieving superlinear speed (<MathView math="\approx 1.618" />) similar to Newton-Raphson, but requires only <em>one</em> new function evaluation per step!
+              <p className="text-xs text-stone-400 leading-relaxed">
+                The <strong className="text-cyan-300">Secant Method</strong> replaces the oldest point regardless of sign, achieving superlinear speed (<MathView math="\approx 1.618" />) similar to Newton-Raphson, but requires only <em>one</em> new function evaluation per step!
               </p>
             </div>
           </div>
@@ -168,57 +169,57 @@ export default function SecantPage() {
 
             {/* Convergence Status Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <div className="bg-white rounded-xl border border-stone-200/90 p-4 shadow-sm">
-                <span className="text-[10px] font-semibold uppercase tracking-wider text-stone-500 block">
+              <div className="bg-[#121215] rounded-xl border border-white/10 p-4">
+                <span className="text-[10px] font-semibold uppercase tracking-wider text-stone-500 font-mono block">
                   Root Estimate
                 </span>
-                <span className="text-lg font-bold font-mono text-[#800020] mt-0.5 block">
+                <span className="text-lg font-bold font-mono text-cyan-300 mt-0.5 block">
                   x* ≈ {formatNum(finalRoot, 6)}
                 </span>
-                <span className="text-[11px] text-stone-500">
+                <span className="text-[11px] text-stone-500 font-mono">
                   f(x*) ≈ {formatNum(evalF(finalRoot), 6)}
                 </span>
               </div>
 
-              <div className="bg-white rounded-xl border border-stone-200/90 p-4 shadow-sm">
-                <span className="text-[10px] font-semibold uppercase tracking-wider text-stone-500 block">
+              <div className="bg-[#121215] rounded-xl border border-white/10 p-4">
+                <span className="text-[10px] font-semibold uppercase tracking-wider text-stone-500 font-mono block">
                   Total Steps / Status
                 </span>
                 <div className="flex items-center gap-1.5 mt-0.5">
                   {converged ? (
                     <>
-                      <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                      <span className="text-sm font-bold text-emerald-800">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                      <span className="text-sm font-bold text-emerald-300 font-mono">
                         Converged in {steps.length} steps
                       </span>
                     </>
                   ) : diverged ? (
-                    <span className="text-sm font-bold text-rose-600">
+                    <span className="text-sm font-bold text-rose-400 font-mono">
                       Diverged / Exceeded Bounds
                     </span>
                   ) : (
-                    <span className="text-sm font-bold text-stone-700">
+                    <span className="text-sm font-bold text-stone-300 font-mono">
                       {steps.length} steps computed
                     </span>
                   )}
                 </div>
-                <span className="text-[11px] text-stone-500">
+                <span className="text-[11px] text-stone-500 font-mono">
                   Tolerance: &le; {tolInput}%
                 </span>
               </div>
 
-              <div className="bg-white rounded-xl border border-stone-200/90 p-4 shadow-sm">
-                <span className="text-[10px] font-semibold uppercase tracking-wider text-stone-500 block">
+              <div className="bg-[#121215] rounded-xl border border-white/10 p-4">
+                <span className="text-[10px] font-semibold uppercase tracking-wider text-stone-500 font-mono block">
                   Final Relative Error
                 </span>
-                <span className="text-lg font-bold font-mono text-emerald-700 mt-0.5 block">
+                <span className="text-lg font-bold font-mono text-emerald-400 mt-0.5 block">
                   {finalEa !== null
                     ? finalEa < 0.0001
                       ? finalEa.toExponential(3) + '%'
                       : finalEa.toFixed(5) + '%'
                     : 'N/A'}
                 </span>
-                <span className="text-[11px] text-stone-500">
+                <span className="text-[11px] text-stone-500 font-mono">
                   Order &phi; &approx; 1.618
                 </span>
               </div>
@@ -232,6 +233,8 @@ export default function SecantPage() {
           </div>
         </div>
       </main>
+
+      <Footer />
     </div>
   );
 }

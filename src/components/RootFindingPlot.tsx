@@ -15,10 +15,10 @@ const Plot = dynamic<any>(
   {
     ssr: false,
     loading: () => (
-      <div className="w-full h-[520px] flex items-center justify-center bg-stone-50/50 rounded-2xl border border-stone-200/80">
-        <div className="flex flex-col items-center gap-3 text-stone-500">
-          <div className="w-8 h-8 border-3 border-[#800020] border-t-transparent rounded-full animate-spin" />
-          <span className="text-sm font-medium">Initializing Modern Root Canvas...</span>
+      <div className="w-full h-[520px] flex items-center justify-center bg-[#0a0a0c] rounded-2xl border border-white/10">
+        <div className="flex flex-col items-center gap-3 text-stone-400">
+          <div className="w-8 h-8 border-2 border-amber-500 border-t-transparent rounded-full animate-spin" />
+          <span className="text-xs font-mono uppercase tracking-wider text-stone-400">Initializing Precision Root Canvas...</span>
         </div>
       </div>
     ),
@@ -139,9 +139,9 @@ export const RootFindingPlot: React.FC<RootFindingPlotProps> = ({
         x: [xl, xl, xu, xu],
         y: [yMinPlot, yMaxPlot, yMaxPlot, yMinPlot],
         fill: 'toself',
-        fillcolor: 'rgba(217, 119, 6, 0.09)', // Warm gold active bracket
+        fillcolor: 'rgba(245, 158, 11, 0.08)', // Warm gold active bracket
         line: { color: 'transparent' },
-        name: `Active Bracket [${xl.toFixed(3)}, ${xu.toFixed(3)}]`,
+        name: `Bracket [${xl.toFixed(3)}, ${xu.toFixed(3)}]`,
         hoverinfo: 'skip',
       });
     }
@@ -153,7 +153,7 @@ export const RootFindingPlot: React.FC<RootFindingPlotProps> = ({
       type: 'scatter',
       mode: 'lines',
       line: {
-        color: '#64748B',
+        color: 'rgba(255, 255, 255, 0.2)',
         width: 1.5,
         dash: 'dot',
       },
@@ -161,7 +161,7 @@ export const RootFindingPlot: React.FC<RootFindingPlotProps> = ({
       hoverinfo: 'skip',
     });
 
-    // 3. True Function f(x) (Royal Maroon)
+    // 3. True Function f(x) (Vibrant Rose Crimson)
     traces.push({
       x: xValues,
       y: yOriginal,
@@ -169,8 +169,8 @@ export const RootFindingPlot: React.FC<RootFindingPlotProps> = ({
       mode: 'lines',
       name: `f(x) = ${originalExpr}`,
       line: {
-        color: '#800020',
-        width: 3.5,
+        color: '#f43f5e',
+        width: 3,
       },
       hovertemplate: `<b>f(x)</b>: %{y:.5f}<br>x: %{x:.5f}<extra></extra>`,
     });
@@ -188,8 +188,8 @@ export const RootFindingPlot: React.FC<RootFindingPlotProps> = ({
         mode: 'lines',
         name: `Prev Secant (Iter ${prevStep.iteration})`,
         line: {
-          color: 'rgba(148, 163, 184, 0.7)',
-          width: 2,
+          color: 'rgba(148, 163, 184, 0.5)',
+          width: 1.8,
           dash: 'dash',
         },
         hovertemplate: `<b>Previous Secant Line</b><extra></extra>`,
@@ -205,19 +205,19 @@ export const RootFindingPlot: React.FC<RootFindingPlotProps> = ({
         mode: 'lines+markers',
         name: `Secant Chord (Iter ${iteration})`,
         line: {
-          color: '#D97706', // Amber gold
-          width: 3,
+          color: '#fbbf24', // Amber gold
+          width: 2.8,
         },
         marker: {
-          size: 8,
-          color: '#D97706',
+          size: 7,
+          color: '#fbbf24',
         },
         hovertemplate: `<b>Secant Chord Point</b><br>x: %{x:.4f}<br>y: %{y:.4f}<extra></extra>`,
       });
     }
 
     // 6. Vertical Bracket Guidelines for xl and xu
-    // Left bound xl (Blue)
+    // Left bound xl (Cyan)
     traces.push({
       x: [xl, xl],
       y: [0, fxl],
@@ -225,19 +225,19 @@ export const RootFindingPlot: React.FC<RootFindingPlotProps> = ({
       mode: 'lines+markers',
       name: `xl = ${xl.toFixed(4)}`,
       line: {
-        color: '#2563EB', // Blue
-        width: 2.2,
+        color: '#06b6d4', // Cyan
+        width: 2,
         dash: 'dash',
       },
       marker: {
-        size: 9,
-        color: '#2563EB',
+        size: 8,
+        color: '#06b6d4',
         symbol: 'circle',
       },
       hovertemplate: `<b>Left Bracket xl</b>: %{x:.5f}<br>f(xl): %{y:.5f}<extra></extra>`,
     });
 
-    // Right bound xu (Purple)
+    // Right bound xu (Violet)
     traces.push({
       x: [xu, xu],
       y: [0, fxu],
@@ -245,13 +245,13 @@ export const RootFindingPlot: React.FC<RootFindingPlotProps> = ({
       mode: 'lines+markers',
       name: `xu = ${xu.toFixed(4)}`,
       line: {
-        color: '#9333EA', // Purple
-        width: 2.2,
+        color: '#a855f7', // Violet
+        width: 2,
         dash: 'dash',
       },
       marker: {
-        size: 9,
-        color: '#9333EA',
+        size: 8,
+        color: '#a855f7',
         symbol: 'circle',
       },
       hovertemplate: `<b>Right Bracket xu</b>: %{x:.5f}<br>f(xu): %{y:.5f}<extra></extra>`,
@@ -266,8 +266,8 @@ export const RootFindingPlot: React.FC<RootFindingPlotProps> = ({
       name: `xr Vertical Drop`,
       showlegend: false,
       line: {
-        color: '#D97706',
-        width: 2,
+        color: '#f59e0b',
+        width: 1.5,
         dash: 'dot',
       },
       hoverinfo: 'skip',
@@ -281,21 +281,20 @@ export const RootFindingPlot: React.FC<RootFindingPlotProps> = ({
       mode: 'markers+text',
       name: `Root Est xr = ${xr.toFixed(4)}`,
       marker: {
-        size: 15,
-        color: '#800020',
+        size: 13,
+        color: '#f43f5e',
         symbol: 'circle',
         line: {
-          color: '#F59E0B',
-          width: 3.5,
+          color: '#fbbf24',
+          width: 2.5,
         },
       },
       text: [`xr = ${xr.toFixed(4)}`],
       textposition: 'top center',
       textfont: {
-        family: 'Inter, sans-serif',
-        size: 12,
-        color: '#800020',
-        weight: 700,
+        family: 'var(--font-geist-mono), monospace',
+        size: 11,
+        color: '#fbbf24',
       },
       hovertemplate: `<b>Root Estimate xr (Iter ${iteration})</b><br>xr: %{x:.6f}<br>f(xr): ${fxr.toFixed(6)}<extra></extra>`,
     });
@@ -329,70 +328,70 @@ export const RootFindingPlot: React.FC<RootFindingPlotProps> = ({
       autosize: true,
       height: 520,
       margin: { l: 55, r: 25, t: 45, b: 50 },
-      paper_bgcolor: 'rgba(255, 255, 255, 0)',
-      plot_bgcolor: '#FAFBFC',
+      paper_bgcolor: 'rgba(0, 0, 0, 0)',
+      plot_bgcolor: '#0a0a0c',
       font: {
-        family: 'Inter, system-ui, -apple-system, sans-serif',
-        color: '#475569',
+        family: 'var(--font-geist-sans), Inter, system-ui, -apple-system, sans-serif',
+        color: '#a1a1aa',
       },
       xaxis: {
-        title: { text: 'x', font: { size: 13, color: '#475569' } },
+        title: { text: 'x', font: { size: 12, color: '#a1a1aa' } },
         range: [plotXMin, plotXMax],
         fixedrange: false,
         showgrid: true,
-        gridcolor: '#EDF2F7',
-        gridwidth: 1.2,
+        gridcolor: 'rgba(255, 255, 255, 0.07)',
+        gridwidth: 1,
         zeroline: true,
-        zerolinecolor: '#94A3B8',
-        zerolinewidth: 2,
-        tickfont: { size: 11, color: '#64748B' },
+        zerolinecolor: 'rgba(255, 255, 255, 0.25)',
+        zerolinewidth: 1.5,
+        tickfont: { size: 11, color: '#71717a' },
       },
       yaxis: {
-        title: { text: 'f(x)', font: { size: 13, color: '#475569' } },
+        title: { text: 'f(x)', font: { size: 12, color: '#a1a1aa' } },
         range: [yMinPlot, yMaxPlot],
         showgrid: true,
-        gridcolor: '#EDF2F7',
-        gridwidth: 1.2,
+        gridcolor: 'rgba(255, 255, 255, 0.07)',
+        gridwidth: 1,
         zeroline: true,
-        zerolinecolor: '#94A3B8',
-        zerolinewidth: 2,
-        tickfont: { size: 11, color: '#64748B' },
+        zerolinecolor: 'rgba(255, 255, 255, 0.25)',
+        zerolinewidth: 1.5,
+        tickfont: { size: 11, color: '#71717a' },
       },
       legend: {
         orientation: 'h',
         x: 0,
         y: 1.12,
-        bgcolor: 'rgba(255, 255, 255, 0.85)',
-        bordercolor: '#E2E8F0',
+        bgcolor: 'rgba(18, 18, 21, 0.85)',
+        bordercolor: 'rgba(255, 255, 255, 0.1)',
         borderwidth: 1,
-        font: { size: 11.5, color: '#334155' },
+        font: { size: 11, color: '#e4e4e7' },
       },
       hovermode: 'closest',
       hoverlabel: {
-        bgcolor: '#0F172A',
+        bgcolor: '#18181b',
         font: { color: '#FFFFFF', size: 12 },
-        bordercolor: 'transparent',
+        bordercolor: 'rgba(255, 255, 255, 0.15)',
       },
     }),
     [plotXMin, plotXMax, yMinPlot, yMaxPlot]
   );
 
   return (
-    <div className="relative w-full rounded-2xl bg-white border border-stone-200/90 shadow-xl shadow-stone-200/40 overflow-hidden">
+    <div className="relative w-full rounded-2xl bg-[#121215] border border-white/10 overflow-hidden">
       {/* Top Floating HUD */}
-      <div className="px-5 py-3.5 border-b border-stone-100 flex flex-wrap items-center justify-between gap-3 bg-gradient-to-r from-stone-50/80 via-white to-stone-50/80">
+      <div className="px-5 py-3 border-b border-white/10 flex flex-wrap items-center justify-between gap-3 bg-[#0a0a0c]">
         <div className="flex items-center gap-2">
-          <span className="inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200">
+          <span className="inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-xs font-mono font-semibold bg-cyan-500/10 text-cyan-300 border border-cyan-500/20">
             xl: {xl.toFixed(4)}
           </span>
-          <span className="inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-purple-50 text-purple-700 border border-purple-200">
+          <span className="inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-xs font-mono font-semibold bg-purple-500/10 text-purple-300 border border-purple-500/20">
             xu: {xu.toFixed(4)}
           </span>
-          <span className="inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-50 text-amber-700 border border-amber-300">
+          <span className="inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-amber-500/10 text-amber-300 border border-amber-500/20">
             xr: {xr.toFixed(4)}
           </span>
           {currentStep?.ea !== null && currentStep?.ea !== undefined && (
-            <span className="hidden sm:inline-flex text-xs text-stone-500 font-mono bg-stone-100 px-2 py-0.5 rounded">
+            <span className="hidden sm:inline-flex text-xs text-stone-400 font-mono bg-white/5 px-2 py-0.5 rounded border border-white/10">
               εa: {currentStep.ea < 0.001 ? currentStep.ea.toExponential(2) : currentStep.ea.toFixed(3)}%
             </span>
           )}
@@ -403,10 +402,10 @@ export const RootFindingPlot: React.FC<RootFindingPlotProps> = ({
           <button
             type="button"
             onClick={() => setShowDiscardedArea(!showDiscardedArea)}
-            className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded-lg transition-all cursor-pointer ${
+            className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-mono rounded-lg transition-all border cursor-pointer ${
               showDiscardedArea
-                ? 'bg-amber-100 text-amber-800 border border-amber-300'
-                : 'bg-stone-100 text-stone-500 hover:bg-stone-200/70'
+                ? 'bg-amber-500/20 text-amber-300 border-amber-500/30'
+                : 'bg-black/40 text-stone-400 border-white/5 hover:bg-white/5'
             }`}
           >
             <Layers className="w-3.5 h-3.5" />
@@ -416,10 +415,10 @@ export const RootFindingPlot: React.FC<RootFindingPlotProps> = ({
           <button
             type="button"
             onClick={() => setZoomToBracket(!zoomToBracket)}
-            className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded-lg transition-all cursor-pointer ${
+            className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-mono rounded-lg transition-all border cursor-pointer ${
               zoomToBracket
-                ? 'bg-[#800020] text-white shadow-xs'
-                : 'bg-stone-100 text-stone-600 hover:bg-stone-200/70'
+                ? 'bg-white text-black border-white'
+                : 'bg-black/40 text-stone-300 border-white/10 hover:bg-white/5'
             }`}
           >
             <ZoomIn className="w-3.5 h-3.5" />
@@ -445,11 +444,11 @@ export const RootFindingPlot: React.FC<RootFindingPlotProps> = ({
 
         {/* Corner Watermark */}
         <div className="absolute bottom-4 right-4 pointer-events-none select-none">
-          <div className="bg-white/85 backdrop-blur-md px-3 py-1.5 rounded-xl border border-stone-200/80 shadow-sm text-right">
-            <div className="text-[10px] uppercase tracking-wider font-semibold text-stone-400">
+          <div className="bg-black/70 backdrop-blur-md px-3.5 py-2 rounded-xl border border-white/10 shadow-sm text-right">
+            <div className="text-[10px] uppercase tracking-wider font-mono text-stone-500">
               Iteration Step
             </div>
-            <div className="text-lg font-bold text-[#800020] font-mono leading-none">
+            <div className="text-lg font-bold text-amber-400 font-mono leading-none mt-0.5">
               i = {iteration}
             </div>
           </div>

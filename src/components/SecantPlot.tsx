@@ -15,10 +15,10 @@ const Plot = dynamic<any>(
   {
     ssr: false,
     loading: () => (
-      <div className="w-full h-[520px] flex items-center justify-center bg-stone-50/50 rounded-2xl border border-stone-200/80">
-        <div className="flex flex-col items-center gap-3 text-stone-500">
-          <div className="w-8 h-8 border-3 border-[#800020] border-t-transparent rounded-full animate-spin" />
-          <span className="text-sm font-medium">Initializing Secant Canvas...</span>
+      <div className="w-full h-[520px] flex items-center justify-center bg-[#0a0a0c] rounded-2xl border border-white/10">
+        <div className="flex flex-col items-center gap-3 text-stone-400">
+          <div className="w-8 h-8 border-2 border-cyan-500 border-t-transparent rounded-full animate-spin" />
+          <span className="text-xs font-mono uppercase tracking-wider text-stone-400">Initializing Secant Precision Canvas...</span>
         </div>
       </div>
     ),
@@ -123,7 +123,7 @@ export const SecantPlot: React.FC<SecantPlotProps> = ({
       type: 'scatter',
       mode: 'lines',
       name: `f(x) = ${exprFStr}`,
-      line: { color: '#800020', width: 3 },
+      line: { color: '#f43f5e', width: 3 },
       hoverinfo: 'x+y',
     });
 
@@ -143,7 +143,7 @@ export const SecantPlot: React.FC<SecantPlotProps> = ({
           type: 'scatter',
           mode: 'lines',
           name: `Secant (i=${s.iteration})`,
-          line: { color: 'rgba(217, 119, 6, 0.25)', width: 1.5, dash: 'dot' },
+          line: { color: 'rgba(6, 182, 212, 0.25)', width: 1.5, dash: 'dot' },
           hoverinfo: 'none',
           showlegend: idx === 0,
         });
@@ -163,7 +163,7 @@ export const SecantPlot: React.FC<SecantPlotProps> = ({
         type: 'scatter',
         mode: 'lines',
         name: `Current Secant Line`,
-        line: { color: '#D97706', width: 2.5 },
+        line: { color: '#06b6d4', width: 2.5 },
         hoverinfo: 'none',
       });
 
@@ -176,7 +176,8 @@ export const SecantPlot: React.FC<SecantPlotProps> = ({
         name: `Point (x_{i-1})`,
         text: [`x_{i-1} (${currentStep.xPrev.toFixed(4)})`],
         textposition: 'top left',
-        marker: { size: 9, color: '#2563EB', symbol: 'circle' },
+        textfont: { size: 10, color: '#38bdf8', family: 'var(--font-geist-mono), monospace' },
+        marker: { size: 8, color: '#38bdf8', symbol: 'circle' },
       });
 
       // Point 2: (x_i, f(x_i))
@@ -188,7 +189,8 @@ export const SecantPlot: React.FC<SecantPlotProps> = ({
         name: `Point (x_i)`,
         text: [`x_i (${currentStep.xi.toFixed(4)})`],
         textposition: 'top right',
-        marker: { size: 9, color: '#D97706', symbol: 'circle' },
+        textfont: { size: 10, color: '#06b6d4', family: 'var(--font-geist-mono), monospace' },
+        marker: { size: 8, color: '#06b6d4', symbol: 'circle' },
       });
 
       // Vertical guideline to new root estimate
@@ -198,7 +200,7 @@ export const SecantPlot: React.FC<SecantPlotProps> = ({
         type: 'scatter',
         mode: 'lines',
         name: 'Projection to f(x_{i+1})',
-        line: { color: '#10B981', width: 1.5, dash: 'dash' },
+        line: { color: '#fbbf24', width: 1.5, dash: 'dash' },
         hoverinfo: 'none',
       });
 
@@ -211,7 +213,8 @@ export const SecantPlot: React.FC<SecantPlotProps> = ({
         name: `Next Root x_{i+1}`,
         text: [`x_{i+1} = ${currentStep.xNext.toFixed(5)}`],
         textposition: 'bottom center',
-        marker: { size: 11, color: '#10B981', symbol: 'star' },
+        textfont: { size: 10, color: '#fbbf24', family: 'var(--font-geist-mono), monospace', weight: 700 },
+        marker: { size: 11, color: '#fbbf24', symbol: 'star' },
       });
     }
 
@@ -229,24 +232,26 @@ export const SecantPlot: React.FC<SecantPlotProps> = ({
   const layout = useMemo(
     () => ({
       autosize: true,
-      margin: { l: 55, r: 25, t: 30, b: 50 },
-      plot_bgcolor: '#FAF9F6',
-      paper_bgcolor: '#FFFFFF',
-      font: { family: 'inherit', color: '#292524' },
+      margin: { l: 55, r: 25, t: 40, b: 50 },
+      plot_bgcolor: '#0a0a0c',
+      paper_bgcolor: 'rgba(0,0,0,0)',
+      font: { family: 'var(--font-geist-sans), Inter, sans-serif', color: '#a1a1aa' },
       xaxis: {
-        title: { text: 'x', font: { size: 12, color: '#78716C' } },
+        title: { text: 'x', font: { size: 12, color: '#a1a1aa' } },
         zeroline: true,
-        zerolinecolor: '#44403C',
+        zerolinecolor: 'rgba(255, 255, 255, 0.25)',
         zerolinewidth: 1.5,
-        gridcolor: '#E7E5E4',
+        gridcolor: 'rgba(255, 255, 255, 0.07)',
+        tickfont: { size: 11, color: '#71717a' },
         range: [plotXMin, plotXMax],
       },
       yaxis: {
-        title: { text: 'y / f(x)', font: { size: 12, color: '#78716C' } },
+        title: { text: 'y / f(x)', font: { size: 12, color: '#a1a1aa' } },
         zeroline: true,
-        zerolinecolor: '#44403C',
+        zerolinecolor: 'rgba(255, 255, 255, 0.25)',
         zerolinewidth: 1.5,
-        gridcolor: '#E7E5E4',
+        gridcolor: 'rgba(255, 255, 255, 0.07)',
+        tickfont: { size: 11, color: '#71717a' },
         range: [yMinPlot, yMaxPlot],
       },
       legend: {
@@ -255,23 +260,30 @@ export const SecantPlot: React.FC<SecantPlotProps> = ({
         y: 1.02,
         xanchor: 'right' as const,
         x: 1,
-        font: { size: 11 },
+        font: { size: 11, color: '#e4e4e7' },
+        bgcolor: 'rgba(18, 18, 21, 0.85)',
+        bordercolor: 'rgba(255, 255, 255, 0.1)',
       },
       hovermode: 'closest' as const,
+      hoverlabel: {
+        bgcolor: '#18181b',
+        font: { color: '#FFFFFF', size: 12 },
+        bordercolor: 'rgba(255, 255, 255, 0.15)',
+      },
     }),
     [plotXMin, plotXMax, yMinPlot, yMaxPlot]
   );
 
   return (
-    <div className="bg-white rounded-2xl border border-stone-200/90 shadow-lg shadow-stone-200/30 p-4 space-y-3">
+    <div className="bg-[#121215] rounded-2xl border border-white/10 p-4 space-y-3">
       {/* Plot Toolbar */}
       <div className="flex flex-wrap items-center justify-between gap-2 px-1">
         <div className="flex items-center gap-2">
-          <Spline className="w-4 h-4 text-[#800020]" />
-          <span className="text-xs font-semibold text-stone-800">
+          <Spline className="w-4 h-4 text-cyan-400" />
+          <span className="text-xs font-semibold text-white">
             Secant Line Projection Diagram
           </span>
-          <span className="text-[11px] font-mono text-stone-400">
+          <span className="text-[11px] font-mono text-stone-500">
             (Step {currentIter} of {steps.length})
           </span>
         </div>
@@ -280,10 +292,10 @@ export const SecantPlot: React.FC<SecantPlotProps> = ({
           <button
             type="button"
             onClick={() => setShowGhostSecants(!showGhostSecants)}
-            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium border transition cursor-pointer ${
+            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-mono border transition cursor-pointer ${
               showGhostSecants
-                ? 'bg-amber-50 text-amber-900 border-amber-300'
-                : 'bg-stone-50 text-stone-600 border-stone-200 hover:bg-stone-100'
+                ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/30'
+                : 'bg-black/40 text-stone-400 border-white/5 hover:bg-white/5'
             }`}
           >
             {showGhostSecants ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
@@ -293,20 +305,20 @@ export const SecantPlot: React.FC<SecantPlotProps> = ({
           <button
             type="button"
             onClick={() => setZoomToRoot(!zoomToRoot)}
-            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium border transition cursor-pointer ${
+            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-mono border transition cursor-pointer ${
               zoomToRoot
-                ? 'bg-[#800020] text-white border-[#800020]'
-                : 'bg-stone-50 text-stone-600 border-stone-200 hover:bg-stone-100'
+                ? 'bg-white text-black border-white'
+                : 'bg-black/40 text-stone-300 border-white/10 hover:bg-white/5'
             }`}
           >
             <ZoomIn className="w-3.5 h-3.5" />
-            <span>{zoomToRoot ? 'Reset Zoom' : 'Zoom Root'}</span>
+            <span>{zoomToRoot ? 'Reset Zoom' : 'Focus Root'}</span>
           </button>
         </div>
       </div>
 
       {/* Plot Canvas */}
-      <div className="w-full h-[520px] rounded-xl overflow-hidden border border-stone-200">
+      <div className="w-full h-[520px] rounded-xl overflow-hidden border border-white/10">
         <Plot
           data={plotData}
           layout={layout}

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Play, HelpCircle, AlertCircle, Sparkles, Orbit } from 'lucide-react';
+import { Play, HelpCircle, AlertCircle, Orbit } from 'lucide-react';
 import { MathView } from './MathView';
 import { MullerPreset } from '@/lib/openMethods';
 
@@ -52,178 +52,196 @@ export const MullerControl: React.FC<MullerControlProps> = ({
   };
 
   return (
-    <div className="bg-white rounded-2xl border border-stone-200/90 shadow-lg shadow-stone-200/30 p-5 space-y-4">
+    <div className="bg-[#121215] rounded-2xl border border-white/10 shadow-xl p-5 space-y-4 text-white">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h2 className="text-base font-semibold text-stone-900 flex items-center gap-2">
-          <span className="w-2.5 h-2.5 rounded-full bg-[#800020]" />
-          <span>Muller's Method Setup</span>
+        <h2 className="text-base font-semibold text-white flex items-center gap-2">
+          <span className="w-2.5 h-2.5 rounded-full bg-indigo-400" />
+          <span>Muller&apos;s Method Setup</span>
         </h2>
         <button
           type="button"
           onClick={() => setShowHelp(!showHelp)}
-          className="text-xs text-stone-500 hover:text-stone-800 flex items-center gap-1 transition-colors cursor-pointer"
+          className="text-xs text-stone-400 hover:text-white flex items-center gap-1 transition-colors cursor-pointer"
         >
           <HelpCircle className="w-3.5 h-3.5" />
-          <span>Parabola Rule</span>
+          <span>Parabolic Rule</span>
         </button>
       </div>
 
       {/* Help Popover */}
       {showHelp && (
-        <div className="p-3.5 bg-amber-50/70 border border-amber-200 rounded-xl text-xs space-y-2 text-stone-800 animate-fadeIn">
-          <div className="font-bold text-amber-900 flex items-center gap-1.5">
-            <Orbit className="w-4 h-4 text-amber-600" />
-            <span>Three-Point Parabolic Fitting</span>
+        <div className="p-3.5 bg-black/50 border border-white/10 rounded-xl text-xs space-y-1.5 text-stone-300">
+          <div className="font-bold text-indigo-300 flex items-center gap-1.5">
+            <Orbit className="w-3.5 h-3.5" />
+            <span>Quadratic Interpolation &amp; Complex Roots</span>
           </div>
-          <p className="leading-relaxed">
-            Muller's Method fits a quadratic parabola through 3 points <MathView math="(x_0, f_0), (x_1, f_1), (x_2, f_2)" />:
+          <p className="text-stone-400">
+            Fits a second-order parabola <MathView math="y = a(x - x_2)^2 + b(x - x_2) + c" block={false} /> through three points: (x₀, f(x₀)), (x₁, f(x₁)), and (x₂, f(x₂)).
           </p>
-          <div className="p-2 bg-white rounded-lg border border-amber-200 text-center font-serif text-xs text-[#800020] font-bold">
-            <MathView math="P(x) = a(x - x_2)^2 + b(x - x_2) + c" />
-          </div>
-          <p className="leading-relaxed">
-            The next estimate is the intersection of this parabola with the x-axis:
-          </p>
-          <div className="p-2 bg-white rounded-lg border border-amber-200 text-center font-serif text-xs text-[#800020] font-bold">
-            <MathView math="x_3 = x_2 - \frac{2c}{b \pm \sqrt{b^2 - 4ac}}" />
-          </div>
-          <p className="text-[11px] text-stone-600">
-            <strong>Unique Power:</strong> The discriminant <MathView math="b^2 - 4ac" /> can be negative, allowing Muller's method to discover <em>complex conjugate roots</em> even with real starting guesses! Convergence order is <MathView math="\approx 1.84" />.
+          <p className="text-stone-400 text-[11px]">
+            Solves for roots with the quadratic formula. When <MathView math="b^2 - 4ac < 0" block={false} />, the square root yields imaginary numbers, naturally discovering complex roots!
           </p>
         </div>
       )}
 
-      {/* Presets */}
+      {/* Presets Grid */}
       <div className="space-y-1.5">
-        <label className="block text-[11px] font-semibold uppercase tracking-wider text-stone-500">
+        <label className="text-[11px] font-mono font-semibold uppercase tracking-wider text-stone-400 block">
           Textbook Presets
         </label>
-        <select
-          onChange={(e) => {
-            const idx = parseInt(e.target.value);
-            if (presets[idx]) applyPreset(presets[idx]);
-          }}
-          className="w-full px-3 py-2 text-xs font-medium bg-stone-50 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#800020]/20 focus:border-[#800020] text-stone-800 cursor-pointer"
-          defaultValue="0"
-        >
+        <div className="grid grid-cols-1 gap-1.5">
           {presets.map((p, idx) => (
-            <option key={idx} value={idx}>
-              {p.label}
-            </option>
+            <button
+              key={idx}
+              type="button"
+              onClick={() => applyPreset(p)}
+              className="text-left px-3 py-2 rounded-xl border border-white/10 bg-white/5 hover:border-indigo-400/50 hover:bg-white/10 text-xs transition cursor-pointer flex flex-col gap-0.5 group"
+            >
+              <div className="flex items-center justify-between">
+                <span className="font-bold text-white group-hover:text-indigo-300 transition-colors">
+                  {p.label}
+                </span>
+                <span className="text-[10px] font-mono text-stone-400">
+                  x₀={p.defaultX0}, x₁={p.defaultX1}, x₂={p.defaultX2}
+                </span>
+              </div>
+              <p className="text-[11px] text-stone-400 line-clamp-1">{p.description}</p>
+              {p.note && (
+                <span className="text-[10px] text-indigo-300 font-mono">
+                  {p.note}
+                </span>
+              )}
+            </button>
           ))}
-        </select>
+        </div>
       </div>
 
       {/* Inputs Form */}
-      <div className="space-y-3.5">
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          onApply();
+        }}
+        className="space-y-3.5 pt-1"
+      >
         <div>
-          <label className="block text-[11px] font-semibold uppercase tracking-wider text-stone-500 mb-1">
-            Function <MathView math="f(x)" />
+          <label className="block text-[11px] font-mono font-semibold uppercase tracking-wider text-stone-400 mb-1">
+            Function Expression <span className="font-serif italic text-white">f(x)</span>
           </label>
           <input
             type="text"
             value={exprFInput}
             onChange={(e) => setExprFInput(e.target.value)}
-            placeholder="e.g. x^3 - 13*x - 12"
-            className="w-full px-3 py-2 text-sm font-mono bg-stone-50 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#800020]/20 focus:border-[#800020] text-stone-900"
+            placeholder="e.g. x^3 - 13*x - 12, x^4 - 16"
+            className="w-full px-3 py-2 text-sm font-mono bg-black/50 border border-white/10 rounded-xl focus:outline-none focus:border-indigo-400/60 focus:ring-1 focus:ring-indigo-400/30 text-white placeholder:text-stone-600"
+            required
           />
         </div>
 
-        {/* 3 Guesses: x0, x1, x2 */}
+        {/* 3 Point Initial Guesses */}
         <div className="grid grid-cols-3 gap-2">
           <div>
-            <label className="block text-[10px] font-semibold uppercase tracking-wider text-stone-500 mb-1">
-              Guess <MathView math="x_0" />
+            <label className="block text-[10px] font-mono font-semibold uppercase tracking-wider text-stone-400 mb-1">
+              Guess <span className="font-serif italic text-white">x₀</span>
             </label>
             <input
               type="number"
               step="any"
               value={x0Input}
               onChange={(e) => setX0Input(parseFloat(e.target.value) || 0)}
-              className="w-full px-2.5 py-2 text-xs font-mono bg-stone-50 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#800020]/20 focus:border-[#800020] text-stone-900"
+              className="w-full px-2 py-1.5 text-xs font-mono bg-black/50 border border-white/10 rounded-xl focus:outline-none focus:border-indigo-400/60 focus:ring-1 focus:ring-indigo-400/30 text-white font-medium"
+              required
             />
           </div>
+
           <div>
-            <label className="block text-[10px] font-semibold uppercase tracking-wider text-stone-500 mb-1">
-              Guess <MathView math="x_1" />
+            <label className="block text-[10px] font-mono font-semibold uppercase tracking-wider text-stone-400 mb-1">
+              Guess <span className="font-serif italic text-white">x₁</span>
             </label>
             <input
               type="number"
               step="any"
               value={x1Input}
               onChange={(e) => setX1Input(parseFloat(e.target.value) || 0)}
-              className="w-full px-2.5 py-2 text-xs font-mono bg-stone-50 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#800020]/20 focus:border-[#800020] text-stone-900"
+              className="w-full px-2 py-1.5 text-xs font-mono bg-black/50 border border-white/10 rounded-xl focus:outline-none focus:border-indigo-400/60 focus:ring-1 focus:ring-indigo-400/30 text-white font-medium"
+              required
             />
           </div>
+
           <div>
-            <label className="block text-[10px] font-semibold uppercase tracking-wider text-stone-500 mb-1">
-              Guess <MathView math="x_2" />
+            <label className="block text-[10px] font-mono font-semibold uppercase tracking-wider text-stone-400 mb-1">
+              Guess <span className="font-serif italic text-white">x₂</span>
             </label>
             <input
               type="number"
               step="any"
               value={x2Input}
               onChange={(e) => setX2Input(parseFloat(e.target.value) || 0)}
-              className="w-full px-2.5 py-2 text-xs font-mono bg-stone-50 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#800020]/20 focus:border-[#800020] text-stone-900"
+              className="w-full px-2 py-1.5 text-xs font-mono bg-black/50 border border-white/10 rounded-xl focus:outline-none focus:border-indigo-400/60 focus:ring-1 focus:ring-indigo-400/30 text-white font-medium"
+              required
             />
           </div>
         </div>
 
+        {/* Criteria Grid */}
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block text-[11px] font-semibold uppercase tracking-wider text-stone-500 mb-1">
-              Tolerance <MathView math="\varepsilon_a\ (\%)" />
+            <label className="block text-[10px] font-mono font-semibold uppercase tracking-wider text-stone-400 mb-1">
+              Error Tol <MathView math="\varepsilon_s\ (%)" />
             </label>
             <input
               type="number"
-              step="0.00001"
-              min="0.000001"
-              max="10"
+              step="any"
+              min="0.00000001"
               value={tolInput}
               onChange={(e) => setTolInput(parseFloat(e.target.value) || 0.0001)}
-              className="w-full px-3 py-2 text-sm font-mono bg-stone-50 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#800020]/20 focus:border-[#800020] text-stone-900"
+              className="w-full px-2.5 py-1.5 text-sm font-mono bg-black/50 border border-white/10 rounded-xl focus:outline-none focus:border-indigo-400/60 focus:ring-1 focus:ring-indigo-400/30 text-white"
+              required
             />
           </div>
+
           <div>
-            <label className="block text-[11px] font-semibold uppercase tracking-wider text-stone-500 mb-1">
+            <label className="block text-[10px] font-mono font-semibold uppercase tracking-wider text-stone-400 mb-1">
               Max Iterations
             </label>
             <input
               type="number"
               min="1"
-              max="100"
+              max="60"
               value={maxIterInput}
               onChange={(e) => setMaxIterInput(parseInt(e.target.value) || 20)}
-              className="w-full px-3 py-2 text-sm font-mono bg-stone-50 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#800020]/20 focus:border-[#800020] text-stone-900"
+              className="w-full px-2.5 py-1.5 text-sm font-mono bg-black/50 border border-white/10 rounded-xl focus:outline-none focus:border-indigo-400/60 focus:ring-1 focus:ring-indigo-400/30 text-white"
+              required
             />
           </div>
         </div>
 
-        {/* Error / Warning Alert */}
+        {/* Warning Alert */}
+        {warningMessage && (
+          <div className="flex items-start gap-2 p-3 bg-amber-500/10 border border-amber-500/30 text-amber-200 rounded-xl text-xs font-mono">
+            <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5 text-amber-400" />
+            <div>{warningMessage}</div>
+          </div>
+        )}
+
+        {/* Error Alert */}
         {errorMessage && (
-          <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-800 flex items-start gap-2">
-            <AlertCircle className="w-4 h-4 text-rose-600 flex-shrink-0 mt-0.5" />
-            <span>{errorMessage}</span>
+          <div className="flex items-start gap-2 p-3 bg-rose-950/40 border border-rose-500/30 text-rose-300 rounded-xl text-xs font-mono">
+            <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5 text-rose-400" />
+            <div>{errorMessage}</div>
           </div>
         )}
 
-        {warningMessage && !errorMessage && (
-          <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-800 flex items-start gap-2">
-            <AlertCircle className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
-            <span>{warningMessage}</span>
-          </div>
-        )}
-
+        {/* Solve Button */}
         <button
-          type="button"
-          onClick={onApply}
-          className="w-full py-2.5 px-4 bg-[#800020] hover:bg-[#6b001b] text-white rounded-xl text-xs font-semibold shadow-md shadow-[#800020]/20 flex items-center justify-center gap-2 transition cursor-pointer"
+          type="submit"
+          className="w-full py-2.5 px-4 rounded-xl font-mono font-medium text-xs text-white bg-[#800020] hover:bg-[#9a0027] active:scale-[0.98] transition-all flex items-center justify-center gap-2 border border-[#800020]/60 shadow-lg shadow-[#800020]/25 cursor-pointer"
         >
-          <Play className="w-3.5 h-3.5 fill-current" />
-          <span>Apply &amp; Plot Muller's Method</span>
+          <Play className="w-3.5 h-3.5 fill-white" />
+          <span>Fit Parabola (Iter 1)</span>
         </button>
-      </div>
+      </form>
     </div>
   );
 };

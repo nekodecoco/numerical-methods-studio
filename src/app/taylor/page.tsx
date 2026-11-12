@@ -10,6 +10,7 @@ import { MathView } from '@/components/MathView';
 import { BookOpen, GraduationCap, Info, Lightbulb, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 import { NavBar } from '@/components/NavBar';
+import { Footer } from '@/components/Footer';
 
 export default function Home() {
   // Input form state
@@ -90,33 +91,33 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FAF9F6] text-stone-900 flex flex-col">
+    <div className="min-h-screen bg-[#09090b] text-white flex flex-col selection:bg-amber-500/30 selection:text-amber-200">
       <NavBar />
 
       {/* Main Educational Workspace */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
         {/* Method Banner */}
-        <div className="bg-white border border-stone-200/90 rounded-xl p-5 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div className="space-y-1">
+        <div className="bg-[#121215] border border-white/10 rounded-2xl p-6 relative overflow-hidden backdrop-blur-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="space-y-1 relative z-10">
             <div className="flex items-center gap-2">
-              <span className="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded bg-[#800020]/10 text-[#800020] font-semibold border border-[#800020]/15">
+              <span className="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded bg-amber-500/10 text-amber-300 font-semibold border border-amber-500/20">
                 Polynomial Approximation
               </span>
-              <span className="text-xs text-stone-400 font-mono">Series Expansion</span>
+              <span className="text-xs text-stone-500 font-mono">Series Expansion</span>
             </div>
-            <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-stone-900 font-sans">
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white font-sans">
               Taylor Series Visualizer
             </h1>
-            <p className="text-xs text-stone-600 max-w-2xl">
-              Polynomial approximations around expansion point <span className="font-mono text-stone-800">x = a</span> with progressive derivative discovery, real-time error bounds, and dynamic plotting.
+            <p className="text-xs text-stone-400 max-w-2xl leading-relaxed">
+              Polynomial approximations around expansion point <span className="font-mono text-stone-200">x = a</span> with progressive derivative discovery, real-time error bounds, and dynamic plotting.
             </p>
           </div>
 
-          <div className="bg-stone-50 border border-stone-200 rounded-lg px-3.5 py-2 text-xs hidden md:block">
-            <div className="text-[9px] uppercase tracking-wider font-mono text-stone-500 font-semibold mb-0.5">
+          <div className="bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-xs hidden md:block relative z-10">
+            <div className="text-[9px] uppercase tracking-wider font-mono text-stone-400 font-semibold mb-1">
               General Series Formulation
             </div>
-            <MathView math="f(x) \approx \sum_{k=0}^n \frac{f^{(k)}(a)}{k!} (x-a)^k" block={false} className="text-stone-900 font-medium" />
+            <MathView math="f(x) \approx \sum_{k=0}^n \frac{f^{(k)}(a)}{k!} (x-a)^k" block={false} className="text-amber-300 font-medium font-serif" />
           </div>
         </div>
 
@@ -139,26 +140,26 @@ export default function Home() {
             />
 
             {/* Quick Instructor / Classroom Guide */}
-            <div className="bg-white rounded-2xl border border-stone-200/90 shadow-sm p-5 space-y-3">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-stone-500 flex items-center gap-1.5">
-                <Lightbulb className="w-4 h-4 text-amber-500" />
+            <div className="bg-[#121215] rounded-2xl border border-white/10 p-5 space-y-3">
+              <h3 className="text-xs font-bold font-mono uppercase tracking-wider text-stone-400 flex items-center gap-1.5">
+                <Lightbulb className="w-4 h-4 text-amber-400" />
                 Teaching Takeaways
               </h3>
-              <ul className="text-xs text-stone-600 space-y-2 leading-relaxed">
+              <ul className="text-xs text-stone-400 space-y-2.5 leading-relaxed">
                 <li className="flex items-start gap-2">
-                  <span className="font-bold text-[#800020]">0th Order:</span>
+                  <span className="font-bold text-amber-300 font-mono">0th Order:</span>
                   <span>Matches only the function value at <MathView math="a" /> (a horizontal line).</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="font-bold text-[#800020]">1st Order:</span>
+                  <span className="font-bold text-amber-300 font-mono">1st Order:</span>
                   <span>Matches the slope <MathView math="f'(a)" /> — this is the classic tangent line approximation.</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="font-bold text-[#800020]">2nd Order:</span>
+                  <span className="font-bold text-amber-300 font-mono">2nd Order:</span>
                   <span>Matches the concavity/curvature <MathView math="f''(a)" /> via a quadratic osculating parabola.</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="font-bold text-[#800020]">Higher Orders:</span>
+                  <span className="font-bold text-amber-300 font-mono">Higher Orders:</span>
                   <span>Widens the domain interval where <MathView math="P_n(x)" /> hugs <MathView math="f(x)" /> tightly.</span>
                 </li>
               </ul>
@@ -203,19 +204,7 @@ export default function Home() {
         </div>
       </main>
 
-      {/* Classroom Footer */}
-      <footer className="border-t border-stone-200 bg-white py-6 text-center text-xs text-stone-500">
-        <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <p>
-            Designed for Numerical Methods &amp; Mathematical Analysis courses. Built with Next.js, math.js &amp; Plotly.
-          </p>
-          <div className="flex items-center gap-4 text-stone-400">
-            <span>Client-Side Computation</span>
-            <span>•</span>
-            <span>Vercel Deploy Ready</span>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

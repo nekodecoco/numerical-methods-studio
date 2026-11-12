@@ -57,61 +57,61 @@ export const DerivativesLog: React.FC<DerivativesLogProps> = ({
   };
 
   return (
-    <div className="bg-white rounded-2xl border border-stone-200/90 shadow-lg shadow-stone-200/30 p-5 space-y-5">
+    <div className="bg-[#121215] rounded-2xl border border-white/10 p-5 space-y-5 text-white">
       {/* 1. Full Formula Display Banner */}
-      <div className="rounded-xl border border-amber-200/90 bg-gradient-to-br from-amber-50/70 via-white to-amber-50/40 p-4 space-y-2 shadow-xs">
+      <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-4 space-y-2">
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-amber-900">
-            <Sigma className="w-4 h-4 text-[#800020]" />
+          <div className="flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-wider text-amber-400">
+            <Sigma className="w-4 h-4 text-amber-400" />
             <span>Full Taylor Polynomial Formula (Degree n = {currentOrder})</span>
           </div>
 
           <button
             type="button"
             onClick={handleCopyFormula}
-            className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded-lg bg-white border border-stone-200 text-stone-700 hover:bg-stone-50 transition cursor-pointer"
+            className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-mono rounded-lg bg-white/5 border border-white/10 text-stone-300 hover:bg-white/10 transition cursor-pointer"
             title="Copy LaTeX formula to clipboard"
           >
-            {copiedFormula ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+            {copiedFormula ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
             <span>{copiedFormula ? 'Copied LaTeX' : 'Copy LaTeX'}</span>
           </button>
         </div>
 
         {/* Large Prominent KaTeX Render of Full Polynomial */}
-        <div className="p-3 bg-white/90 rounded-lg border border-amber-200/60 overflow-x-auto text-stone-900">
-          <div className="text-base sm:text-lg font-serif text-[#800020] min-w-max">
+        <div className="p-3 bg-black/50 rounded-lg border border-white/10 overflow-x-auto text-white">
+          <div className="text-base sm:text-lg font-serif text-amber-300 min-w-max">
             <MathView math={fullFormulaLatex} block={true} />
           </div>
         </div>
 
         {/* General Definition Reference */}
-        <div className="text-[11px] text-stone-500 font-serif flex flex-wrap items-center gap-2 pt-0.5">
-          <span className="font-sans font-semibold uppercase text-[10px] text-stone-400">Definition:</span>
+        <div className="text-[11px] text-stone-400 font-serif flex flex-wrap items-center gap-2 pt-0.5">
+          <span className="font-mono font-semibold uppercase text-[10px] text-stone-500">Definition:</span>
           <MathView math="f(x) = \sum_{k=0}^n \frac{f^{(k)}(a)}{k!} (x-a)^k + R_n(x)" />
         </div>
       </div>
 
       {/* 2. Header & View Toggle (Table vs Cards) */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-3 border-b border-stone-100">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-3 border-b border-white/10">
         <div>
-          <h3 className="text-base font-semibold text-stone-900 flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-[#800020]" />
-            Derivatives &amp; Numerical Values Tracker
+          <h3 className="text-base font-semibold text-white flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-amber-500" />
+            <span>Derivatives &amp; Numerical Values Tracker</span>
           </h3>
-          <p className="text-xs text-stone-500 mt-0.5">
+          <p className="text-xs text-stone-400 mt-0.5">
             Expansion center <MathView math={`a = ${a}`} /> • {visibleSteps.length} term{visibleSteps.length !== 1 ? 's' : ''} computed
           </p>
         </div>
 
         {/* Tab Switcher Pills */}
-        <div className="inline-flex items-center p-1 bg-stone-100 rounded-xl border border-stone-200">
+        <div className="inline-flex items-center p-1 bg-black/50 rounded-xl border border-white/10">
           <button
             type="button"
             onClick={() => setActiveTab('table')}
-            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition cursor-pointer ${
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono font-semibold transition cursor-pointer ${
               activeTab === 'table'
-                ? 'bg-white text-[#800020] shadow-xs'
-                : 'text-stone-600 hover:text-stone-900'
+                ? 'bg-white text-black shadow-xs'
+                : 'text-stone-400 hover:text-white'
             }`}
           >
             <Table className="w-3.5 h-3.5" />
@@ -121,10 +121,10 @@ export const DerivativesLog: React.FC<DerivativesLogProps> = ({
           <button
             type="button"
             onClick={() => setActiveTab('cards')}
-            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition cursor-pointer ${
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono font-semibold transition cursor-pointer ${
               activeTab === 'cards'
-                ? 'bg-white text-[#800020] shadow-xs'
-                : 'text-stone-600 hover:text-stone-900'
+                ? 'bg-white text-black shadow-xs'
+                : 'text-stone-400 hover:text-white'
             }`}
           >
             <LayoutGrid className="w-3.5 h-3.5" />
@@ -154,22 +154,22 @@ export const DerivativesLog: React.FC<DerivativesLogProps> = ({
                 key={s.order}
                 className={`p-4 rounded-xl border transition-all duration-300 ${
                   isLatest
-                    ? 'bg-amber-50/30 border-amber-300/80 shadow-sm animate-fadeIn'
-                    : 'bg-stone-50/60 border-stone-200'
+                    ? 'bg-amber-500/10 border-amber-500/30'
+                    : 'bg-black/40 border-white/10'
                 }`}
               >
                 <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
                   <div className="flex items-center gap-2">
                     <span
-                      className={`text-xs font-bold px-2 py-0.5 rounded-md ${
+                      className={`text-xs font-mono font-bold px-2 py-0.5 rounded-md ${
                         isLatest
-                          ? 'bg-[#800020] text-white'
-                          : 'bg-stone-200 text-stone-700'
+                          ? 'bg-amber-500 text-black'
+                          : 'bg-white/10 text-stone-300'
                       }`}
                     >
                       Order {s.order}
                     </span>
-                    <span className="text-xs font-medium text-stone-600">
+                    <span className="text-xs font-medium text-stone-300">
                       {isZeroOrder
                         ? 'Base Value f(a)'
                         : s.order === 1
@@ -181,8 +181,8 @@ export const DerivativesLog: React.FC<DerivativesLogProps> = ({
                   </div>
 
                   {isLatest && (
-                    <span className="text-[11px] font-semibold text-amber-700 bg-amber-100/70 px-2 py-0.5 rounded-full flex items-center gap-1">
-                      <Sparkles className="w-3 h-3" />
+                    <span className="text-[11px] font-mono font-semibold text-amber-300 bg-amber-500/20 px-2 py-0.5 rounded-full flex items-center gap-1">
+                      <Sparkles className="w-3 h-3 text-amber-400" />
                       Latest Revealed Term
                     </span>
                   )}
@@ -190,11 +190,11 @@ export const DerivativesLog: React.FC<DerivativesLogProps> = ({
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-1 text-xs">
                   {/* Symbolic Derivative */}
-                  <div className="bg-white p-2.5 rounded-lg border border-stone-200/80">
-                    <span className="block text-[10px] uppercase font-bold text-stone-400 mb-1">
+                  <div className="bg-black/60 p-2.5 rounded-lg border border-white/5">
+                    <span className="block text-[10px] font-mono uppercase font-bold text-stone-500 mb-1">
                       Symbolic Derivative
                     </span>
-                    <div className="text-sm font-serif text-stone-900 overflow-x-auto">
+                    <div className="text-sm font-serif text-white overflow-x-auto">
                       <MathView
                         math={`${getDerivLabel(s.order)} = ${s.derivativeLatex || s.derivativeExpr}`}
                       />
@@ -202,11 +202,11 @@ export const DerivativesLog: React.FC<DerivativesLogProps> = ({
                   </div>
 
                   {/* Evaluated at a */}
-                  <div className="bg-white p-2.5 rounded-lg border border-stone-200/80">
-                    <span className="block text-[10px] uppercase font-bold text-stone-400 mb-1">
+                  <div className="bg-black/60 p-2.5 rounded-lg border border-white/5">
+                    <span className="block text-[10px] font-mono uppercase font-bold text-stone-500 mb-1">
                       Evaluated at a = {a}
                     </span>
-                    <div className="text-sm font-serif text-stone-900 overflow-x-auto">
+                    <div className="text-sm font-serif text-white overflow-x-auto">
                       <MathView
                         math={`${getDerivAtALabel(s.order)} = ${s.derivativeAtAFormatted}`}
                       />
@@ -214,11 +214,11 @@ export const DerivativesLog: React.FC<DerivativesLogProps> = ({
                   </div>
 
                   {/* Added Term */}
-                  <div className="bg-white p-2.5 rounded-lg border border-stone-200/80">
-                    <span className="block text-[10px] uppercase font-bold text-stone-400 mb-1">
+                  <div className="bg-black/60 p-2.5 rounded-lg border border-white/5">
+                    <span className="block text-[10px] font-mono uppercase font-bold text-stone-500 mb-1">
                       Added Taylor Term
                     </span>
-                    <div className="text-sm font-serif text-[#800020] font-semibold overflow-x-auto">
+                    <div className="text-sm font-serif text-amber-300 font-semibold overflow-x-auto">
                       <MathView math={s.termLatex || '0'} />
                     </div>
                   </div>
@@ -231,17 +231,17 @@ export const DerivativesLog: React.FC<DerivativesLogProps> = ({
 
       {/* Up Next Teaser if not at cap */}
       {currentOrder < capOrder && currentOrder < steps.length - 1 && (
-        <div className="p-3 rounded-xl border border-dashed border-stone-300 bg-stone-50/40 text-stone-500 text-xs flex items-center justify-between">
+        <div className="p-3 rounded-xl border border-dashed border-white/10 bg-black/30 text-stone-400 text-xs flex items-center justify-between font-mono">
           <span className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-stone-400 animate-pulse" />
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
             <span>
               Order {currentOrder + 1} derivative ready:{' '}
-              <strong className="text-stone-700 font-mono">
+              <strong className="text-stone-200">
                 {getDerivLabel(currentOrder + 1)}
               </strong>
             </span>
           </span>
-          <span className="text-[11px] font-medium text-[#800020]">
+          <span className="text-[11px] text-amber-400">
             Click &quot;Reveal Next Derivative&quot; above
           </span>
         </div>

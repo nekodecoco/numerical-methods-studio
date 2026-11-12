@@ -15,8 +15,6 @@ import {
   ChevronDown,
   Menu,
   X,
-  Binary,
-  Layers,
   ArrowRight,
 } from 'lucide-react';
 
@@ -126,7 +124,7 @@ export const NavBar: React.FC = () => {
   const isTutorialActive = pathname === '/tutorial';
 
   return (
-    <header className="border-b border-stone-200/80 bg-white/95 backdrop-blur-md sticky top-0 z-40 transition-colors">
+    <header className="border-b border-white/10 bg-[#09090b]/85 backdrop-blur-xl sticky top-0 z-40 transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="h-16 flex items-center justify-between gap-4">
           {/* Brand Identity */}
@@ -134,16 +132,16 @@ export const NavBar: React.FC = () => {
             href="/"
             className="flex items-center gap-3 group select-none flex-shrink-0"
           >
-            <div className="w-9 h-9 rounded-lg bg-[#800020] text-white flex items-center justify-center font-mono font-bold text-sm shadow-sm group-hover:bg-[#6b001b] transition-colors">
+            <div className="w-8 h-8 rounded-lg bg-[#800020] text-white flex items-center justify-center font-mono font-bold text-sm shadow-md shadow-[#800020]/30 group-hover:bg-[#9a0027] transition-colors">
               <span className="tracking-tight text-amber-200 font-serif italic text-base">f</span>
               <span className="text-[10px] text-white/90 -ml-0.5">(x)</span>
             </div>
             <div className="flex flex-col">
               <div className="flex items-center gap-2">
-                <span className="text-sm sm:text-base font-semibold tracking-tight text-stone-900 font-sans">
+                <span className="text-sm sm:text-base font-semibold tracking-tight text-white font-sans">
                   Numerical Methods Studio
                 </span>
-                <span className="text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-stone-100 text-stone-600 border border-stone-200 hidden sm:inline-block">
+                <span className="text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-white/10 text-stone-300 border border-white/10 hidden sm:inline-block">
                   v2.0
                 </span>
               </div>
@@ -156,15 +154,15 @@ export const NavBar: React.FC = () => {
           {/* Categorized Desktop Navigation */}
           <nav
             ref={dropdownRef}
-            className="hidden md:flex items-center gap-1 text-sm font-medium"
+            className="hidden md:flex items-center gap-1.5 text-xs font-medium"
           >
             {/* Primary Category: Taylor Series */}
             <Link
               href="/taylor"
-              className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
                 isTaylorActive
                   ? 'bg-[#800020] text-white font-semibold shadow-xs'
-                  : 'text-stone-600 hover:text-stone-950 hover:bg-stone-100'
+                  : 'text-stone-400 hover:text-white hover:bg-white/5'
               }`}
             >
               <TrendingUp className="w-3.5 h-3.5" />
@@ -184,10 +182,10 @@ export const NavBar: React.FC = () => {
                 }
                 className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
                   isBracketingActive
-                    ? 'text-[#800020] bg-[#800020]/10 font-semibold border border-[#800020]/20'
+                    ? 'text-amber-300 bg-white/5 font-semibold border border-white/15'
                     : openDropdown === 'bracketing'
-                    ? 'bg-stone-100 text-stone-950'
-                    : 'text-stone-600 hover:text-stone-950 hover:bg-stone-100'
+                    ? 'bg-white/10 text-white'
+                    : 'text-stone-400 hover:text-white hover:bg-white/5'
                 }`}
                 aria-expanded={openDropdown === 'bracketing'}
               >
@@ -201,9 +199,9 @@ export const NavBar: React.FC = () => {
 
               {/* Bracketing Dropdown Flyout */}
               {openDropdown === 'bracketing' && (
-                <div className="absolute left-0 mt-1.5 w-72 rounded-xl bg-white border border-stone-200/90 shadow-xl shadow-stone-900/10 p-1.5 z-50">
-                  <div className="px-2.5 py-1.5 border-b border-stone-100 mb-1">
-                    <span className="text-[10px] font-mono uppercase tracking-wider text-stone-400 font-semibold">
+                <div className="absolute left-0 mt-1.5 w-72 rounded-xl bg-[#121215] border border-white/10 shadow-2xl p-1.5 z-50">
+                  <div className="px-2.5 py-1.5 border-b border-white/10 mb-1">
+                    <span className="text-[10px] font-mono uppercase tracking-wider text-stone-500 font-semibold">
                       Enclosed Search Intervals
                     </span>
                   </div>
@@ -217,31 +215,31 @@ export const NavBar: React.FC = () => {
                           href={method.href}
                           className={`flex items-start gap-2.5 p-2 rounded-lg text-xs transition-colors ${
                             active
-                              ? 'bg-[#800020]/8 text-[#800020] font-medium'
-                              : 'text-stone-700 hover:bg-stone-50 hover:text-stone-950'
+                              ? 'bg-[#800020]/25 text-rose-200 font-medium border border-[#800020]/40'
+                              : 'text-stone-300 hover:bg-white/5 hover:text-white'
                           }`}
                         >
                           <div
                             className={`p-1.5 rounded-md mt-0.5 flex-shrink-0 ${
                               active
                                 ? 'bg-[#800020] text-white'
-                                : 'bg-stone-100 text-stone-600'
+                                : 'bg-white/5 text-stone-400'
                             }`}
                           >
                             <Icon className="w-3.5 h-3.5" />
                           </div>
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center justify-between gap-1">
-                              <span className="font-semibold text-stone-900">
+                              <span className="font-semibold text-white">
                                 {method.label}
                               </span>
                               {method.badge && (
-                                <span className="text-[9px] font-mono px-1.5 py-0.2 rounded bg-stone-100 text-stone-500 border border-stone-200">
+                                <span className="text-[9px] font-mono px-1.5 py-0.2 rounded bg-white/5 text-stone-400 border border-white/10">
                                   {method.badge}
                                 </span>
                               )}
                             </div>
-                            <p className="text-[11px] text-stone-500 leading-snug mt-0.5">
+                            <p className="text-[11px] text-stone-400 leading-snug mt-0.5">
                               {method.subtitle}
                             </p>
                           </div>
@@ -266,10 +264,10 @@ export const NavBar: React.FC = () => {
                 }
                 className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
                   isOpenMethodsActive
-                    ? 'text-[#800020] bg-[#800020]/10 font-semibold border border-[#800020]/20'
+                    ? 'text-amber-300 bg-white/5 font-semibold border border-white/15'
                     : openDropdown === 'open'
-                    ? 'bg-stone-100 text-stone-950'
-                    : 'text-stone-600 hover:text-stone-950 hover:bg-stone-100'
+                    ? 'bg-white/10 text-white'
+                    : 'text-stone-400 hover:text-white hover:bg-white/5'
                 }`}
                 aria-expanded={openDropdown === 'open'}
               >
@@ -283,9 +281,9 @@ export const NavBar: React.FC = () => {
 
               {/* Open Methods Dropdown Flyout */}
               {openDropdown === 'open' && (
-                <div className="absolute left-0 mt-1.5 w-80 rounded-xl bg-white border border-stone-200/90 shadow-xl shadow-stone-900/10 p-1.5 z-50">
-                  <div className="px-2.5 py-1.5 border-b border-stone-100 mb-1">
-                    <span className="text-[10px] font-mono uppercase tracking-wider text-stone-400 font-semibold">
+                <div className="absolute left-0 mt-1.5 w-80 rounded-xl bg-[#121215] border border-white/10 shadow-2xl p-1.5 z-50">
+                  <div className="px-2.5 py-1.5 border-b border-white/10 mb-1">
+                    <span className="text-[10px] font-mono uppercase tracking-wider text-stone-500 font-semibold">
                       Single / Multi-Point Iteration
                     </span>
                   </div>
@@ -302,31 +300,31 @@ export const NavBar: React.FC = () => {
                           href={method.href}
                           className={`flex items-start gap-2.5 p-2 rounded-lg text-xs transition-colors ${
                             active
-                              ? 'bg-[#800020]/8 text-[#800020] font-medium'
-                              : 'text-stone-700 hover:bg-stone-50 hover:text-stone-950'
+                              ? 'bg-[#800020]/25 text-rose-200 font-medium border border-[#800020]/40'
+                              : 'text-stone-300 hover:bg-white/5 hover:text-white'
                           }`}
                         >
                           <div
                             className={`p-1.5 rounded-md mt-0.5 flex-shrink-0 ${
                               active
                                 ? 'bg-[#800020] text-white'
-                                : 'bg-stone-100 text-stone-600'
+                                : 'bg-white/5 text-stone-400'
                             }`}
                           >
                             <Icon className="w-3.5 h-3.5" />
                           </div>
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center justify-between gap-1">
-                              <span className="font-semibold text-stone-900">
+                              <span className="font-semibold text-white">
                                 {method.label}
                               </span>
                               {method.badge && (
-                                <span className="text-[9px] font-mono px-1.5 py-0.2 rounded bg-stone-100 text-stone-500 border border-stone-200">
+                                <span className="text-[9px] font-mono px-1.5 py-0.2 rounded bg-white/5 text-stone-400 border border-white/10">
                                   {method.badge}
                                 </span>
                               )}
                             </div>
-                            <p className="text-[11px] text-stone-500 leading-snug mt-0.5">
+                            <p className="text-[11px] text-stone-400 leading-snug mt-0.5">
                               {method.subtitle}
                             </p>
                           </div>
@@ -344,7 +342,7 @@ export const NavBar: React.FC = () => {
               className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
                 isTutorialActive
                   ? 'bg-[#800020] text-white font-semibold shadow-xs'
-                  : 'text-stone-600 hover:text-stone-950 hover:bg-stone-100'
+                  : 'text-stone-400 hover:text-white hover:bg-white/5'
               }`}
             >
               <BookOpen className="w-3.5 h-3.5" />
@@ -357,7 +355,7 @@ export const NavBar: React.FC = () => {
             <button
               type="button"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 rounded-lg text-stone-600 hover:text-stone-900 hover:bg-stone-100 transition-colors cursor-pointer"
+              className="p-2 rounded-lg text-stone-400 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
               aria-label="Toggle Navigation Menu"
             >
               {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -368,10 +366,10 @@ export const NavBar: React.FC = () => {
 
       {/* Mobile Drawer Navigation */}
       {mobileMenuOpen && (
-        <div className="md:hidden border-t border-stone-200 bg-white px-4 pt-3 pb-6 space-y-4">
+        <div className="md:hidden border-t border-white/10 bg-[#0c0c0e] px-4 pt-3 pb-6 space-y-4">
           {/* Overview */}
           <div className="space-y-1">
-            <div className="text-[10px] font-mono uppercase tracking-wider text-stone-400 font-semibold px-2">
+            <div className="text-[10px] font-mono uppercase tracking-wider text-stone-500 font-semibold px-2">
               Approximation
             </div>
             <Link
@@ -379,7 +377,7 @@ export const NavBar: React.FC = () => {
               className={`flex items-center justify-between p-2.5 rounded-lg text-sm font-medium ${
                 isTaylorActive
                   ? 'bg-[#800020] text-white font-semibold'
-                  : 'text-stone-800 hover:bg-stone-100'
+                  : 'text-stone-300 hover:bg-white/5 hover:text-white'
               }`}
             >
               <div className="flex items-center gap-2.5">
@@ -392,7 +390,7 @@ export const NavBar: React.FC = () => {
 
           {/* Bracketing Methods */}
           <div className="space-y-1">
-            <div className="text-[10px] font-mono uppercase tracking-wider text-stone-400 font-semibold px-2">
+            <div className="text-[10px] font-mono uppercase tracking-wider text-stone-500 font-semibold px-2">
               Bracketing Methods
             </div>
             {bracketingMethods.map((method) => {
@@ -404,16 +402,16 @@ export const NavBar: React.FC = () => {
                   href={method.href}
                   className={`flex items-center justify-between p-2.5 rounded-lg text-sm ${
                     active
-                      ? 'bg-[#800020]/10 text-[#800020] font-semibold'
-                      : 'text-stone-800 hover:bg-stone-100'
+                      ? 'bg-[#800020]/25 text-rose-200 font-semibold border border-[#800020]/40'
+                      : 'text-stone-300 hover:bg-white/5 hover:text-white'
                   }`}
                 >
                   <div className="flex items-center gap-2.5">
-                    <Icon className="w-4 h-4 text-stone-500" />
+                    <Icon className="w-4 h-4 text-stone-400" />
                     <span>{method.label}</span>
                   </div>
                   {method.badge && (
-                    <span className="text-[10px] font-mono text-stone-400">
+                    <span className="text-[10px] font-mono text-stone-500">
                       {method.badge}
                     </span>
                   )}
@@ -424,7 +422,7 @@ export const NavBar: React.FC = () => {
 
           {/* Open Methods */}
           <div className="space-y-1">
-            <div className="text-[10px] font-mono uppercase tracking-wider text-stone-400 font-semibold px-2">
+            <div className="text-[10px] font-mono uppercase tracking-wider text-stone-500 font-semibold px-2">
               Open Methods
             </div>
             {openMethods.map((method) => {
@@ -439,16 +437,16 @@ export const NavBar: React.FC = () => {
                   href={method.href}
                   className={`flex items-center justify-between p-2.5 rounded-lg text-sm ${
                     active
-                      ? 'bg-[#800020]/10 text-[#800020] font-semibold'
-                      : 'text-stone-800 hover:bg-stone-100'
+                      ? 'bg-[#800020]/25 text-rose-200 font-semibold border border-[#800020]/40'
+                      : 'text-stone-300 hover:bg-white/5 hover:text-white'
                   }`}
                 >
                   <div className="flex items-center gap-2.5">
-                    <Icon className="w-4 h-4 text-stone-500" />
+                    <Icon className="w-4 h-4 text-stone-400" />
                     <span>{method.label}</span>
                   </div>
                   {method.badge && (
-                    <span className="text-[10px] font-mono text-stone-400">
+                    <span className="text-[10px] font-mono text-stone-500">
                       {method.badge}
                     </span>
                   )}
@@ -458,13 +456,13 @@ export const NavBar: React.FC = () => {
           </div>
 
           {/* Resources */}
-          <div className="space-y-1 pt-2 border-t border-stone-100">
+          <div className="space-y-1 pt-2 border-t border-white/10">
             <Link
               href="/tutorial"
               className={`flex items-center justify-between p-2.5 rounded-lg text-sm font-medium ${
                 isTutorialActive
                   ? 'bg-[#800020] text-white font-semibold'
-                  : 'text-stone-800 hover:bg-stone-100'
+                  : 'text-stone-300 hover:bg-white/5 hover:text-white'
               }`}
             >
               <div className="flex items-center gap-2.5">

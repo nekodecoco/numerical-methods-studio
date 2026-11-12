@@ -15,10 +15,10 @@ const Plot = dynamic<any>(
   {
     ssr: false,
     loading: () => (
-      <div className="w-full h-[520px] flex items-center justify-center bg-stone-50/50 rounded-2xl border border-stone-200/80">
-        <div className="flex flex-col items-center gap-3 text-stone-500">
-          <div className="w-8 h-8 border-3 border-[#800020] border-t-transparent rounded-full animate-spin" />
-          <span className="text-sm font-medium">Initializing Tangent Canvas...</span>
+      <div className="w-full h-[520px] flex items-center justify-center bg-[#0a0a0c] rounded-2xl border border-white/10">
+        <div className="flex flex-col items-center gap-3 text-stone-400">
+          <div className="w-8 h-8 border-2 border-amber-500 border-t-transparent rounded-full animate-spin" />
+          <span className="text-xs font-mono uppercase tracking-wider text-stone-400">Initializing Tangent Precision Canvas...</span>
         </div>
       </div>
     ),
@@ -124,14 +124,14 @@ export const NewtonRaphsonPlot: React.FC<NewtonRaphsonPlotProps> = ({
       mode: 'lines',
       name: 'Zero Axis (y = 0)',
       line: {
-        color: '#64748B',
-        width: 1.8,
+        color: 'rgba(255, 255, 255, 0.2)',
+        width: 1.5,
         dash: 'dot',
       },
       hoverinfo: 'skip',
     });
 
-    // 2. True Function Curve f(x) (Royal Maroon)
+    // 2. True Function Curve f(x) (Vibrant Rose Crimson)
     traces.push({
       x: xValues,
       y: yValues,
@@ -139,8 +139,8 @@ export const NewtonRaphsonPlot: React.FC<NewtonRaphsonPlotProps> = ({
       mode: 'lines',
       name: `f(x) = ${exprFStr}`,
       line: {
-        color: '#800020',
-        width: 3.5,
+        color: '#f43f5e',
+        width: 3,
       },
       hovertemplate: `<b>f(x)</b>: %{y:.5f}<br>x: %{x:.5f}<extra></extra>`,
     });
@@ -159,8 +159,8 @@ export const NewtonRaphsonPlot: React.FC<NewtonRaphsonPlotProps> = ({
         mode: 'lines',
         name: `Prev Tangent (Iter ${prevStep.iteration})`,
         line: {
-          color: 'rgba(148, 163, 184, 0.75)',
-          width: 2,
+          color: 'rgba(148, 163, 184, 0.45)',
+          width: 1.8,
           dash: 'dash',
         },
         hovertemplate: `<b>Previous Tangent</b><extra></extra>`,
@@ -188,8 +188,8 @@ export const NewtonRaphsonPlot: React.FC<NewtonRaphsonPlotProps> = ({
         mode: 'lines',
         name: `Active Tangent (Iter ${currentIter})`,
         line: {
-          color: '#D97706', // Amber Gold
-          width: 3.2,
+          color: '#fbbf24', // Amber Gold
+          width: 2.8,
         },
         hovertemplate: `<b>Tangent Line</b>: slope = ${currentStep.dfxi.toFixed(4)}<extra></extra>`,
       });
@@ -202,17 +202,17 @@ export const NewtonRaphsonPlot: React.FC<NewtonRaphsonPlotProps> = ({
         mode: 'markers+text',
         name: `(x_${currentIter - 1}, f(x_${currentIter - 1}))`,
         marker: {
-          size: 13,
-          color: '#800020',
+          size: 11,
+          color: '#f43f5e',
           symbol: 'diamond',
           line: {
-            color: '#F59E0B',
-            width: 2.5,
+            color: '#fbbf24',
+            width: 2,
           },
         },
         text: [`(x_${currentIter - 1}, f)`],
         textposition: currentStep.fxi >= 0 ? 'top center' : 'bottom center',
-        textfont: { size: 10, color: '#800020', weight: 600 },
+        textfont: { size: 10, color: '#fbbf24', family: 'var(--font-geist-mono), monospace' },
         hovertemplate: `<b>Curve Point</b><br>x: %{x:.5f}<br>f(x): %{y:.5f}<extra></extra>`,
       });
 
@@ -226,13 +226,13 @@ export const NewtonRaphsonPlot: React.FC<NewtonRaphsonPlotProps> = ({
           mode: 'lines+markers',
           name: 'Vertical Projection',
           line: {
-            color: '#2563EB',
-            width: 2,
+            color: '#38bdf8', // Sky Blue
+            width: 1.8,
             dash: 'dot',
           },
           marker: {
-            size: 7,
-            color: '#2563EB',
+            size: 6,
+            color: '#38bdf8',
           },
           hoverinfo: 'skip',
         });
@@ -246,20 +246,20 @@ export const NewtonRaphsonPlot: React.FC<NewtonRaphsonPlotProps> = ({
         mode: 'markers+text',
         name: `Root Estimate x_${currentIter}`,
         marker: {
-          size: 15,
-          color: '#D97706',
+          size: 13,
+          color: '#f59e0b',
           symbol: 'circle',
           line: {
-            color: '#800020',
-            width: 3,
+            color: '#ffffff',
+            width: 2.5,
           },
         },
         text: [`x_${currentIter} = ${currentStep.xNext.toFixed(4)}`],
         textposition: 'top center',
         textfont: {
-          family: 'Inter, sans-serif',
-          size: 12,
-          color: '#800020',
+          family: 'var(--font-geist-mono), monospace',
+          size: 11,
+          color: '#fbbf24',
           weight: 700,
         },
         hovertemplate: `<b>New Estimate x_${currentIter}</b>: %{x:.6f}<extra></extra>`,
@@ -287,83 +287,90 @@ export const NewtonRaphsonPlot: React.FC<NewtonRaphsonPlotProps> = ({
       autosize: true,
       height: 520,
       margin: { l: 55, r: 25, t: 45, b: 50 },
-      paper_bgcolor: 'rgba(255, 255, 255, 0)',
-      plot_bgcolor: '#FAFBFC',
+      paper_bgcolor: 'rgba(0, 0, 0, 0)',
+      plot_bgcolor: '#0a0a0c',
       font: {
-        family: 'Inter, system-ui, -apple-system, sans-serif',
-        color: '#475569',
+        family: 'var(--font-geist-sans), Inter, system-ui, -apple-system, sans-serif',
+        color: '#a1a1aa',
       },
       xaxis: {
-        title: { text: 'x', font: { size: 13, color: '#475569' } },
+        title: { text: 'x', font: { size: 12, color: '#a1a1aa' } },
         range: [plotXMin, plotXMax],
         fixedrange: false,
         showgrid: true,
-        gridcolor: '#EDF2F7',
-        gridwidth: 1.2,
+        gridcolor: 'rgba(255, 255, 255, 0.07)',
+        gridwidth: 1,
         zeroline: true,
-        zerolinecolor: '#94A3B8',
-        zerolinewidth: 2,
-        tickfont: { size: 11, color: '#64748B' },
+        zerolinecolor: 'rgba(255, 255, 255, 0.25)',
+        zerolinewidth: 1.5,
+        tickfont: { size: 11, color: '#71717a' },
       },
       yaxis: {
-        title: { text: 'f(x)', font: { size: 13, color: '#475569' } },
+        title: { text: 'f(x)', font: { size: 12, color: '#a1a1aa' } },
         range: [yMinPlot, yMaxPlot],
         fixedrange: false,
         showgrid: true,
-        gridcolor: '#EDF2F7',
-        gridwidth: 1.2,
+        gridcolor: 'rgba(255, 255, 255, 0.07)',
+        gridwidth: 1,
         zeroline: true,
-        zerolinecolor: '#94A3B8',
-        zerolinewidth: 2,
-        tickfont: { size: 11, color: '#64748B' },
+        zerolinecolor: 'rgba(255, 255, 255, 0.25)',
+        zerolinewidth: 1.5,
+        tickfont: { size: 11, color: '#71717a' },
       },
       legend: {
         orientation: 'h',
         x: 0,
         y: 1.14,
-        font: { size: 11, color: '#334155' },
-        bgcolor: 'rgba(255, 255, 255, 0.85)',
+        font: { size: 11, color: '#e4e4e7' },
+        bgcolor: 'rgba(18, 18, 21, 0.85)',
+        bordercolor: 'rgba(255, 255, 255, 0.1)',
+      },
+      hovermode: 'closest',
+      hoverlabel: {
+        bgcolor: '#18181b',
+        font: { color: '#FFFFFF', size: 12 },
+        bordercolor: 'rgba(255, 255, 255, 0.15)',
       },
     }),
     [plotXMin, plotXMax, yMinPlot, yMaxPlot]
   );
 
   return (
-    <div className="relative w-full rounded-2xl bg-white border border-stone-200/90 shadow-xl shadow-stone-200/40 overflow-hidden">
+    <div className="relative w-full rounded-2xl bg-[#121215] border border-white/10 overflow-hidden">
       {/* Graph Toolbar */}
-      <div className="px-5 py-3 border-b border-stone-100 flex flex-wrap items-center justify-between gap-3 bg-gradient-to-r from-stone-50/80 via-white to-stone-50/80">
+      <div className="px-5 py-3 border-b border-white/10 flex flex-wrap items-center justify-between gap-3 bg-[#0a0a0c]">
         <div className="flex items-center gap-3">
-          <span className="inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#800020]/10 text-[#800020] border border-[#800020]/20">
-            f(x) Function Curve
+          <span className="inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-xs font-mono font-semibold bg-rose-500/10 text-rose-300 border border-rose-500/20">
+            f(x) Curve
           </span>
-          <span className="inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-900 border border-amber-300">
+          <span className="inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-xs font-mono font-semibold bg-amber-500/10 text-amber-300 border border-amber-500/20">
             Active Tangent Line
           </span>
-          <span className="inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-50 text-blue-800 border border-blue-200">
+          <span className="inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-xs font-mono font-semibold bg-sky-500/10 text-sky-300 border border-sky-500/20">
             Vertical Projection
           </span>
         </div>
 
         <div className="flex items-center gap-4">
-          <label className="text-xs text-stone-600 flex items-center gap-1.5 cursor-pointer select-none">
+          <label className="text-xs font-mono text-stone-400 flex items-center gap-1.5 cursor-pointer select-none">
             <input
               type="checkbox"
               checked={showGhostTangent}
               onChange={(e) => setShowGhostTangent(e.target.checked)}
-              className="accent-[#800020] rounded"
+              className="accent-amber-500 rounded"
             />
             <span>Show previous ghost tangent</span>
           </label>
 
-          <label className="text-xs text-stone-600 flex items-center gap-1.5 cursor-pointer select-none">
+          <label className="text-xs font-mono text-stone-400 flex items-center gap-1.5 cursor-pointer select-none">
             <input
               type="checkbox"
               checked={zoomToRoot}
               onChange={(e) => setZoomToRoot(e.target.checked)}
-              className="accent-[#800020] rounded"
+              className="accent-amber-500 rounded"
             />
-            <ZoomIn className="w-3.5 h-3.5 text-stone-500" />
-            <span>Zoom to active root</span>
+            <ZoomIn className="w-3.5 h-3.5 text-stone-400" />
+            <span>Focus root</span>
           </label>
         </div>
       </div>

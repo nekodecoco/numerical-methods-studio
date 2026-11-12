@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Play, Sparkles, AlertCircle, HelpCircle } from 'lucide-react';
+import { Play, AlertCircle, HelpCircle } from 'lucide-react';
 import { MathView } from './MathView';
 
 interface Preset {
@@ -61,17 +61,17 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({
   };
 
   return (
-    <div className="bg-white rounded-2xl border border-stone-200/90 shadow-lg shadow-stone-200/30 p-5 space-y-4">
+    <div className="bg-[#121215] rounded-2xl border border-white/10 shadow-xl p-5 space-y-4 text-white">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h2 className="text-base font-semibold text-stone-900 flex items-center gap-2">
-          <span className="w-2.5 h-2.5 rounded-full bg-[#800020]" />
-          Function & Expansion Setup
+        <h2 className="text-base font-semibold text-white flex items-center gap-2">
+          <span className="w-2.5 h-2.5 rounded-full bg-amber-400" />
+          <span>Function &amp; Expansion Setup</span>
         </h2>
         <button
           type="button"
           onClick={() => setShowSyntaxHelp(!showSyntaxHelp)}
-          className="text-xs text-stone-500 hover:text-stone-800 flex items-center gap-1 transition-colors"
+          className="text-xs text-stone-400 hover:text-white flex items-center gap-1 transition-colors cursor-pointer"
         >
           <HelpCircle className="w-3.5 h-3.5" />
           <span>Syntax Tips</span>
@@ -79,20 +79,20 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({
       </div>
 
       {showSyntaxHelp && (
-        <div className="p-3 bg-stone-50 rounded-xl text-xs text-stone-600 border border-stone-200/70 space-y-1 animate-fadeIn">
-          <p className="font-semibold text-stone-700">Supported math.js syntax:</p>
-          <ul className="list-disc pl-4 space-y-0.5 font-mono text-[11px]">
-            <li>Trig: <code className="text-[#800020]">sin(x)</code>, <code className="text-[#800020]">cos(x)</code>, <code className="text-[#800020]">tan(x)</code></li>
-            <li>Exponential/Log: <code className="text-[#800020]">exp(x)</code> or <code className="text-[#800020]">e^x</code>, <code className="text-[#800020]">log(x)</code> (natural ln)</li>
-            <li>Powers/Roots: <code className="text-[#800020]">x^3 - 2*x</code>, <code className="text-[#800020]">sqrt(1 + x)</code></li>
-            <li>Rational: <code className="text-[#800020]">1 / (1 + x^2)</code></li>
+        <div className="p-3 bg-black/50 rounded-xl text-xs text-stone-300 border border-white/10 space-y-1">
+          <p className="font-semibold text-white">Supported math.js syntax:</p>
+          <ul className="list-disc pl-4 space-y-0.5 font-mono text-[11px] text-stone-400">
+            <li>Trig: <code className="text-amber-300">sin(x)</code>, <code className="text-amber-300">cos(x)</code>, <code className="text-amber-300">tan(x)</code></li>
+            <li>Exponential/Log: <code className="text-amber-300">exp(x)</code> or <code className="text-amber-300">e^x</code>, <code className="text-amber-300">log(x)</code></li>
+            <li>Powers/Roots: <code className="text-amber-300">x^3 - 2*x</code>, <code className="text-amber-300">sqrt(1 + x)</code></li>
+            <li>Rational: <code className="text-amber-300">1 / (1 + x^2)</code></li>
           </ul>
         </div>
       )}
 
       {/* Classroom Quick Presets */}
       <div>
-        <label className="block text-xs font-semibold uppercase tracking-wider text-stone-500 mb-1.5">
+        <label className="block text-[11px] font-mono font-semibold uppercase tracking-wider text-stone-400 mb-1.5">
           Classroom Presets
         </label>
         <div className="flex flex-wrap gap-1.5">
@@ -101,10 +101,10 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({
               key={p.label}
               type="button"
               onClick={() => applyPreset(p)}
-              className={`px-2.5 py-1 text-xs rounded-lg font-medium border transition-all ${
+              className={`px-2.5 py-1 text-xs rounded-lg font-mono transition-all cursor-pointer ${
                 exprInput === p.expr
-                  ? 'bg-[#800020] text-white border-[#800020] shadow-sm shadow-[#800020]/20'
-                  : 'bg-stone-50 text-stone-700 border-stone-200 hover:border-stone-300 hover:bg-stone-100'
+                  ? 'bg-[#800020] text-white border border-[#800020]/60 shadow-md shadow-[#800020]/30'
+                  : 'bg-white/5 text-stone-300 border border-white/10 hover:border-white/20 hover:bg-white/10'
               }`}
             >
               <MathView math={p.mathDisplay} />
@@ -122,7 +122,7 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({
         className="space-y-3"
       >
         <div>
-          <label className="block text-xs font-semibold uppercase tracking-wider text-stone-500 mb-1">
+          <label className="block text-[11px] font-mono font-semibold uppercase tracking-wider text-stone-400 mb-1">
             Function <MathView math="f(x)" />
           </label>
           <div className="relative">
@@ -131,7 +131,7 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({
               value={exprInput}
               onChange={(e) => setExprInput(e.target.value)}
               placeholder="e.g. sin(x), exp(x), 1/(1+x^2)"
-              className="w-full px-3.5 py-2 text-sm font-mono bg-stone-50 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#800020]/30 focus:border-[#800020] text-stone-900 placeholder:text-stone-400 transition"
+              className="w-full px-3.5 py-2 text-sm font-mono bg-black/50 border border-white/10 rounded-xl focus:outline-none focus:border-amber-400/60 focus:ring-1 focus:ring-amber-400/30 text-white placeholder:text-stone-600 transition"
               required
             />
           </div>
@@ -140,7 +140,7 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({
         {/* Parameters Grid */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
           <div>
-            <label className="block text-[11px] font-semibold uppercase tracking-wider text-stone-500 mb-1">
+            <label className="block text-[10px] font-mono font-semibold uppercase tracking-wider text-stone-400 mb-1">
               Center <MathView math="a" />
             </label>
             <input
@@ -148,13 +148,13 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({
               step="any"
               value={aInput}
               onChange={(e) => setAInput(parseFloat(e.target.value) || 0)}
-              className="w-full px-2.5 py-1.5 text-sm font-mono bg-stone-50 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#800020]/30 focus:border-[#800020] text-stone-900"
+              className="w-full px-2.5 py-1.5 text-sm font-mono bg-black/50 border border-white/10 rounded-xl focus:outline-none focus:border-amber-400/60 focus:ring-1 focus:ring-amber-400/30 text-white"
               required
             />
           </div>
 
           <div>
-            <label className="block text-[11px] font-semibold uppercase tracking-wider text-stone-500 mb-1">
+            <label className="block text-[10px] font-mono font-semibold uppercase tracking-wider text-stone-400 mb-1">
               Range <MathView math="x_{min}" />
             </label>
             <input
@@ -162,13 +162,13 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({
               step="any"
               value={xMinInput}
               onChange={(e) => setXMinInput(parseFloat(e.target.value) || 0)}
-              className="w-full px-2.5 py-1.5 text-sm font-mono bg-stone-50 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#800020]/30 focus:border-[#800020] text-stone-900"
+              className="w-full px-2.5 py-1.5 text-sm font-mono bg-black/50 border border-white/10 rounded-xl focus:outline-none focus:border-amber-400/60 focus:ring-1 focus:ring-amber-400/30 text-white"
               required
             />
           </div>
 
           <div>
-            <label className="block text-[11px] font-semibold uppercase tracking-wider text-stone-500 mb-1">
+            <label className="block text-[10px] font-mono font-semibold uppercase tracking-wider text-stone-400 mb-1">
               Range <MathView math="x_{max}" />
             </label>
             <input
@@ -176,13 +176,13 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({
               step="any"
               value={xMaxInput}
               onChange={(e) => setXMaxInput(parseFloat(e.target.value) || 0)}
-              className="w-full px-2.5 py-1.5 text-sm font-mono bg-stone-50 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#800020]/30 focus:border-[#800020] text-stone-900"
+              className="w-full px-2.5 py-1.5 text-sm font-mono bg-black/50 border border-white/10 rounded-xl focus:outline-none focus:border-amber-400/60 focus:ring-1 focus:ring-amber-400/30 text-white"
               required
             />
           </div>
 
           <div>
-            <label className="block text-[11px] font-semibold uppercase tracking-wider text-stone-500 mb-1">
+            <label className="block text-[10px] font-mono font-semibold uppercase tracking-wider text-stone-400 mb-1">
               Max Order <MathView math="N" />
             </label>
             <input
@@ -196,7 +196,7 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({
                 setMaxOrderInput(Math.min(25, Math.max(1, val)));
               }}
               title="Maximum Taylor approximation order (up to 25)"
-              className="w-full px-2.5 py-1.5 text-sm font-mono bg-stone-50 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#800020]/30 focus:border-[#800020] text-stone-900 font-bold text-[#800020]"
+              className="w-full px-2.5 py-1.5 text-sm font-mono bg-black/50 border border-white/10 rounded-xl focus:outline-none focus:border-amber-400/60 focus:ring-1 focus:ring-amber-400/30 text-amber-300 font-bold"
               required
             />
           </div>
@@ -204,19 +204,19 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({
 
         {/* Inline Error Alert */}
         {errorMessage && (
-          <div className="flex items-start gap-2 p-3 bg-red-50 border border-red-200 text-red-700 rounded-xl text-xs">
-            <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5 text-red-500" />
+          <div className="flex items-start gap-2 p-3 bg-rose-950/40 border border-rose-500/30 text-rose-300 rounded-xl text-xs">
+            <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5 text-rose-400" />
             <div className="font-medium">{errorMessage}</div>
           </div>
         )}
 
-        {/* Start / Plot Button with micro-interaction */}
+        {/* Start / Plot Button */}
         <button
           type="submit"
-          className="w-full py-2.5 px-4 rounded-xl font-medium text-sm text-white bg-[#800020] hover:bg-[#6b001b] active:scale-[0.98] transition-all duration-150 flex items-center justify-center gap-2 shadow-md shadow-[#800020]/20 cursor-pointer"
+          className="w-full py-2.5 px-4 rounded-xl font-mono font-medium text-xs text-white bg-[#800020] hover:bg-[#9a0027] active:scale-[0.98] transition-all flex items-center justify-center gap-2 border border-[#800020]/60 shadow-lg shadow-[#800020]/25 cursor-pointer"
         >
-          <Play className="w-4 h-4 fill-white" />
-          <span>Plot & Initialize (Order 0)</span>
+          <Play className="w-3.5 h-3.5 fill-white" />
+          <span>Plot &amp; Initialize (Order 0)</span>
         </button>
       </form>
     </div>

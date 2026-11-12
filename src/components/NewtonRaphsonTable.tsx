@@ -40,19 +40,19 @@ export const NewtonRaphsonTable: React.FC<NewtonRaphsonTableProps> = ({
   };
 
   return (
-    <div className="bg-white rounded-2xl border border-stone-200/90 shadow-xl shadow-stone-200/40 p-5 space-y-4">
+    <div className="bg-[#121215] rounded-2xl border border-white/10 p-5 space-y-4 text-white">
       {/* Table Header & Copy Button */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h3 className="text-base font-semibold text-stone-900 flex items-center gap-2">
-            <TableIcon className="w-4 h-4 text-[#800020]" />
+          <h3 className="text-base font-semibold text-white flex items-center gap-2">
+            <TableIcon className="w-4 h-4 text-amber-400" />
             <span>Values Accounting Table: Newton-Raphson Method</span>
-            <span className="text-xs font-normal text-stone-500">
+            <span className="text-xs font-normal text-stone-400 font-mono">
               ({steps.length} {steps.length === 1 ? 'iteration' : 'iterations'})
             </span>
           </h3>
-          <p className="text-xs text-stone-500">
-            Audit of slope <code className="bg-stone-100 px-1 py-0.5 rounded text-stone-800">f&apos;(x_i)</code>, tangent intercept <code className="bg-stone-100 px-1 py-0.5 rounded text-stone-800">x_{'{i+1}'}</code>, and quadratic error decrease.
+          <p className="text-xs text-stone-400">
+            Audit of slope <code className="bg-white/5 border border-white/10 px-1 py-0.5 rounded text-stone-300 font-mono">f&apos;(x_i)</code>, tangent intercept <code className="bg-white/5 border border-white/10 px-1 py-0.5 rounded text-stone-300 font-mono">x_{'{i+1}'}</code>, and quadratic error decrease.
           </p>
         </div>
 
@@ -60,27 +60,27 @@ export const NewtonRaphsonTable: React.FC<NewtonRaphsonTableProps> = ({
           type="button"
           onClick={handleCopyTSV}
           disabled={steps.length === 0}
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-stone-100 hover:bg-stone-200 text-stone-700 rounded-xl transition cursor-pointer disabled:opacity-40"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-semibold bg-white/5 border border-white/10 hover:bg-white/10 text-stone-300 rounded-xl transition cursor-pointer disabled:opacity-40"
         >
-          {copied ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5 text-stone-500" />}
+          {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5 text-stone-400" />}
           <span>{copied ? 'Copied TSV!' : 'Copy for Excel/Sheets'}</span>
         </button>
       </div>
 
       {/* Table Container */}
-      <div className="overflow-x-auto border border-stone-200 rounded-xl max-h-[380px]">
-        <table className="w-full text-left text-xs text-stone-700 font-mono">
-          <thead className="bg-stone-100/90 sticky top-0 border-b border-stone-200 text-stone-900 font-sans uppercase text-[10px] tracking-wider z-10">
+      <div className="overflow-x-auto border border-white/10 rounded-xl max-h-[380px] bg-black/40">
+        <table className="w-full text-left text-xs text-stone-300 font-mono">
+          <thead className="bg-[#0a0a0c] sticky top-0 border-b border-white/10 text-stone-400 uppercase text-[10px] tracking-wider z-10 font-mono">
             <tr>
               <th className="py-2.5 px-3 text-center">Iter (i)</th>
               <th className="py-2.5 px-3">x_i</th>
               <th className="py-2.5 px-3">f(x_i)</th>
               <th className="py-2.5 px-3">f&apos;(x_i)</th>
-              <th className="py-2.5 px-3 text-[#800020] font-bold">x_{'{i+1}'} (Tangent Intercept)</th>
-              <th className="py-2.5 px-3 text-emerald-700 font-bold">ε_a (%)</th>
+              <th className="py-2.5 px-3 text-amber-300 font-bold">x_{'{i+1}'} (Tangent Intercept)</th>
+              <th className="py-2.5 px-3 text-emerald-400 font-bold">ε_a (%)</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-stone-100 bg-white">
+          <tbody className="divide-y divide-white/5 bg-transparent">
             {steps.map((step) => {
               const isActive = step.iteration === currentIter;
 
@@ -90,22 +90,22 @@ export const NewtonRaphsonTable: React.FC<NewtonRaphsonTableProps> = ({
                   onClick={() => onSelectIter(step.iteration)}
                   className={`transition-colors cursor-pointer ${
                     isActive
-                      ? 'bg-amber-50/90 font-bold border-l-4 border-l-[#800020] text-stone-900'
-                      : 'hover:bg-stone-50/80'
+                      ? 'bg-amber-500/10 font-bold border-l-2 border-l-amber-400 text-amber-200'
+                      : 'hover:bg-white/5'
                   }`}
                 >
-                  <td className="py-2.5 px-3 text-center font-bold text-[#800020]">
+                  <td className="py-2.5 px-3 text-center font-bold text-amber-400">
                     {step.iteration}
                   </td>
                   <td className="py-2.5 px-3">{step.xi.toFixed(6)}</td>
                   <td className="py-2.5 px-3">{step.fxi.toFixed(6)}</td>
                   <td className="py-2.5 px-3">
-                    <span className={step.zeroSlopeWarning ? 'text-red-600 font-bold' : ''}>
+                    <span className={step.zeroSlopeWarning ? 'text-rose-400 font-bold' : 'text-stone-400'}>
                       {step.dfxi.toFixed(6)}
                     </span>
                   </td>
-                  <td className="py-2.5 px-3 font-bold text-amber-900">{step.xNext.toFixed(6)}</td>
-                  <td className="py-2.5 px-3 font-bold text-emerald-700">
+                  <td className="py-2.5 px-3 font-bold text-amber-300">{step.xNext.toFixed(6)}</td>
+                  <td className="py-2.5 px-3 font-bold text-emerald-400">
                     {step.ea !== null ? `${step.ea.toFixed(4)}%` : '—'}
                   </td>
                 </tr>

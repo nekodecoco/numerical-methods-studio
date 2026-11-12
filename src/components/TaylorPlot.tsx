@@ -16,10 +16,10 @@ const Plot = dynamic<any>(
   {
     ssr: false,
     loading: () => (
-      <div className="w-full h-[520px] flex items-center justify-center bg-stone-50/50 rounded-2xl border border-stone-200/80">
-        <div className="flex flex-col items-center gap-3 text-stone-500">
-          <div className="w-8 h-8 border-3 border-[#800020] border-t-transparent rounded-full animate-spin" />
-          <span className="text-sm font-medium">Initializing Modern Plot Canvas...</span>
+      <div className="w-full h-[520px] flex items-center justify-center bg-[#0a0a0c] rounded-2xl border border-white/10">
+        <div className="flex flex-col items-center gap-3 text-stone-400">
+          <div className="w-8 h-8 border-2 border-amber-500 border-t-transparent rounded-full animate-spin" />
+          <span className="text-xs font-mono uppercase tracking-wider text-stone-400">Initializing Precision Canvas...</span>
         </div>
       </div>
     ),
@@ -260,7 +260,7 @@ export const TaylorPlot: React.FC<TaylorPlotProps> = ({
       });
     }
 
-    // 3. True Function f(x) (Solid Royal Maroon)
+    // 3. True Function f(x) (Solid Crimson Glow)
     traces.push({
       x: xValues,
       y: yOriginal,
@@ -268,13 +268,13 @@ export const TaylorPlot: React.FC<TaylorPlotProps> = ({
       mode: 'lines',
       name: `f(x) = ${originalExpr}`,
       line: {
-        color: '#800020', // Academic Royal Maroon
-        width: 3.5,
+        color: '#f43f5e', // Vibrant Rose Crimson
+        width: 3,
       },
       hovertemplate: `<b>f(x)</b>: %{y:.4f}<extra></extra>`,
     });
 
-    // 4. Current Taylor Polynomial P_n(x) (Luminous Gold / Amber)
+    // 4. Current Taylor Polynomial P_n(x) (Luminous Amber)
     if (currentStep) {
       traces.push({
         x: animatedX,
@@ -283,8 +283,8 @@ export const TaylorPlot: React.FC<TaylorPlotProps> = ({
         mode: 'lines',
         name: `P${currentOrder}(x) (Order ${currentOrder})`,
         line: {
-          color: '#D97706', // Warm Amber Gold
-          width: 3.5,
+          color: '#fbbf24', // Luminous Amber Gold
+          width: 3,
         },
         hovertemplate: `<b>P${currentOrder}(x)</b>: %{y:.4f}<extra></extra>`,
       });
@@ -298,20 +298,20 @@ export const TaylorPlot: React.FC<TaylorPlotProps> = ({
       mode: 'markers+text',
       name: `Center a = ${a}`,
       marker: {
-        size: 14,
-        color: '#800020',
+        size: 13,
+        color: '#f43f5e',
         symbol: 'circle',
         line: {
-          color: '#F59E0B',
-          width: 3.5,
+          color: '#fbbf24',
+          width: 2.5,
         },
       },
       text: [`a = ${a}`],
       textposition: 'top center',
       textfont: {
-        family: 'Inter, sans-serif',
-        size: 12,
-        color: '#800020',
+        family: 'var(--font-geist-mono), monospace',
+        size: 11,
+        color: '#fbbf24',
       },
       hovertemplate: `<b>Expansion Center</b><br>a: %{x}<br>f(a): %{y:.4f}<extra></extra>`,
     });
@@ -341,71 +341,71 @@ export const TaylorPlot: React.FC<TaylorPlotProps> = ({
       autosize: true,
       height: 520,
       margin: { l: 55, r: 25, t: 45, b: 50 },
-      paper_bgcolor: 'rgba(255, 255, 255, 0)',
-      plot_bgcolor: '#FAFBFC',
+      paper_bgcolor: 'rgba(0, 0, 0, 0)',
+      plot_bgcolor: '#0a0a0c',
       font: {
         family: 'var(--font-geist-sans), Inter, system-ui, -apple-system, sans-serif',
-        color: '#475569',
+        color: '#a1a1aa',
       },
       xaxis: {
-        title: { text: 'x', font: { size: 13, color: '#475569' } },
+        title: { text: 'x', font: { size: 12, color: '#a1a1aa' } },
         range: [xMin, xMax],
         fixedrange: false,
         showgrid: true,
-        gridcolor: '#EDF2F7',
-        gridwidth: 1.2,
+        gridcolor: 'rgba(255, 255, 255, 0.07)',
+        gridwidth: 1,
         zeroline: true,
-        zerolinecolor: '#CBD5E1',
+        zerolinecolor: 'rgba(255, 255, 255, 0.25)',
         zerolinewidth: 1.5,
-        tickfont: { size: 11, color: '#64748B' },
+        tickfont: { size: 11, color: '#71717a' },
       },
       yaxis: {
-        title: { text: 'y', font: { size: 13, color: '#475569' } },
+        title: { text: 'y', font: { size: 12, color: '#a1a1aa' } },
         range: [yMinPlot, yMaxPlot],
         showgrid: true,
-        gridcolor: '#EDF2F7',
-        gridwidth: 1.2,
+        gridcolor: 'rgba(255, 255, 255, 0.07)',
+        gridwidth: 1,
         zeroline: true,
-        zerolinecolor: '#CBD5E1',
+        zerolinecolor: 'rgba(255, 255, 255, 0.25)',
         zerolinewidth: 1.5,
-        tickfont: { size: 11, color: '#64748B' },
+        tickfont: { size: 11, color: '#71717a' },
       },
       legend: {
         orientation: 'h',
         x: 0,
         y: 1.12,
-        bgcolor: 'rgba(255, 255, 255, 0.85)',
-        bordercolor: '#E2E8F0',
+        bgcolor: 'rgba(18, 18, 21, 0.85)',
+        bordercolor: 'rgba(255, 255, 255, 0.1)',
         borderwidth: 1,
-        font: { size: 11.5, color: '#334155' },
+        font: { size: 11, color: '#e4e4e7' },
       },
       hovermode: 'closest',
       hoverlabel: {
-        bgcolor: '#0F172A',
+        bgcolor: '#18181b',
         font: { color: '#FFFFFF', size: 12 },
-        bordercolor: 'transparent',
+        bordercolor: 'rgba(255, 255, 255, 0.15)',
       },
     }),
     [xMin, xMax, yMinPlot, yMaxPlot]
   );
 
   return (
-    <div className="relative w-full rounded-2xl bg-white border border-stone-200/90 shadow-xl shadow-stone-200/40 overflow-hidden backdrop-blur-sm">
+    <div className="relative w-full rounded-2xl bg-[#121215] border border-white/10 overflow-hidden">
       {/* Sleek Top Floating HUD */}
-      <div className="px-5 py-3.5 border-b border-stone-100 flex flex-wrap items-center justify-between gap-3 bg-gradient-to-r from-stone-50/80 via-white to-stone-50/80">
+      <div className="px-5 py-3 border-b border-white/10 flex flex-wrap items-center justify-between gap-3 bg-[#0a0a0c]">
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2">
-            <span className="inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#800020]/10 text-[#800020] border border-[#800020]/20">
-              f(x) Royal Maroon
+            <span className="inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-xs font-mono font-semibold bg-rose-500/10 text-rose-300 border border-rose-500/20">
+              f(x) Crimson
             </span>
-            <span className="inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-300/60">
-              P{currentOrder}(x) Luminous Gold
+            <span className="inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-xs font-mono font-semibold bg-amber-500/10 text-amber-300 border border-amber-500/20">
+              P{currentOrder}(x) Gold
             </span>
           </div>
 
           {currentOrder > 0 && (
-            <span className="hidden sm:inline-flex text-xs text-stone-500 font-mono bg-stone-100 px-2 py-0.5 rounded">
-              Peak Interval Gap: {maxError > 1000 ? '>1000' : maxError.toFixed(4)}
+            <span className="hidden sm:inline-flex text-xs text-stone-400 font-mono bg-white/5 px-2 py-0.5 rounded border border-white/10">
+              Peak Gap: {maxError > 1000 ? '>1000' : maxError.toFixed(4)}
             </span>
           )}
         </div>
@@ -416,13 +416,13 @@ export const TaylorPlot: React.FC<TaylorPlotProps> = ({
             <button
               onClick={() => setShowGhost(!showGhost)}
               title="Toggle ghost curve of previous order"
-              className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded-lg transition-all ${
+              className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-mono rounded-lg transition-all border ${
                 showGhost
-                  ? 'bg-stone-200 text-stone-800'
-                  : 'bg-stone-100 text-stone-500 hover:bg-stone-200/70'
+                  ? 'bg-white/10 text-white border-white/20'
+                  : 'bg-black/40 text-stone-400 border-white/5 hover:bg-white/5'
               }`}
             >
-              {showGhost ? <Eye className="w-3.5 h-3.5 text-stone-700" /> : <EyeOff className="w-3.5 h-3.5" />}
+              {showGhost ? <Eye className="w-3.5 h-3.5 text-stone-300" /> : <EyeOff className="w-3.5 h-3.5" />}
               <span>Ghost P{currentOrder - 1}</span>
             </button>
           )}
@@ -430,10 +430,10 @@ export const TaylorPlot: React.FC<TaylorPlotProps> = ({
           <button
             onClick={() => setShowErrorRegion(!showErrorRegion)}
             title="Highlight approximation error region between f(x) and Pn(x)"
-            className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded-lg transition-all ${
+            className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-mono rounded-lg transition-all border ${
               showErrorRegion
-                ? 'bg-amber-100 text-amber-800 border border-amber-300'
-                : 'bg-stone-100 text-stone-500 hover:bg-stone-200/70'
+                ? 'bg-amber-500/20 text-amber-300 border-amber-500/30'
+                : 'bg-black/40 text-stone-400 border-white/5 hover:bg-white/5'
             }`}
           >
             <Layers className="w-3.5 h-3.5" />
@@ -459,11 +459,11 @@ export const TaylorPlot: React.FC<TaylorPlotProps> = ({
 
         {/* Dynamic Watermark / Order Indicator */}
         <div className="absolute bottom-4 right-4 pointer-events-none select-none">
-          <div className="bg-white/80 backdrop-blur-md px-3 py-1.5 rounded-xl border border-stone-200/70 shadow-sm text-right">
-            <div className="text-[10px] uppercase tracking-wider font-semibold text-stone-400">
+          <div className="bg-black/70 backdrop-blur-md px-3.5 py-2 rounded-xl border border-white/10 shadow-sm text-right">
+            <div className="text-[10px] uppercase tracking-wider font-mono text-stone-500">
               Polynomial Order
             </div>
-            <div className="text-lg font-bold text-[#800020] font-mono leading-none">
+            <div className="text-lg font-bold text-amber-400 font-mono leading-none mt-0.5">
               n = {currentOrder}
             </div>
           </div>

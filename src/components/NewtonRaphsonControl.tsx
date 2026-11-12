@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Play, HelpCircle, AlertCircle, Sparkles, Target, Zap } from 'lucide-react';
+import { Play, HelpCircle, AlertCircle, Target, Zap } from 'lucide-react';
 import { MathView } from './MathView';
 import { OpenMethodPreset } from '@/lib/openMethods';
 
@@ -44,45 +44,35 @@ export const NewtonRaphsonControl: React.FC<NewtonRaphsonControlProps> = ({
   };
 
   return (
-    <div className="bg-white rounded-2xl border border-stone-200/90 shadow-lg shadow-stone-200/30 p-5 space-y-4">
+    <div className="bg-[#121215] rounded-2xl border border-white/10 shadow-xl p-5 space-y-4 text-white">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h2 className="text-base font-semibold text-stone-900 flex items-center gap-2">
-          <span className="w-2.5 h-2.5 rounded-full bg-[#800020]" />
+        <h2 className="text-base font-semibold text-white flex items-center gap-2">
+          <span className="w-2.5 h-2.5 rounded-full bg-amber-400" />
           <span>Newton-Raphson Setup</span>
         </h2>
         <button
           type="button"
           onClick={() => setShowHelp(!showHelp)}
-          className="text-xs text-stone-500 hover:text-stone-800 flex items-center gap-1 transition-colors cursor-pointer"
+          className="text-xs text-stone-400 hover:text-white flex items-center gap-1 transition-colors cursor-pointer"
         >
           <HelpCircle className="w-3.5 h-3.5" />
           <span>Tangent Rule</span>
         </button>
       </div>
 
-      {/* Help Popover */}
       {showHelp && (
-        <div className="p-3.5 bg-amber-50/70 border border-amber-200 rounded-xl text-xs space-y-2 text-stone-800 animate-fadeIn">
-          <div className="font-bold text-amber-900 flex items-center gap-1.5">
-            <Zap className="w-4 h-4 text-amber-600" />
-            <span>Tangent Line Projection Formula</span>
-          </div>
-          <p className="leading-relaxed">
-            Newton-Raphson extrapolates the tangent line from <MathView math="(x_i, f(x_i))" /> with slope <MathView math="f'(x_i)" /> to find where it strikes the x-axis:
-          </p>
-          <div className="p-2.5 bg-white rounded-lg border border-amber-200 text-center font-serif text-sm text-[#800020] font-bold">
-            <MathView math="x_{i+1} = x_i - \frac{f(x_i)}{f'(x_i)}" />
-          </div>
-          <p className="text-[11px] text-stone-600">
-            <strong>Quadratic Convergence:</strong> Once near a simple root, the number of accurate decimal digits approximately doubles each iteration!
+        <div className="p-3 bg-black/50 rounded-xl text-xs text-stone-300 border border-white/10 space-y-1">
+          <p className="font-semibold text-amber-300">Tangent Extrapolation Principle:</p>
+          <p className="text-stone-400">
+            Uses the derivative f&apos;(x) to construct the tangent line at the current estimate and follows it to its x-axis intercept. Converges with quadratic order (p = 2) when close to the root.
           </p>
         </div>
       )}
 
       {/* Presets Bar */}
       <div className="space-y-1.5">
-        <label className="text-[11px] font-bold uppercase tracking-wider text-stone-500 block">
+        <label className="text-[11px] font-mono font-semibold uppercase tracking-wider text-stone-400 block">
           Textbook Presets
         </label>
         <div className="grid grid-cols-1 gap-1.5">
@@ -91,17 +81,17 @@ export const NewtonRaphsonControl: React.FC<NewtonRaphsonControlProps> = ({
               key={idx}
               type="button"
               onClick={() => applyPreset(p)}
-              className="text-left px-3 py-2 rounded-xl border border-stone-200 hover:border-[#800020]/40 hover:bg-stone-50 text-xs transition cursor-pointer flex flex-col gap-0.5 group"
+              className="text-left px-3 py-2 rounded-xl border border-white/10 bg-white/5 hover:border-amber-400/50 hover:bg-white/10 text-xs transition cursor-pointer flex flex-col gap-0.5 group"
             >
               <div className="flex items-center justify-between">
-                <span className="font-bold text-stone-900 group-hover:text-[#800020] transition-colors">
+                <span className="font-bold text-white group-hover:text-amber-300 transition-colors">
                   {p.label}
                 </span>
                 <span className="text-[10px] font-mono text-stone-400">x₀ = {p.defaultX0}</span>
               </div>
-              <p className="text-[11px] text-stone-500 line-clamp-1">{p.description}</p>
+              <p className="text-[11px] text-stone-400 line-clamp-1">{p.description}</p>
               {p.note && (
-                <span className="text-[10px] text-amber-800 font-mono font-medium">
+                <span className="text-[10px] text-amber-300 font-mono">
                   {p.note}
                 </span>
               )}
@@ -119,107 +109,102 @@ export const NewtonRaphsonControl: React.FC<NewtonRaphsonControlProps> = ({
         className="space-y-3.5 pt-1"
       >
         <div>
-          <label className="block text-[11px] font-semibold uppercase tracking-wider text-stone-500 mb-1">
-            Function Expression <span className="font-serif">f(x)</span>
+          <label className="block text-[11px] font-mono font-semibold uppercase tracking-wider text-stone-400 mb-1">
+            Function Expression <span className="font-serif italic text-white">f(x)</span>
           </label>
           <input
             type="text"
             value={exprFInput}
             onChange={(e) => setExprFInput(e.target.value)}
             placeholder="e.g. x^3 - x - 2, exp(-x) - x"
-            className="w-full px-3 py-2 text-sm font-mono bg-stone-50 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#800020]/30 focus:border-[#800020] text-stone-900"
+            className="w-full px-3 py-2 text-sm font-mono bg-black/50 border border-white/10 rounded-xl focus:outline-none focus:border-amber-400/60 focus:ring-1 focus:ring-amber-400/30 text-white placeholder:text-stone-600"
             required
           />
         </div>
 
         {/* Live Symbolic Derivative Display */}
         {derivativeLatex && (
-          <div className="p-2.5 bg-stone-50 rounded-xl border border-stone-200 space-y-1">
-            <span className="text-[10px] uppercase font-bold text-stone-400 block tracking-wider">
+          <div className="p-2.5 bg-black/50 rounded-xl border border-white/10 space-y-1">
+            <span className="text-[10px] uppercase font-mono font-bold text-stone-500 block tracking-wider">
               Computed Symbolic Derivative f&apos;(x)
             </span>
-            <div className="text-xs font-serif text-[#800020]">
+            <div className="text-xs font-mono text-amber-200">
               <MathView math={`f'(x) = ${derivativeLatex}`} />
             </div>
           </div>
         )}
 
         <div>
-          <label className="block text-[11px] font-semibold uppercase tracking-wider text-amber-700 mb-1 flex items-center gap-1">
+          <label className="block text-[11px] font-mono font-semibold uppercase tracking-wider text-amber-400 mb-1 flex items-center gap-1">
             <Target className="w-3.5 h-3.5" />
-            Initial Guess <span className="font-serif">x_0</span>
+            Initial Guess <span className="font-serif italic text-white">x₀</span>
           </label>
           <input
             type="number"
             step="any"
             value={x0Input}
             onChange={(e) => setX0Input(parseFloat(e.target.value) || 0)}
-            className="w-full px-3 py-1.5 text-sm font-mono bg-stone-50 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500/30 focus:border-amber-500 text-stone-900 font-medium"
+            className="w-full px-3 py-1.5 text-sm font-mono bg-black/50 border border-white/10 rounded-xl focus:outline-none focus:border-amber-400/60 focus:ring-1 focus:ring-amber-400/30 text-white font-medium"
             required
           />
         </div>
 
+        {/* Criteria Grid */}
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block text-[11px] font-semibold uppercase tracking-wider text-stone-500 mb-1">
-              Stopping Tol <span className="font-serif">ε_s (%)</span>
+            <label className="block text-[10px] font-mono font-semibold uppercase tracking-wider text-stone-400 mb-1">
+              Error Tol <MathView math="\varepsilon_s\ (%)" />
             </label>
             <input
               type="number"
               step="any"
-              min="0.0000001"
+              min="0.00000001"
               value={tolInput}
               onChange={(e) => setTolInput(parseFloat(e.target.value) || 0.0001)}
-              className="w-full px-3 py-1.5 text-sm font-mono bg-stone-50 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#800020]/30 focus:border-[#800020] text-stone-900"
+              className="w-full px-2.5 py-1.5 text-sm font-mono bg-black/50 border border-white/10 rounded-xl focus:outline-none focus:border-amber-400/60 focus:ring-1 focus:ring-amber-400/30 text-white"
               required
             />
           </div>
 
           <div>
-            <label className="block text-[11px] font-semibold uppercase tracking-wider text-stone-500 mb-1">
-              Max Iterations <span className="font-serif">N</span>
+            <label className="block text-[10px] font-mono font-semibold uppercase tracking-wider text-stone-400 mb-1">
+              Max Iterations
             </label>
             <input
               type="number"
               min="1"
               max="50"
-              step="1"
               value={maxIterInput}
               onChange={(e) => setMaxIterInput(parseInt(e.target.value) || 20)}
-              className="w-full px-3 py-1.5 text-sm font-mono bg-stone-50 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#800020]/30 focus:border-[#800020] text-stone-900"
+              className="w-full px-2.5 py-1.5 text-sm font-mono bg-black/50 border border-white/10 rounded-xl focus:outline-none focus:border-amber-400/60 focus:ring-1 focus:ring-amber-400/30 text-white"
               required
             />
           </div>
         </div>
 
-        {/* Error Alert */}
-        {errorMessage && (
-          <div className="p-3 bg-red-50 border border-red-200 text-red-700 rounded-xl text-xs space-y-1">
-            <div className="font-bold flex items-center gap-1.5">
-              <AlertCircle className="w-4 h-4 flex-shrink-0" />
-              <span>Input Error</span>
-            </div>
-            <p className="text-[11px] leading-relaxed">{errorMessage}</p>
-          </div>
-        )}
-
         {/* Warning Alert */}
         {warningMessage && (
-          <div className="p-3 bg-amber-50 border border-amber-300 text-amber-900 rounded-xl text-xs space-y-1">
-            <div className="font-bold flex items-center gap-1.5">
-              <AlertCircle className="w-4 h-4 flex-shrink-0 text-amber-600" />
-              <span>Pitfall Alert</span>
-            </div>
-            <p className="text-[11px] leading-relaxed">{warningMessage}</p>
+          <div className="flex items-start gap-2 p-3 bg-amber-500/10 border border-amber-500/30 text-amber-200 rounded-xl text-xs font-mono">
+            <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5 text-amber-400" />
+            <div>{warningMessage}</div>
           </div>
         )}
 
+        {/* Error Alert */}
+        {errorMessage && (
+          <div className="flex items-start gap-2 p-3 bg-rose-950/40 border border-rose-500/30 text-rose-300 rounded-xl text-xs font-mono">
+            <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5 text-rose-400" />
+            <div>{errorMessage}</div>
+          </div>
+        )}
+
+        {/* Start Button */}
         <button
           type="submit"
-          className="w-full py-2.5 px-4 rounded-xl font-medium text-sm text-white bg-[#800020] hover:bg-[#6b001b] active:scale-[0.98] transition-all duration-150 flex items-center justify-center gap-2 shadow-md shadow-[#800020]/20 cursor-pointer"
+          className="w-full py-2.5 px-4 rounded-xl font-mono font-medium text-xs text-white bg-[#800020] hover:bg-[#9a0027] active:scale-[0.98] transition-all flex items-center justify-center gap-2 border border-[#800020]/60 shadow-lg shadow-[#800020]/25 cursor-pointer"
         >
-          <Play className="w-4 h-4 fill-white" />
-          <span>Initialize &amp; Trace Tangent</span>
+          <Play className="w-3.5 h-3.5 fill-white" />
+          <span>Extrapolate Tangents (Iter 1)</span>
         </button>
       </form>
     </div>

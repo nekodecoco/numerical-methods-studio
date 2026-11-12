@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { NavBar } from '@/components/NavBar';
+import { Footer } from '@/components/Footer';
 import { RootFindingControl } from '@/components/RootFindingControl';
 import { RootFindingPlot } from '@/components/RootFindingPlot';
 import { RootFindingActionBar } from '@/components/RootFindingActionBar';
@@ -85,35 +86,35 @@ export default function FalsePositionPage() {
   );
 
   return (
-    <div className="min-h-screen bg-[#FAF9F6] text-stone-900 flex flex-col">
+    <div className="min-h-screen bg-[#09090b] text-white flex flex-col selection:bg-amber-500/30 selection:text-amber-200">
       <NavBar />
 
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
         {/* Method Banner */}
-        <div className="bg-white border border-stone-200/90 rounded-xl p-5 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div className="space-y-1">
+        <div className="bg-[#121215] border border-white/10 rounded-2xl p-6 relative overflow-hidden backdrop-blur-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="space-y-1 relative z-10">
             <div className="flex items-center gap-2">
-              <span className="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded bg-[#800020]/10 text-[#800020] font-semibold border border-[#800020]/15">
+              <span className="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded bg-purple-500/10 text-purple-300 font-semibold border border-purple-500/20">
                 Bracketing Method
               </span>
-              <span className="text-xs text-stone-400 font-mono">Regula Falsi</span>
+              <span className="text-xs text-stone-500 font-mono">Regula Falsi</span>
             </div>
-            <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-stone-900 font-sans">
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white font-sans">
               False Position Method Visualizer
             </h1>
-            <p className="text-xs text-stone-600 max-w-2xl">
+            <p className="text-xs text-stone-400 max-w-2xl leading-relaxed">
               Accelerating root estimates by drawing a straight chord between bracket endpoints while strictly maintaining sign containment.
             </p>
           </div>
 
-          <div className="bg-stone-50 border border-stone-200 rounded-lg px-3.5 py-2 text-xs hidden md:block">
-            <div className="text-[9px] uppercase tracking-wider font-mono text-stone-500 font-semibold mb-0.5">
+          <div className="bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-xs hidden md:block relative z-10">
+            <div className="text-[9px] uppercase tracking-wider font-mono text-stone-400 font-semibold mb-1">
               False Position Intercept
             </div>
             <MathView
               math="x_r = \frac{x_l f(x_u) - x_u f(x_l)}{f(x_u) - f(x_l)}"
               block={false}
-              className="text-stone-900 font-medium"
+              className="text-amber-300 font-medium font-serif"
             />
           </div>
         </div>
@@ -143,40 +144,40 @@ export default function FalsePositionPage() {
 
             {/* Stagnation Warning Banner if triggered */}
             {isStagnant && (
-              <div className="p-4 rounded-2xl bg-amber-50 border border-amber-300 text-amber-900 text-xs space-y-1.5 animate-fadeIn">
-                <div className="flex items-center gap-1.5 font-bold text-amber-800">
-                  <AlertTriangle className="w-4 h-4 text-amber-600" />
+              <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-200 text-xs space-y-1.5">
+                <div className="flex items-center gap-1.5 font-bold text-amber-300 font-mono">
+                  <AlertTriangle className="w-4 h-4 text-amber-400" />
                   <span>One-Sided Stagnation Detected!</span>
                 </div>
-                <p className="leading-relaxed">
+                <p className="leading-relaxed text-stone-400">
                   Notice how one bracket endpoint remains frozen while the other slowly creeps forward! This occurs when the function exhibits severe curvature, causing the secant chord to consistently underestimate the root.
                 </p>
               </div>
             )}
 
             {/* Teaching Takeaways */}
-            <div className="bg-white rounded-2xl border border-stone-200/90 shadow-sm p-5 space-y-3">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-stone-500 flex items-center gap-1.5">
-                <Lightbulb className="w-4 h-4 text-amber-500" />
+            <div className="bg-[#121215] rounded-2xl border border-white/10 p-5 space-y-3">
+              <h3 className="text-xs font-bold font-mono uppercase tracking-wider text-stone-400 flex items-center gap-1.5">
+                <Lightbulb className="w-4 h-4 text-amber-400" />
                 Teaching Takeaways &amp; Comparisons
               </h3>
-              <ul className="text-xs text-stone-600 space-y-2.5 leading-relaxed">
+              <ul className="text-xs text-stone-400 space-y-2.5 leading-relaxed">
                 <li className="flex items-start gap-2">
-                  <span className="font-bold text-[#800020] min-w-max">Secant Advantage:</span>
+                  <span className="font-bold text-purple-300 font-mono min-w-max">Secant Advantage:</span>
                   <span>
                     Unlike Bisection which blindly cuts at the midpoint, False Position weights the estimate towards the endpoint whose value is closer to zero.
                   </span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="font-bold text-[#800020] min-w-max">Linear Functions:</span>
+                  <span className="font-bold text-purple-300 font-mono min-w-max">Linear Functions:</span>
                   <span>
                     If <MathView math="f(x)" /> is linear, False Position finds the exact root in literally <strong>1 iteration</strong>!
                   </span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="font-bold text-[#800020] min-w-max">The Classic Trap:</span>
+                  <span className="font-bold text-purple-300 font-mono min-w-max">The Classic Trap:</span>
                   <span>
-                    Try the <code className="bg-stone-100 px-1 py-0.5 rounded text-[11px] font-bold">x^10 - 1</code> preset! High convexity causes one bracket bound to stagnate, making False Position surprisingly slower than Bisection!
+                    Try the <code className="bg-black/60 px-1.5 py-0.5 rounded text-[11px] font-mono text-stone-300 border border-white/10">x^10 - 1</code> preset! High convexity causes one bracket bound to stagnate, making False Position surprisingly slower than Bisection!
                   </span>
                 </li>
               </ul>
@@ -221,9 +222,7 @@ export default function FalsePositionPage() {
         </div>
       </main>
 
-      <footer className="border-t border-stone-200 bg-white py-6 text-center text-xs text-stone-500">
-        <p>False Position (Regula Falsi) Visualizer for Numerical Methods &amp; Scientific Computing.</p>
-      </footer>
+      <Footer />
     </div>
   );
 }
