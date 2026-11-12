@@ -122,7 +122,7 @@ export const NavBar: React.FC = () => {
     pathname === '/secant' ||
     pathname === '/mullers' ||
     pathname === '/muller';
-  const isTaylorActive = pathname === '/';
+  const isTaylorActive = pathname === '/taylor' || pathname === '/taylor-series';
   const isTutorialActive = pathname === '/tutorial';
 
   return (
@@ -160,7 +160,7 @@ export const NavBar: React.FC = () => {
           >
             {/* Primary Category: Taylor Series */}
             <Link
-              href="/"
+              href="/taylor"
               className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
                 isTaylorActive
                   ? 'bg-[#800020] text-white font-semibold shadow-xs'
@@ -375,7 +375,7 @@ export const NavBar: React.FC = () => {
               Approximation
             </div>
             <Link
-              href="/"
+              href="/taylor"
               className={`flex items-center justify-between p-2.5 rounded-lg text-sm font-medium ${
                 isTaylorActive
                   ? 'bg-[#800020] text-white font-semibold'
